@@ -1,0 +1,40 @@
+  </table>
+  <!-- Tabelle Ende -->
+
+  <!-- Unterschrift Start -->
+  <div style="margin-top: 20px; text-align: right;">
+   <div style="width:150px; border-bottom: 2px solid black; float:right">&nbsp;</div>
+
+   <div style="width:300px; float:right;"><h2>Unterschrift EL / BL:</h2></div>
+  </div>
+
+  <div style="clear: both;"></div>
+  <!-- Unterschrift Ende -->
+
+
+
+
+
+  <!-- Footer Start -->
+  <div style="width:100%; margin:40px 0 0 auto; padding:3px; border: 1px solid black; height: 8mm;">
+
+   <div style="width:180px; font-size: 12px; padding: 2px; height: 90%; float:left;">
+    <i>0309/2014</i>
+   </div>
+
+   <div style="width:230px; font-size: 12px; padding: 2px; height: 90%; float:left;">
+    Erstellt:<br>SHD, Hr. Schubert
+   </div>
+
+   <div style="width:150px; font-size: 12px; padding: 2px; height: 90%; float:left;">
+    Datum/Version<br>18.10.2026, 01
+   </div>
+
+   <div style="width:100px; font-size: 12px; padding: 2px; height: 90%; float:right;">
+    Freigegeben<br>&nbsp;&nbsp;QMB/Dilg
+   </div>
+
+  </div>
+
+  <div style="clear: both;"></div>
+  <!-- Footer Ende -->

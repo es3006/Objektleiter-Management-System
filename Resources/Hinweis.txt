@@ -1,0 +1,10 @@
+Für jede Resourcedatei *.res, die im Programm genutzt werden soll, gibt es ein Verzeichnis.
+In jedem dieser Verzeichnisse befindet sich ein Unterverzeichnis "Resourcen", 
+eine Datei mit dem Namen "Resources.rc" und 
+eine Datei mit dem Namen "CreateResource.bat"
+
+
+Im Unterverzeichnis "Resourcen" werden alle Dateien abgelegt, die in die jeweilige Resource kompiliert werden sollen.
+
+In der Datei "Resources.rc" werden alle Resourcen deklariert
+Die Datei "CreateResource.bat" erstellt im Quellcodeverzeichnis die jeweilige Res-Datei.

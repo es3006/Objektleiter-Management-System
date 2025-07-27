@@ -1,0 +1,1 @@
+<tr><td style="height:50px; text-align:left;">[MITARBEITER]</td><td>[WAFFENNUMMER]</td><td>[SCHLIESSFACH]</td></tr>

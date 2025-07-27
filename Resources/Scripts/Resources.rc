@@ -1,0 +1,5 @@
+landscape RCDATA "Resourcen\print_landscape.bat"
+portrait RCDATA "Resourcen\print_portrait.bat"
+html2pdf RCDATA "Resourcen\printHtmlAsPDF.bat"
+wkhtmltopdfexe RCDATA "Resourcen\wkhtmltopdf.exe"
+wkhtmltoxdll RCDATA "Resourcen\wkhtmltox.dll"

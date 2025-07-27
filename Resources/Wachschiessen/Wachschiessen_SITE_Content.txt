@@ -1,0 +1,12 @@
+   <tr class="centerCell">
+    <td>[NACHNAME]</td>
+    <td>[VORNAME]</td>
+    <td>[DATUMQ1]</td>
+    <td>&nbsp;</td>
+    <td>[DATUMQ2]</td>
+    <td>&nbsp;</td>
+    <td>[DATUMQ3]</td>
+    <td>&nbsp;</td>
+    <td>[DATUMQ4]</td>
+    <td>&nbsp;</td>
+   </tr> 

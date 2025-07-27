@@ -1,0 +1,93 @@
+<!DOCTYPE html
+ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <title>Ausbildungsordner_07_Gesamtübersicht_Wachschießen</title>
+ <meta name="author" content="Mitarbeiter" />
+ <style type="text/css">
+  * {
+   margin: 0;
+   padding: 0;
+   text-indent: 0;
+   font-family: Arial, Helvetica, sans-serif;
+  }
+
+  body {
+   font-family: Calibri, sans-serif;
+   margin: 0 auto;
+   padding: 11px;
+   font-size: 18px;
+  }
+
+  @page {
+   size: A4 landscape;
+   height: 210mm;
+   width: 297mm;
+  }
+
+  p {
+   color: black;
+   font-family: Calibri, sans-serif;
+   font-style: normal;
+   font-weight: bold;
+   text-decoration: none;
+   font-size: 16pt;
+   margin: 0pt;
+  }
+
+  h1 {
+   font-size: 14pt;
+   padding-top: 20pt;
+   padding-left: 10pt;
+   margin-bottom: 10mm;
+  }
+
+  table,
+  tbody {
+   overflow: visible;
+  }
+
+  table,
+  td,
+  th {
+   border: 1px solid black;
+   border-collapse: collapse;
+  }
+
+  td {
+   height: 17px;
+  }
+
+  th {
+   padding-left: 2px;
+   text-align: left;
+   font-size: 10pt;
+   vertical-align: top;
+  }
+
+  .trtitle {
+   height: 13pt;
+  }
+
+  tr {
+   height: 17pt;
+  }
+
+  .sidewidth {
+   width: 100%;
+  }
+
+  .centerCell {
+   height: 11mm;
+   text-align: center;
+  }
+
+  .titleBig {
+   font-size: 20pt;
+   padding-top:10px;
+  }
+ </style>
+</head>
+<body>

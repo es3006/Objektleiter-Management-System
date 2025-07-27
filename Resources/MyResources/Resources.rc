@@ -1,0 +1,7 @@
+WRONGPW RCDATA "Resourcen\wrongpw.WAV"
+WHOOSH RCDATA "Resourcen\whoosh.WAV"
+BLING RCDATA "Resourcen\bling.WAV"
+CLICK RCDATA "Resourcen\click.WAV"
+WEBVIEWLOADER RCDATA "Resourcen\WebView2Loader_x64.dll"
+SSLEAY32 RCDATA "Resourcen\ssleay32.dll"
+LIBEAY32 RCDATA "Resourcen\libeay32.dll"

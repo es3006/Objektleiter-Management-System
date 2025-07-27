@@ -1,0 +1,7 @@
+ <tr class="tcenter">
+  <td>[LFDNR]</td>
+  <td>[NRWBK]</td>
+  <td>[WAFFENTYP]</td>
+  <td>[WAFFENNUTZER]</td>
+  <td>[SERIENNUMMER]</td>
+ </tr>

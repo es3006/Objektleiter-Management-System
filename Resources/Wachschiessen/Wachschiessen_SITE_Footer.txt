@@ -1,0 +1,35 @@
+<!-- SITE CONTENT ENDE -->     
+  </table>
+<!-- TABELLE ENDE -->    
+
+
+ 
+
+<!-- Footer Start -->
+  <div style="width:100%; margin:20px 0 0 auto; border: 1px solid gray; height: 28px;">
+
+   <div style="width:180px; font-size: 10px; padding: 2px; height: 90%; float:left;">
+    0278/2019
+   </div>
+
+   <div style="width:230px; font-size: 10px; padding: 2px; height: 90%; float:left;">
+    Erstellt:<br>SHD, Kerscher
+   </div>
+
+   <div style="width:150px; font-size: 10px; padding: 2px; height: 90%; float:left;">
+    Datum/Version<br>14.11.2019, 02
+   </div>
+
+   <div style="width:100px; font-size: 10px; padding: 2px; height: 90%; float:right;">
+    Freigegeben OMB
+   </div>
+
+  </div>
+
+  <div style="clear: both;"></div>
+  <!-- Footer Ende -->
+
+
+
+
+</div>

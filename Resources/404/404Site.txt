@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Keine Datei vorhanden</title>
+ <style>
+@page {
+  size: A4 landscape;
+  height: 210mm;
+  width:297mm;
+  padding: 10px;
+}
+
+
+/* CSS-Reset für die Seite */
+html, body, div, header, main, footer, table {
+ margin: 0;
+ padding: 0;
+}
+
+body {
+ font-family: Arial, sans-serif;
+ margin: 0 auto; /* Seiteninhalt horizontal zentrieren */
+ padding: 10px; /* Rechter Rand (30mm) für den Druck */
+ font-size: 18px;
+}
+ </style>
+</head>
+<body>
+
+
+<div style="width:500px; margin:0 auto; padding: 10px; margin-top:100px; background-color: #1976D2; text-align: center; color:#fff;">Hier wurde für das ausgewählte Jahr noch nichts gespeichert!</div>
+</body>
+</html>

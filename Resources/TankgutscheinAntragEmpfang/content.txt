@@ -1,0 +1,1 @@
+<tr><td class="table-cell-height">[MITARBEITER]</td><td>[DATUM]</td><td[COLOR]>[GUTSCHEINART]</td><td>&nbsp;</td></tr>

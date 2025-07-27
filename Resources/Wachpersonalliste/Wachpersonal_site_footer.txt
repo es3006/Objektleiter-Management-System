@@ -1,0 +1,14 @@
+</table>
+
+<p class="noborder bold blue" style="font-size:16px;">Stand [DATUM]</p>
+
+
+<table style="width:100%; border: 1px solid black; margin-bottom:20px;">
+ <tr style="vertical-align: text-top;  line-height: 1.7;">
+  <td class="noborder" style="width: 60mm; font-size: 14px;">0216/2014</td>
+  <td class="noborder" style="width: 113mm; font-size: 14px;">Erstellt:<br>SHD, Hr. Schubert</td>
+  <td class="noborder" style="width: 44mm; font-size: 14px;">Datum/Version<br>29.09.2016</td>
+  <td class="noborder" style="width: 29mm; font-size: 14px; text-align: right;">Freigegeben:<br>QMB/Dilg</td>
+  <td class="noborder" style="width: 20mm; font-size: 14px;">&nbsp;</td>
+ </tr>
+</table>

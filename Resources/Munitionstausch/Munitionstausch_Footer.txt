@@ -1,0 +1,32 @@
+<!-- FOOTER START -->
+</table>
+</div><!-- sidewidth -->
+
+<div class="sidewidth">
+  <div style="width:100%; margin:20px 0 0 auto; border: 1px solid gray; height: 28px;">
+
+   <div style="width:45mm; font-size: 10px; padding: 2px; height: 90%; float:left;">
+    0240/2014
+   </div>
+
+   <div style="width:75mm; font-size: 10px; padding: 2px; height: 90%; float:left;">
+    Erstellt:<br>SHD, Herr Schubert
+   </div>
+
+   <div style="font-size: 10px; padding: 2px; height: 90%; float:left;">
+    Datum/Version<br>05.10.2016, 02
+   </div>
+
+   <div style="width:75mm; font-size: 10px; padding: 2px; height: 90%; float:right;">
+    Freigegeben QMB/Dilg
+   </div>
+
+  </div>
+</div><!--sidewidth-->
+
+<div style="clear: both;"></div>
+
+</body>
+
+</html>
+<!-- FOOTER ENDE -->

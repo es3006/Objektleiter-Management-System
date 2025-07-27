@@ -1,0 +1,13 @@
+<tr style="height: 30px; text-align: center; vertical-align:top">
+  <td>[VORNAME]</td>
+  <td>[NACHNAME]</td>
+  <td>[PERSONALNR]</td>
+  <td>[SWANR]</td>
+  <td>[LETZTESSCHIESSEN]</td>
+  <td>[WAFFENHANDHABUNG]</td>
+  <td>[THEORIE]</td>
+  <td>[WACHAUSBILDUNG]</td>
+  <td>[ERSTEHILFE]</td>
+  <td>[EINTRITTSDATUM]</td>
+  <td>[AUSTRITTSDATUM]</td>
+ </tr>

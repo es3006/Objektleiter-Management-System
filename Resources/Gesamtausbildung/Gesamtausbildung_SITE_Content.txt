@@ -1,0 +1,13 @@
+<tr style="height: 30px; text-align: center"[LINECOLOR]>
+  <td>[VORNAME]</td>
+  <td>[NACHNAME]</td>
+  <td>[PERSONALNR]</td>
+  <td>[SWANR]</td>
+  <td>[LETZTESSCHIESSEN]</td>
+  <td[ZELLWIDTHWAFFENH]>[WAFFENHANDHABUNG]</td>
+  <td[ZELLWIDTHTHEORIE]>[THEORIE]</td>
+  <td[ZELLWIDTHWACHAUSB]>[WACHAUSBILDUNG]</td>
+  <td>[ERSTEHILFE]</td>
+  <td style="font-size:10px;">[EINTRITTSDATUM]</td>
+  <td style="font-size:10px;">[AUSTRITTSDATUM]</td>
+ </tr>

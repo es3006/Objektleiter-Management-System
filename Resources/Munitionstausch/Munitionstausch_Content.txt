@@ -1,0 +1,12 @@
+<!-- CONTENT START -->
+  <tr class="centerCell">
+    <td>[DATUM]</td>
+    <td>[BESTANDVOR]</td>
+    <td>[EINGANG]</td>
+    <td>[ABGANG]</td>
+    <td>[BESTANDNACH]</td>
+    <td>[ZWECK]</td>
+    <td>[UEBERGEBENDER]</td>
+    <td>[UEBERNEHMENDER]</td>
+  </tr>
+<!-- CONTENT ENDE -->     

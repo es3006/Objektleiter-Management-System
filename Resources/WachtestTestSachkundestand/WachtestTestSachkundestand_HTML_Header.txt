@@ -1,0 +1,107 @@
+<!DOCTYPE html
+ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <title>SHD-Deckblatt_Ordner_Wachteste-2016-10-18.docx</title>
+ <meta name="author" content="ESD Sicherheitsdienst" />
+ <style type="text/css">
+  body {
+   font-family: Arial, sans-serif;
+   margin: 0 auto;
+   padding: 20px;
+   font-size: 18px;
+  }
+
+
+  @page {
+   size: A4 landscape;
+   height: 210mm;
+   width: 297mm;
+   padding: 10px;
+  }
+
+
+  h1 {
+   color: black;
+   font-family: "Trebuchet MS", sans-serif;
+   font-style: normal;
+   font-weight: bold;
+   text-decoration: none;
+   font-size: 16pt;
+   padding-top: 18pt;
+   padding-left: 19pt;
+   text-indent: 0pt;
+   text-align: left;
+  }
+
+ 
+
+  h2 {
+   color: black;
+   font-family: "Trebuchet MS", sans-serif;
+   font-style: normal;
+   font-weight: bold;
+   text-decoration: none;
+   font-size: 11pt;
+  }
+
+  table {
+    width:100%;
+    table-layout: auto;
+    
+  }
+
+  table,
+  tbody {
+   vertical-align: top;
+   overflow: visible;
+  }
+
+  table,
+  td,
+  th {
+   border: 1px solid black;
+   border-collapse: collapse;
+  }
+
+  td {
+   height: 7mm;
+  }
+
+  th {
+   padding-left: 2px;
+   text-align: left;
+   font-size: 13pt;
+  }
+
+  .trtitle {
+   height: 13pt;
+  }
+
+
+  .lightblue {
+   color: #8db3e2;
+  }
+
+  .beschreibung {
+   padding-left: 20px;
+   font-size: 14px;
+   margin-bottom: 65px;
+   padding-top: 11pt;
+   text-indent: 0pt;
+   text-align: left;
+   line-height:20px;
+  }
+
+  .footer {
+    font-size:10px;
+  }
+  
+
+ </style>
+</head>
+
+<body>
+

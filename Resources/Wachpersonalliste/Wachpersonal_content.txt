@@ -1,0 +1,1 @@
+<tr><td><strong>[NACHNAME]</strong></td><td><strong>[VORNAME]</strong></td><td>[EINTRITTSDATUM]</td><td>[GEBURTSDATUM]</td><td><strong>[PASSNR]</strong></td><td>[PASSGUELTIGBIS]</td><td style="font-size: 14pt; font-weight: bold; text-align:center;">[WSNR]</td><td>[WSGUELTIGBIS]</td><td>[WAFFENNR]</td>  <td style="text-align:center;">[DHNAME]</td></tr>

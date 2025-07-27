@@ -1,0 +1,22 @@
+</table>
+
+
+
+
+<table class="noborder" style="width:100%; margin-top:80px;">
+  <tr>
+  <td>Beantragt am: [ANTRAGSDATUM]</td>
+ </tr>
+ <tr>
+   <td>[COUNTTANKGUTSCHEIN] x Tankgutscheine<br>[COUNTLIDLGUTSCHEIN] x Lidl-Gutscheine</td>
+ </tr>
+</table>
+
+
+
+
+
+
+
+</body>
+</html>

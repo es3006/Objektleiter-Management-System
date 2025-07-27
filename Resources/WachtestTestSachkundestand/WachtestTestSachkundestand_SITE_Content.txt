@@ -1,0 +1,16 @@
+   <tr>
+    <td style="height: 6mm;">[MIT]</td>
+    <td>[JAN]</td>
+    <td>[FEB]</td>
+    <td>[MAR]</td>
+    <td>[APR]</td>
+    <td>[MAI]</td>
+    <td>[JUN]</td>
+    <td>[JUL]</td>
+    <td>[AUG]</td>
+    <td>[SEP]</td>
+    <td>[OKT]</td>
+    <td>[NOV]</td>
+    <td>[DEZ]</td>
+    <td>[TSW]</td>
+   </tr>
