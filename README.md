@@ -127,4 +127,4 @@ Wenn z.B. ein Mitarbeiter einen neuen Personalausweis oder Sonder- und Waffenaus
 ### Hier werden alle Ausbildungen die im gewählten Quartal durchgeführt wurden, ausgegeben.
 
 **Gesamtausbildung - Quartalsansicht**
-![Gesamtausbildung-Quartalsansicht](docs/screenshots/geamtausbildung_quartal.png)
+![Gesamtausbildung-Quartalsansicht](docs/screenshots/gesamtausbildung_quartal.png)
