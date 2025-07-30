@@ -246,7 +246,7 @@ object FrameWachtest: TFrameWachtest
     DetailView.Font.Style = []
     OnRightClickCell = lvWachtestRightClickCell
     Version = '1.9.1.1'
-    ExplicitWidth = 1199
+    ExplicitHeight = 420
   end
   object Panel1: TPanel
     Left = 0
@@ -261,14 +261,16 @@ object FrameWachtest: TFrameWachtest
       AlignWithMargins = True
       Left = 17
       Top = 6
-      Width = 15
-      Height = 19
+      Width = 1149
+      Height = 48
       Margins.Left = 16
       Margins.Top = 5
       Margins.Right = 10
       Margins.Bottom = 5
       Align = alClient
       Caption = '...'
+      ExplicitWidth = 15
+      ExplicitHeight = 19
     end
     object sbWeiter: TSpeedButton
       Left = 1176
@@ -344,7 +346,7 @@ object FrameWachtest: TFrameWachtest
       Top = 30
       Width = 231
       Height = 40
-      Anchors = [akTop, akRight]
+      Anchors = [akLeft, akTop, akRight]
       Caption = 'Speichern'
       TabOrder = 1
       OnClick = btnSaveClick

@@ -112,11 +112,11 @@ begin
   cbJahrSelect(self);
 
   dtpDatum.Date := Date;
-  SelMonth := 12;
+  SelMonth := 1;
   SelYear  := CurrentYear;
 
-  showMitarbeiterInComboBox(cbStammpersonal, 12, SelYear, false, OBJEKTID, 1);
-  showMitarbeiterInComboBox(cbAushilfen, 12, SelYear, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
+  showMitarbeiterInComboBox(cbStammpersonal, SelMonth, SelYear, false, OBJEKTID, 1);
+  showMitarbeiterInComboBox(cbAushilfen, SelMonth, SelYear, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
 
   lvWachtest.ItemIndex := -1;
   lvWachtest.Selected := nil;
@@ -452,6 +452,9 @@ begin
 
   cbStammpersonal.ItemIndex := 0;
   cbAushilfen.ItemIndex := 0;
+
+  showMitarbeiterInComboBox(cbStammpersonal, 1, SelYear, false, OBJEKTID, 1);
+  showMitarbeiterInComboBox(cbAushilfen, 1, SelYear, false, OBJEKTID, 2);
 
   showWachtestTestSachkundestandInListView(lvWachtest, SelYear);
 end;

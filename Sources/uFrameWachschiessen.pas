@@ -110,12 +110,13 @@ begin
   Index := cbJahr.Items.IndexOf(IntToStr(CurrentYear));
   if Index <> -1 then cbJahr.ItemIndex := Index;
 
+
   SelYear := CurrentYear;
 
 
   AusbildungsartID := 4; // 4 = Wachschiessen
 
-  showMitarbeiterInComboBox(cbStammpersonal, 12, SelYear, false, OBJEKTID, 1);
+  showMitarbeiterInComboBox(cbStammpersonal, 1, SelYear, false, OBJEKTID, 1);
 
   cbJahrSelect(nil);
 
@@ -222,6 +223,8 @@ begin
     dtpDatum.Date := NewDate;
 
     cbStammpersonal.ItemIndex := 0;
+
+    showMitarbeiterInComboBox(cbStammpersonal, 1, SelYear, false, OBJEKTID, 1);
 
     showAusbildungInListView(lvWachschiessen, AusbildungsartID, SelYear);
   end;

@@ -408,6 +408,9 @@ begin
     selectedMonth    := monat;
     selectedYear     := jahr;
 
+    showMitarbeiterInComboBox(cbStammpersonal, selectedMonth, selectedYear, false, OBJEKTID, 1);
+    showMitarbeiterInComboBox(cbAushilfen, selectedMonth, selectedYear, false, OBJEKTID, 2);
+
     showAusbildungInListView(lvTheorieausbildung, selectedAusbildungsartID, selectedMonth, selectedYear);
 
     if(selectedMonth <> MonthOf(Date)) OR (selectedYear <> YearOf(Date)) then

@@ -712,6 +712,9 @@ end;
 
 
 
+//Hier noch eine Abfrage für Jahreslisten rein ob auch Mitarbeiter angezeigt werden sollen, die im
+//übergebenen Jahr ausgeschieden sind. (notwendig für Wachtest)
+
 
 
 {****************************************************************************************************************
