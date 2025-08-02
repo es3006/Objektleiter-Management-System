@@ -132,13 +132,13 @@
         <VerInfo_Private>true</VerInfo_Private>
         <VerInfo_Locale>1031</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <Icon_MainIcon>Objektleiter_Management_Icon2.ico</Icon_MainIcon>
+        <Icon_MainIcon>Objektleiter_Management_Icon.ico</Icon_MainIcon>
         <AppDPIAwarenessMode>none</AppDPIAwarenessMode>
         <BT_BuildType>Debug</BT_BuildType>
-        <UWP_DelphiLogo44>RESOURCES\Logo.png</UWP_DelphiLogo44>
-        <UWP_DelphiLogo150>RESOURCES\Logo.png</UWP_DelphiLogo150>
-        <DCC_ExeOutput>.\Output</DCC_ExeOutput>
-        <DCC_DcuOutput>.\DCU\$(Platform)\$(Config)</DCC_DcuOutput>
+        <UWP_DelphiLogo44>..\Resources\Logo.png</UWP_DelphiLogo44>
+        <UWP_DelphiLogo150>..\Resources\Logo.png</UWP_DelphiLogo150>
+        <DCC_ExeOutput>..\Output\Release</DCC_ExeOutput>
+        <DCC_DcuOutput>..\Output\Release\DCU</DCC_DcuOutput>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -203,10 +203,6 @@
             <Form>FrameWaffenbestandsmeldung</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="uFrameTheorieausbildung.pas">
-            <Form>FrameTheorieausbildung</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="uFrameErsteHilfe.pas">
             <Form>FrameErsteHilfe</Form>
             <DesignClass>TFrame</DesignClass>
@@ -240,6 +236,11 @@
             <Form>fEinstellungen_Programm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="uFrameAusbildung.pas">
+            <Form>FrameAusbildung</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -267,13 +268,13 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="4">
-                <DeployFile LocalName="Output\Objektleiter_Management.exe" Configuration="Release" Class="ProjectOutput">
+                <DeployFile LocalName="..\Output\Release\Objektleiter_Management.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win64">
                         <RemoteName>Objektleiter_Management.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="RESOURCES\Logo.png" Configuration="Release" Class="UWP_DelphiLogo44">
+                <DeployFile LocalName="..\Resources\Logo.png" Configuration="Release" Class="UWP_DelphiLogo44">
                     <Platform Name="Win64">
                         <RemoteDir>Assets\</RemoteDir>
                         <RemoteName>Logo44x44.png</RemoteName>

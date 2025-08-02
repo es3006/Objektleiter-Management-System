@@ -688,11 +688,13 @@ object fWochenberichtNeu: TfWochenberichtNeu
     Width = 856
     Height = 60
     Align = alTop
+    Color = 16707798
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentBackground = False
     ParentFont = False
     TabOrder = 2
     object Label18: TLabel

@@ -815,18 +815,6 @@ object fMain: TfMain
   OnDestroy = FormDestroy
   OnShow = FormShow
   TextHeight = 13
-  object Shape1: TShape
-    Left = 0
-    Top = 103
-    Width = 1184
-    Height = 5
-    Align = alTop
-    Brush.Color = 16707798
-    Pen.Style = psClear
-    ExplicitLeft = 8
-    ExplicitTop = 216
-    ExplicitWidth = 1194
-  end
   object StatusBar1: TStatusBar
     Left = 0
     Top = 704
@@ -866,7 +854,7 @@ object fMain: TfMain
     Font.Name = 'Tahoma'
     Font.Style = []
     GradientEndColor = clWhite
-    HotTrackColor = 16707798
+    HotTrackColor = clSkyBlue
     Images = ImageListToolBar
     ParentColor = False
     ParentFont = False
@@ -970,6 +958,13 @@ object fMain: TfMain
         object Exportieren1: TMenuItem
           Caption = 'Exportieren'
           OnClick = Exportieren1Click
+        end
+        object N1: TMenuItem
+          Caption = '-'
+        end
+        object N4: TMenuItem
+          Caption = 'DBDump erstellen'
+          OnClick = N4Click
         end
       end
       object N2: TMenuItem
@@ -20851,7 +20846,14 @@ object fMain: TfMain
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 136
-    Top = 392
+    Left = 376
+    Top = 488
+  end
+  object FDSQLiteBackup1: TFDSQLiteBackup
+    DriverLink = FDPhysSQLiteDriverLink1
+    Catalog = 'MAIN'
+    DestCatalog = 'MAIN'
+    Left = 552
+    Top = 480
   end
 end

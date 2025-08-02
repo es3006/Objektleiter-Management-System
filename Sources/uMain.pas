@@ -17,7 +17,7 @@ uses
   FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, FireDAC.Phys.SQLite,
   AdvPageControl, uFrameWochenberichtEdit, uFrameWachpersonal,
   uFrameGesamtausbildung, uFrameWachtest, uFrameWachschiessen, uFrameMunTausch,
-  uFrameWaffenbestandsmeldung, uFrameTheorieausbildung, uFrameErsteHilfe,
+  uFrameWaffenbestandsmeldung, uFrameTheorieausbildung, uFrameAusbildung, uFrameErsteHilfe,
   FireDAC.Phys.SQLiteWrapper.Stat;
 
 
@@ -50,7 +50,6 @@ type
     Objekte2: TMenuItem;
     Mitarbeiter2: TMenuItem;
     Waffen1: TMenuItem;
-    Shape1: TShape;
     tbAusbildung: TToolButton;
     tbErsteHilfe: TToolButton;
     N2: TMenuItem;
@@ -64,6 +63,9 @@ type
     Diensthunde1: TMenuItem;
     mProgrammeinstellungen: TMenuItem;
     Timer1: TTimer;
+    FDSQLiteBackup1: TFDSQLiteBackup;
+    N1: TMenuItem;
+    N4: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure Einstellungen1Click(Sender: TObject);
@@ -93,6 +95,7 @@ type
     procedure Diensthunde1Click(Sender: TObject);
     procedure mProgrammeinstellungenClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure N4Click(Sender: TObject);
   private
 
   public
@@ -346,6 +349,8 @@ begin
 
   FDConnection1.Connected := true;
   FDConnection1.Open(); // Verbindung öffnen
+
+  FDSQLiteBackup1.Database := DBNAME;
 end;
 
 
@@ -536,6 +541,11 @@ end;
 
 
 
+procedure TfMain.N4Click(Sender: TObject);
+begin
+  BackupDatabase;
+end;
+
 procedure TfMain.tbGesamtausbildungClick(Sender: TObject);
 var
   Frame: TFrameGesamtausbildung;
@@ -608,16 +618,16 @@ end;
 
 procedure TfMain.tbAusbildungClick(Sender: TObject);
 var
-  Frame: TFrameTheorieausbildung;
+  Frame: TFrameAusbildung;
   i: integer;
 begin
   PlayResourceMP3('CLICK', 'TEMP\click.wav');
 
-  LoadFrame(TFrameTheorieausbildung);
+  LoadFrame(TFrameAusbildung);
 
-  if CurrentFrame is TFrameTheorieausbildung then
+  if CurrentFrame is TFrameAusbildung then
   begin
-    Frame := TFrameTheorieausbildung(CurrentFrame);
+    Frame := TFrameAusbildung(CurrentFrame);
     Frame.DoubleBuffered := True;
     Frame.Initialize;
   end;

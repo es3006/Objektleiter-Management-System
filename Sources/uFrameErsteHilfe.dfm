@@ -156,12 +156,15 @@ object FrameErsteHilfe: TFrameErsteHilfe
     Width = 1200
     Height = 60
     Align = alTop
+    BevelOuter = bvNone
+    Color = 16707798
+    ParentBackground = False
     TabOrder = 2
     object Image1: TImage
-      Left = 1151
-      Top = 1
+      Left = 1152
+      Top = 0
       Width = 48
-      Height = 58
+      Height = 60
       Cursor = crHandPoint
       Hint = 'Diese Liste als PDF speichern|Diese Liste als PDF speichern'
       Align = alRight
@@ -194,6 +197,8 @@ object FrameErsteHilfe: TFrameErsteHilfe
         A8F1FFF8D0CDB2D50068DB271219CA40AFFCF0FB0000000049454E44AE426082}
       Proportional = True
       ShowHint = True
+      ExplicitLeft = 1151
+      ExplicitTop = 1
       ExplicitHeight = 48
     end
   end

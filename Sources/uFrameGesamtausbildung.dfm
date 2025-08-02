@@ -16,6 +16,9 @@ object FrameGesamtausbildung: TFrameGesamtausbildung
     Width = 1200
     Height = 60
     Align = alTop
+    BevelOuter = bvNone
+    Color = 16707798
+    ParentBackground = False
     ShowCaption = False
     TabOrder = 0
     object lbMonat: TLabel
@@ -42,10 +45,10 @@ object FrameGesamtausbildung: TFrameGesamtausbildung
     end
     object btnGeneratePDF: TImage
       AlignWithMargins = True
-      Left = 1132
-      Top = 4
+      Left = 1133
+      Top = 3
       Width = 64
-      Height = 52
+      Height = 54
       Cursor = crHandPoint
       Hint = 
         'Gesamtausbildungs'#252'bersicht als PDF speichern|Gesamtausbildungs'#252'b' +
@@ -119,6 +122,8 @@ object FrameGesamtausbildung: TFrameGesamtausbildung
       Proportional = True
       ShowHint = True
       OnClick = btnGeneratePDFClick
+      ExplicitLeft = 1132
+      ExplicitTop = 4
       ExplicitHeight = 64
     end
     object cbMonat: TComboBox
@@ -175,7 +180,7 @@ object FrameGesamtausbildung: TFrameGesamtausbildung
       Height = 17
       Caption = 'Monatsansicht'
       TabOrder = 3
-      OnClick = rbQuartalClick
+      OnClick = rbMonatClick
     end
     object rbQuartal: TRadioButton
       Left = 180

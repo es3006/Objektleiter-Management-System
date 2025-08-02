@@ -5,9 +5,12 @@ interface
 uses
   Windows, Classes, Forms, SysUtils, Vcl.StdCtrls, Vcl.ComCtrls, Dialogs, Controls, ExtCtrls, DateUtils,
   Graphics, StrUtils, ShellApi, System.UITypes, System.Zip, System.IOUtils,
-  FireDAC.Stan.Param, FireDAC.Phys.SQLite, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Stan.Param, FireDAC.Phys.SQLite, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  FireDAC.Stan.Def, FireDAC.Phys.SQLiteWrapper;
 
 
+
+procedure BackupDatabase;
 procedure CreateDatabaseTables;
 procedure CreateIndexes;
 procedure ReadSettingsFromDB;
@@ -36,6 +39,22 @@ implementation
 
 uses
   uMain, uFunktionen, uDBSettings, uWebBrowser;
+
+
+
+procedure BackupDatabase;
+var
+  BackupFile: string;
+begin
+// BackupFile := PATH + 'Backup_' + FormatDateTime('yyyymmdd_hhnnss', Now) + '.s3db';
+  BackupFile := IncludeTrailingPathDelimiter(PATH + 'DBDUMPS') + FormatDateTime('yyyymmdd_hhnnss', Now) + '.s3db';
+
+  fMain.FDSQLiteBackup1.Database := PATH + 'esddb.s3db';      // Quell-Datenbank
+  fMain.FDSQLiteBackup1.DestDatabase := BackupFile;           // Ziel-Backup
+  fMain.FDSQLiteBackup1.Backup;                               // Backup ausführen
+  ShowMessage('Backup wurde erstellt: ' + BackupFile);
+end;
+
 
 
 

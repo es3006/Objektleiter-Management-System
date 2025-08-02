@@ -16,6 +16,9 @@ object FrameMunTausch: TFrameMunTausch
     Width = 1200
     Height = 60
     Align = alTop
+    BevelOuter = bvNone
+    Color = 16707798
+    ParentBackground = False
     TabOrder = 0
     object Label10: TLabel
       Left = 16
@@ -26,10 +29,10 @@ object FrameMunTausch: TFrameMunTausch
     end
     object Image1: TImage
       AlignWithMargins = True
-      Left = 1132
-      Top = 4
+      Left = 1133
+      Top = 3
       Width = 64
-      Height = 64
+      Height = 54
       Cursor = crHandPoint
       Hint = 'Diese Liste als PDF speichern|Diese Liste als PDF speichern'
       Align = alRight
@@ -102,6 +105,8 @@ object FrameMunTausch: TFrameMunTausch
       ShowHint = True
       OnClick = Image1Click
       ExplicitLeft = 1148
+      ExplicitTop = 4
+      ExplicitHeight = 64
     end
     object imgNewEntry: TImage
       Left = 245
@@ -364,7 +369,7 @@ object FrameMunTausch: TFrameMunTausch
     DetailView.Font.Style = []
     OnRightClickCell = lvMuntauschRightClickCell
     Version = '1.9.1.1'
-    ExplicitWidth = 1199
+    ExplicitHeight = 411
   end
   object Panel3: TPanel
     Left = 0
@@ -503,8 +508,8 @@ object FrameMunTausch: TFrameMunTausch
       AlignWithMargins = True
       Left = 17
       Top = 6
-      Width = 15
-      Height = 19
+      Width = 1149
+      Height = 48
       Margins.Left = 16
       Margins.Top = 5
       Margins.Right = 10
@@ -512,6 +517,8 @@ object FrameMunTausch: TFrameMunTausch
       Align = alClient
       Caption = '...'
       WordWrap = True
+      ExplicitWidth = 15
+      ExplicitHeight = 19
     end
     object sbWeiter: TSpeedButton
       Left = 1176

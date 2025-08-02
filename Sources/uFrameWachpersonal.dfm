@@ -16,6 +16,9 @@ object FrameWachpersonal: TFrameWachpersonal
     Width = 1200
     Height = 60
     Align = alTop
+    BevelOuter = bvNone
+    Color = 16707798
+    ParentBackground = False
     TabOrder = 0
     object Label10: TLabel
       Left = 216
@@ -33,10 +36,10 @@ object FrameWachpersonal: TFrameWachpersonal
     end
     object Image1: TImage
       AlignWithMargins = True
-      Left = 1132
-      Top = 4
+      Left = 1133
+      Top = 3
       Width = 64
-      Height = 52
+      Height = 54
       Cursor = crHandPoint
       Hint = 
         'Wachpersonalliste als PDF speichern|Wachpersonalliste als PDF sp' +
@@ -376,7 +379,7 @@ object FrameWachpersonal: TFrameWachpersonal
     DetailView.Font.Name = 'Tahoma'
     DetailView.Font.Style = []
     Version = '1.9.1.1'
-    ExplicitWidth = 1199
+    ExplicitHeight = 471
   end
   object Panel1: TPanel
     Left = 0

@@ -270,37 +270,32 @@ begin
 
   ClearListView(lvWaffenbestandsliste);
 
+
+
+
   FDQuery := TFDQuery.Create(nil);
   try
     with FDQuery do
     begin
       Connection := fMain.FDConnection1;
 
-      SQL.Text :=
-      'SELECT W.id, W.pos, W.nrwbk, W.waffentyp, ' +
-      '       COALESCE((SELECT M.nachname || " " || M.vorname ' +
-      '                FROM mitarbeiter M ' +
-      '                WHERE M.waffennummer = W.seriennr ' +
-      '                  AND (M.austrittsdatum IS NULL OR M.austrittsdatum = '''' OR DATE(M.austrittsdatum) >= DATE(:STARTDATE)) ' +
-      '                LIMIT 1), "Aushilfe") AS Waffennutzer, ' +
-      '       W.seriennr, W.fach, ' +
-      '       (SELECT CASE ' +
-      '                 WHEN M.objektid = :OBJEKTID THEN 0 ' +
-      '                 ELSE 1 ' +
-      '              END ' +
-      '        FROM mitarbeiter M ' +
-      '        WHERE M.waffennummer = W.seriennr ' +
-      '          AND (M.austrittsdatum IS NULL OR M.austrittsdatum = '''' OR DATE(M.austrittsdatum) >= DATE(:STARTDATE)) ' +
-      '        LIMIT 1) AS Sortierung ' +
-      'FROM Waffenbestand W ' +
-      'ORDER BY Sortierung ASC, Waffennutzer COLLATE NOCASE;';
+      SQL.Text := 'SELECT W.id, W.pos, W.nrwbk, W.waffentyp, ' +
+                  'COALESCE((SELECT M.nachname || " " || M.vorname FROM mitarbeiter M ' +
+                  'WHERE M.waffennummer = W.seriennr ' +
+                  'AND (M.austrittsdatum IS NULL OR ' +
+                  'M.austrittsdatum = "" OR DATE(M.austrittsdatum) >= DATE(:STARTDATE)) ' +
+                  'ORDER BY M.eintrittsdatum DESC LIMIT 1 ), "Aushilfe") AS Waffennutzer,' +
+                  'W.seriennr, W.fach, ' +
+                  '(SELECT CASE  WHEN M.objektid = :OBJEKTID THEN 0  ELSE 1 END FROM mitarbeiter M ' +
+                  'WHERE M.waffennummer = W.seriennr ' +
+                  'AND (M.austrittsdatum IS NULL OR M.austrittsdatum = "" OR ' +
+                  'DATE(M.austrittsdatum) >= DATE(:STARTDATE)) ' +
+                  'ORDER BY M.eintrittsdatum DESC LIMIT 1) AS Sortierung ' +
+                  'FROM Waffenbestand W ORDER BY Sortierung DESC, Waffennutzer COLLATE NOCASE;';
 
-
-
-
-        StartDate := EncodeDate(jahr, monat, 1);
-        Params.ParamByName('STARTDATE').AsDate := StartDate;
-        Params.ParamByName('OBJEKTID').AsInteger := OBJEKTID;
+      StartDate := EncodeDate(jahr, monat, 1);
+      Params.ParamByName('STARTDATE').AsDate := StartDate;
+      Params.ParamByName('OBJEKTID').AsInteger := OBJEKTID;
 
       Open;
 

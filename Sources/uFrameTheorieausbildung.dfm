@@ -16,6 +16,9 @@ object FrameTheorieausbildung: TFrameTheorieausbildung
     Width = 1200
     Height = 60
     Align = alTop
+    BevelOuter = bvNone
+    Color = 16707798
+    ParentBackground = False
     TabOrder = 0
     object Label10: TLabel
       Left = 240
@@ -218,6 +221,12 @@ object FrameTheorieausbildung: TFrameTheorieausbildung
       Width = 66
       Height = 19
       Caption = 'Aushilfen'
+    end
+    object SpeedButton1: TSpeedButton
+      Left = 336
+      Top = 40
+      Width = 23
+      Height = 22
     end
     object cbStammpersonal: TComboBox
       Left = 12

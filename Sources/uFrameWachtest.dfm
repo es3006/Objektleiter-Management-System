@@ -16,6 +16,9 @@ object FrameWachtest: TFrameWachtest
     Width = 1200
     Height = 60
     Align = alTop
+    BevelOuter = bvNone
+    Color = 16707798
+    ParentBackground = False
     TabOrder = 0
     object Label10: TLabel
       Left = 16
@@ -26,10 +29,10 @@ object FrameWachtest: TFrameWachtest
     end
     object Image1: TImage
       AlignWithMargins = True
-      Left = 1132
-      Top = 4
+      Left = 1133
+      Top = 3
       Width = 64
-      Height = 52
+      Height = 54
       Cursor = crHandPoint
       Hint = 'Diese Liste als PDF speichern|Diese Liste als PDF speichern'
       Align = alRight
@@ -102,6 +105,7 @@ object FrameWachtest: TFrameWachtest
       ShowHint = True
       OnClick = Image1Click
       ExplicitLeft = 1148
+      ExplicitTop = 4
       ExplicitHeight = 64
     end
     object Label2: TLabel

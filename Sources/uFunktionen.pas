@@ -54,6 +54,10 @@ uses
 
 
 
+
+
+
+
 //Erzeugt aus einer Stringlist eine temporäre Html-Datei und daraus eine PDF Datei.
 procedure CreateHtmlAndPdfFileFromResource(dateiname: string; stl: TStringList; ausrichtung: string = 'print_landscape.bat');
 var

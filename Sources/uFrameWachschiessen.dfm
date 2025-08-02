@@ -16,6 +16,9 @@ object FrameWachschiessen: TFrameWachschiessen
     Width = 1200
     Height = 60
     Align = alTop
+    BevelOuter = bvNone
+    Color = 16707798
+    ParentBackground = False
     TabOrder = 0
     object Label10: TLabel
       Left = 16
@@ -26,10 +29,10 @@ object FrameWachschiessen: TFrameWachschiessen
     end
     object Image1: TImage
       AlignWithMargins = True
-      Left = 1132
-      Top = 4
+      Left = 1133
+      Top = 3
       Width = 64
-      Height = 52
+      Height = 54
       Cursor = crHandPoint
       Hint = 'Diese Liste als PDF speichern|Diese Liste als PDF speichern'
       Align = alRight
@@ -101,14 +104,16 @@ object FrameWachschiessen: TFrameWachschiessen
       Proportional = True
       ShowHint = True
       OnClick = Image1Click
+      ExplicitLeft = 1132
+      ExplicitTop = 4
       ExplicitHeight = 64
     end
     object imgTankgutschein: TImage
       AlignWithMargins = True
-      Left = 1054
-      Top = 4
+      Left = 1055
+      Top = 3
       Width = 72
-      Height = 52
+      Height = 54
       Cursor = crHandPoint
       Hint = 'Tankgutschein beantragen|Tankgutschein beantragen'
       Align = alRight
@@ -171,6 +176,7 @@ object FrameWachschiessen: TFrameWachschiessen
       ShowHint = True
       OnClick = imgTankgutscheinClick
       ExplicitLeft = 1078
+      ExplicitTop = 4
       ExplicitHeight = 72
     end
     object Label3: TLabel

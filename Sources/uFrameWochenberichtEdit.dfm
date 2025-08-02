@@ -10,11 +10,14 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
     Width = 1200
     Height = 60
     Align = alTop
+    BevelOuter = bvNone
+    Color = 16707798
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentBackground = False
     ParentFont = False
     TabOrder = 0
     object Jahr: TLabel
@@ -33,10 +36,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
     end
     object imgPDF: TImage
       AlignWithMargins = True
-      Left = 1132
-      Top = 4
+      Left = 1133
+      Top = 3
       Width = 64
-      Height = 52
+      Height = 54
       Cursor = crHandPoint
       Hint = 
         'Den gew'#228'hlten Wochenbericht als PDF speichern|Den gew'#228'hlten Woch' +
@@ -111,6 +114,8 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
       ShowHint = True
       OnClick = imgPDFClick
       ExplicitLeft = 1152
+      ExplicitTop = 4
+      ExplicitHeight = 52
     end
     object lbStartDatumEndDatum: TLabel
       Left = 408
@@ -144,7 +149,7 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
     Width = 1200
     Height = 594
     Cursor = crHandPoint
-    ActivePage = AdvTabSheet8
+    ActivePage = AdvTabSheet9
     ActiveFont.Charset = DEFAULT_CHARSET
     ActiveFont.Color = clWindowText
     ActiveFont.Height = -16
@@ -168,6 +173,7 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
     Version = '2.0.5.0'
     PersistPagesState.Location = plRegistry
     PersistPagesState.Enabled = False
+    TabHeight = 50
     TabOrder = 1
     TabWidth = 200
     OnChange = edKG1Change
@@ -177,11 +183,13 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
       ColorTo = clNone
       TabColor = clBtnFace
       TabColorTo = clNone
+      ExplicitTop = 30
+      ExplicitHeight = 560
       object GridPanel1: TGridPanel
         Left = 0
         Top = 0
         Width = 1192
-        Height = 560
+        Height = 534
         Align = alClient
         ColumnCollection = <
           item
@@ -208,18 +216,20 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
         ShowCaption = False
         TabOrder = 0
         VerticalAlignment = taAlignTop
+        ExplicitHeight = 560
         object Panel4: TPanel
           Left = 596
           Top = 1
           Width = 595
-          Height = 558
+          Height = 532
           Align = alClient
           BevelOuter = bvNone
           ShowCaption = False
           TabOrder = 0
+          ExplicitHeight = 558
           DesignSize = (
             595
-            558)
+            532)
           object Label27: TLabel
             Left = 20
             Top = 14
@@ -370,14 +380,15 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
           Left = 1
           Top = 1
           Width = 595
-          Height = 558
+          Height = 532
           Align = alClient
           BevelOuter = bvNone
           ShowCaption = False
           TabOrder = 1
+          ExplicitHeight = 558
           DesignSize = (
             595
-            558)
+            532)
           object Label28: TLabel
             Left = 28
             Top = 15
@@ -532,9 +543,8 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
       ColorTo = clNone
       TabColor = clBtnFace
       TabColorTo = clNone
-      DesignSize = (
-        1192
-        560)
+      ExplicitTop = 30
+      ExplicitHeight = 560
       object Label10: TLabel
         Left = 21
         Top = 68
@@ -718,22 +728,20 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
         ParentFont = False
       end
       object Label12: TLabel
-        Left = 19
-        Top = 497
+        Left = 139
+        Top = 259
         Width = 529
         Height = 38
-        Anchors = [akLeft, akBottom]
         Caption = 
           'Wenn eine Tag- und eine Nachtkontrolle am selben Tag erfolgen, d' +
           'ie zwei Datumswerte bitte durch / trennen!'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clRed
+        Font.Color = clGray
         Font.Height = -16
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
         WordWrap = True
-        ExplicitTop = 435
       end
       object edMoWer: TEdit
         Left = 140

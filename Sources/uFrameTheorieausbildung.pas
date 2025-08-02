@@ -35,6 +35,7 @@ type
     sbWeiter: TSpeedButton;
     cbAushilfen: TComboBox;
     Label5: TLabel;
+    SpeedButton1: TSpeedButton;
     procedure Initialize;
     procedure cbMonatSelect(Sender: TObject);
     procedure btnInsertClick(Sender: TObject);
@@ -42,8 +43,7 @@ type
     procedure sbWeiterClick(Sender: TObject);
     procedure cbStammpersonalSelect(Sender: TObject);
     procedure cbAushilfenSelect(Sender: TObject);
-    procedure lvTheorieausbildungSelectItem(Sender: TObject; Item: TListItem;
-      Selected: Boolean);
+    procedure lvTheorieausbildungSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
   private
     s1, s2: String;
     currentIndex: Integer;

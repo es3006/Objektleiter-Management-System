@@ -159,15 +159,22 @@ begin
   begin
     Connection := fMain.FDConnection1;
 
-    FDQuery.SQL.Text := 'SELECT strftime("%d.%m.%Y", datum) AS datum FROM ausbildung ' +
-                        'WHERE (mitarbeiterID = :maid ' +
-                        'AND ausbildungsartID = 4 ' +
-                        'AND strftime("%Y-%m", datum) <= :jahr || "-" || :monat) ' +
-                        'GROUP BY mitarbeiterID ' +
-                        'LIMIT 0, 1;';
+
+    //AND date(datum) <= date(:jahr || ''-'' || :monat || ''-01'', ''+1 month'', ''-1 day'') ' +
+    //Liefert den letzten Tag des übergebenen Monats und Jahres, zeigt also den Schießtermin an
+    //der im selben Monat lag oder als letztes vor dem übergebenen Monat.
+
+    FDQuery.SQL.Text :=
+      'SELECT strftime("%d.%m.%Y", datum) AS datum FROM ausbildung ' +
+      'WHERE mitarbeiterID = :maid ' +
+      'AND ausbildungsartID = 4 ' +
+      'AND date(datum) <= date(:jahr || ''-'' || :monat || ''-01'', ''+1 month'', ''-1 day'') ' +
+      'ORDER BY date(datum) DESC ' +
+      'LIMIT 1;';
+
 
     ParamByName('monat').AsString := Format('%.2d', [SelMonth]); //Monat als zweistellige Zahl ausgeben
-    ParamByName('jahr').AsString  := IntToStr(SelYear);
+    ParamByName('jahr').AsString  := '2025'; //IntToStr(SelYear);
     ParamByName('maid').AsInteger := mitarbeiterid;
 
     Open;
@@ -370,7 +377,9 @@ begin
     FDQuery.SQL.Text := 'SELECT strftime("%m/%Y", date(datum, "+2 years")) AS datum ' +
                         'FROM ausbildung ' +
                         'WHERE mitarbeiterID = :MITARBEITERID AND ausbildungsartID = :AUSBILDUNGSARTID ' +
-                        'ORDER BY Datum ASC LIMIT 1;';
+                        'ORDER BY date(datum) DESC LIMIT 1';
+
+                        //Order by data(datum) das date() ist wichtig damit nach datum und nicht nach text sortiert wird
 
     ParamByName('MITARBEITERID').AsInteger := mitarbeiterid;
     ParamByName('AUSBILDUNGSARTID').AsInteger := 5; // 5 = ersteHilfe
@@ -404,17 +413,17 @@ procedure TFrameGesamtausbildung.cbMonatSelect(Sender: TObject);
 var
   quartal, monat, jahr: integer;
 begin
-  quartal := cbQuartal.ItemIndex+1;
+//  quartal := cbQuartal.ItemIndex+1;
   monat   := cbMonat.ItemIndex+1;
   jahr    := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
 
   SELMONTH   := monat;
-  SELQUARTAL := quartal;
+//  SELQUARTAL := quartal;
   SELYEAR    := jahr;
 
-  if(rbQuartal.Checked) then
-    showQuartalsausbildungInListView(quartal, jahr)
-  else
+//  if(rbQuartal.Checked) then
+ //   showQuartalsausbildungInListView(quartal, jahr)
+//  else
     showMonatsausbildungInListView;
 end;
 
@@ -427,9 +436,9 @@ procedure TFrameGesamtausbildung.cbQuartalSelect(Sender: TObject);
 var
   quartal, jahr: integer;
 begin
-  quartal := cbQuartal.ItemIndex+1;
-  jahr    := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
-  SELMONTH := 0;
+  quartal    := cbQuartal.ItemIndex+1;
+  jahr       := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
+  SELMONTH   := 0;
   SELQUARTAL := quartal;
 
   showQuartalsausbildungInListView(quartal, jahr);
@@ -464,13 +473,13 @@ begin
   CurrentMonth        := MonthOf(Now); // aktuellen Monat ermitteln
   CurrentYear         := YearOf(Now);   // aktuelles Jahr ermitteln
   CurrentQuarter      := GetQuarterForMonth(CurrentMonth); // aktuelles Quartal ermitteln
-  cbQuartal.ItemIndex := CurrentQuarter-1; //aktuelles Quartal in Combobox auswählen
+//  cbQuartal.ItemIndex := CurrentQuarter-1; //aktuelles Quartal in Combobox auswählen
   cbMonat.ItemIndex   := CurrentMonth - 1; //aktuellen Monat in combobox auswählen
   Index               := cbJahr.Items.IndexOf(IntToStr(CurrentYear));
   if Index <> -1 then cbJahr.ItemIndex := Index; //aktuelles Jahr in combobox auswählen
 
 
-  if(rbQuartal.Checked) then
+  {if(rbQuartal.Checked) then
   begin
     lbQuartal.Visible := true;
     cbQuartal.Visible := true;
@@ -479,13 +488,13 @@ begin
     cbQuartalSelect(self);
   end
   else
-  begin
+  begin }
     lbQuartal.Visible := false;
     cbQuartal.Visible := false;
     lbMonat.Visible   := true;
     cbMonat.Visible   := true;
     cbMonatSelect(self);
-  end;
+ // end;
 end;
 
 
@@ -505,14 +514,14 @@ begin
   if Index <> -1 then cbJahr.ItemIndex := Index; //aktuelles Jahr in combobox auswählen
 
 
-  if(rbQuartal.Checked) then
-  begin
+//  if(rbQuartal.Checked) then
+//  begin
     lbQuartal.Visible := true;
     cbQuartal.Visible := true;
     lbMonat.Visible   := false;
     cbMonat.Visible   := false;
     cbQuartalSelect(self);
-  end
+{  end
   else
   begin
     lbQuartal.Visible := false;
@@ -520,7 +529,7 @@ begin
     lbMonat.Visible   := true;
     cbMonat.Visible   := true;
     cbMonatSelect(self);
-  end;
+  end;  }
 end;
 
 
@@ -559,6 +568,7 @@ begin
   // Start- und Enddatum für den Monat berechnen
   StartDate := EncodeDate(SelYear, SelMonth, 1);
   EndDate := EndOfTheMonth(StartDate);
+
 
   FDQuery := TFDQuery.Create(nil);
   try

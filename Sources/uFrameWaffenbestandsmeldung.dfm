@@ -16,6 +16,9 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
     Width = 1200
     Height = 60
     Align = alTop
+    BevelOuter = bvNone
+    Color = 16707798
+    ParentBackground = False
     TabOrder = 0
     object Label9: TLabel
       Left = 16
@@ -33,10 +36,10 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
     end
     object imgCreateWaffenzuordnungAlsPdf: TImage
       AlignWithMargins = True
-      Left = 1132
-      Top = 4
+      Left = 1133
+      Top = 3
       Width = 64
-      Height = 52
+      Height = 54
       Cursor = crHandPoint
       Hint = 
         'Waffenbestandsmeldung als PDF speichern|Waffenbestandsmeldung al' +
@@ -111,14 +114,15 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
       ShowHint = True
       OnClick = imgCreateWaffenzuordnungAlsPdfClick
       ExplicitLeft = 1148
+      ExplicitTop = 4
       ExplicitHeight = 64
     end
     object imgCreatePDF: TImage
       AlignWithMargins = True
-      Left = 1054
-      Top = 4
+      Left = 1055
+      Top = 3
       Width = 72
-      Height = 52
+      Height = 54
       Cursor = crHandPoint
       Hint = 
         'Zuordnung der Waffen und Schlie'#223'f'#228'cher als PDF speichern|Zuordnu' +
@@ -183,6 +187,7 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
       ShowHint = True
       OnClick = imgCreatePDFClick
       ExplicitLeft = 1078
+      ExplicitTop = 4
       ExplicitHeight = 72
     end
     object cbMonat: TComboBox

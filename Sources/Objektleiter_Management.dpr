@@ -22,7 +22,6 @@ uses
   uFrameWachschiessen in 'uFrameWachschiessen.pas' {FrameWachschiessen: TFrame},
   uMitarbeiter in 'uMitarbeiter.pas' {fMitarbeiter},
   uFrameWaffenbestandsmeldung in 'uFrameWaffenbestandsmeldung.pas' {FrameWaffenbestandsmeldung: TFrame},
-  uFrameTheorieausbildung in 'uFrameTheorieausbildung.pas' {FrameTheorieausbildung: TFrame},
   uFrameErsteHilfe in 'uFrameErsteHilfe.pas' {FrameErsteHilfe: TFrame},
   uEinstellungen_WaffenMunition in 'uEinstellungen_WaffenMunition.pas' {fEinstellungen_WaffenMunition},
   uWochenberichtNeu in 'uWochenberichtNeu.pas' {fWochenberichtNeu},
@@ -32,7 +31,8 @@ uses
   uEinstellungen_Objekt in 'uEinstellungen_Objekt.pas' {fEinstellungen_Objekt},
   uZugangsdaten in 'uZugangsdaten.pas' {fZugangsdaten},
   uDiensthunde in 'uDiensthunde.pas' {fDiensthunde},
-  uEinstellungen_Programm in 'uEinstellungen_Programm.pas' {fEinstellungen_Programm};
+  uEinstellungen_Programm in 'uEinstellungen_Programm.pas' {fEinstellungen_Programm},
+  uFrameAusbildung in 'uFrameAusbildung.pas' {FrameAusbildung: TFrame};
 
 {$R *.res}
 

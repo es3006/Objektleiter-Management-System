@@ -142,7 +142,7 @@ begin
   cbJahr.ItemIndex := cbJahr.Items.IndexOf(IntToStr(CurrentYear)); //Aktuelles Jahr in cbJahr setzen
   cbJahrSelect(Self); //aktuelles Jahr in cbJahr auswählen udn procedure dahinter aufrufen
 
-  PageControl_Wochenbericht.ActivePageIndex := 0;
+  PageControl_Wochenbericht.ActivePageIndex := 1;
 end;
 
 
