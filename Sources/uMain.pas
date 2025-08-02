@@ -66,6 +66,19 @@ type
     FDSQLiteBackup1: TFDSQLiteBackup;
     N1: TMenuItem;
     N4: TMenuItem;
+    TrayIcon1: TTrayIcon;
+    pmTray: TPopupMenu;
+    est11: TMenuItem;
+    est21: TMenuItem;
+    est22: TMenuItem;
+    Waffnbestandsmeldung1: TMenuItem;
+    Waffnbestandsmeldung2: TMenuItem;
+    WachtestSachkunde1: TMenuItem;
+    WachtestSachkunde2: TMenuItem;
+    ErsteHilfe1: TMenuItem;
+    ErsteHilfe2: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure Einstellungen1Click(Sender: TObject);
@@ -103,6 +116,7 @@ type
     ColumnToSort, LastSorted, SortDir: Integer;
     procedure LoadFrame(FrameClass: TFrameClass);
     procedure ReadSettingsFromIni;
+    procedure BringAppToFront;
   protected
     procedure CreateParams(var Params: TCreateParams); override;
   end;
@@ -285,6 +299,8 @@ end;
 
 procedure TfMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
+  TrayIcon1.Visible := false;
+
   if(FDConnection1.Connected) then FDConnection1.Connected := false; //Verbindung zur Datenbank trennen
   DeleteFiles(PATH+'TEMP\*.*'); //Temp Verzeichnis leeren
 end;
@@ -510,6 +526,8 @@ end;
 
 procedure TfMain.Mitarbeiter2Click(Sender: TObject);
 begin
+  BringAppToFront;
+
   fMitarbeiter.Show;
 end;
 
@@ -551,6 +569,8 @@ var
   Frame: TFrameGesamtausbildung;
   i: integer;
 begin
+  BringAppToFront;
+
   PlayResourceMP3('CLICK', 'TEMP\click.wav');
 
   LoadFrame(TFrameGesamtausbildung);
@@ -587,6 +607,8 @@ var
   Frame: TFrameMunTausch;
   i: integer;
 begin
+  BringAppToFront;
+
   PlayResourceMP3('CLICK', 'TEMP\click.wav');
 
   LoadFrame(TFrameMunTausch);
@@ -621,6 +643,8 @@ var
   Frame: TFrameAusbildung;
   i: integer;
 begin
+  BringAppToFront;
+
   PlayResourceMP3('CLICK', 'TEMP\click.wav');
 
   LoadFrame(TFrameAusbildung);
@@ -653,6 +677,8 @@ var
   Frame: TFrameWachpersonal;
   i: integer;
 begin
+  BringAppToFront;
+
   PlayResourceMP3('CLICK', 'TEMP\click.wav');
 
   LoadFrame(TFrameWachpersonal);
@@ -686,6 +712,8 @@ var
   Frame: TFrameWachschiessen;
   i: integer;
 begin
+  BringAppToFront;
+
   PlayResourceMP3('CLICK', 'TEMP\click.wav');
 
   LoadFrame(TFrameWachschiessen);
@@ -719,6 +747,8 @@ var
   Frame: TFrameWachtest;
   i: integer;
 begin
+  BringAppToFront;
+
   PlayResourceMP3('CLICK', 'TEMP\click.wav');
 
   LoadFrame(TFrameWachtest);
@@ -753,6 +783,8 @@ var
   Frame: TFrameWaffenbestandsmeldung;
   i: integer;
 begin
+  BringAppToFront;
+
   PlayResourceMP3('CLICK', 'TEMP\click.wav');
 
   LoadFrame(TFrameWaffenbestandsmeldung);
@@ -787,6 +819,8 @@ var
   Frame: TFrameWochenberichtEdit;
   i: integer;
 begin
+  BringAppToFront;
+
   PlayResourceMP3('CLICK', 'TEMP\click.wav');
 
   LoadFrame(TFrameWochenberichtEdit);
@@ -820,6 +854,8 @@ var
   Frame: TFrameErsteHilfe;
   i: integer;
 begin
+  BringAppToFront;
+
   PlayResourceMP3('CLICK', 'TEMP\click.wav');
 
   LoadFrame(TFrameErsteHilfe);
@@ -847,6 +883,15 @@ end;
 
 
 
+
+
+procedure TfMain.BringAppToFront;
+begin
+  if IsIconic(Application.MainForm.Handle) then
+    ShowWindow(Application.MainForm.Handle, SW_RESTORE); // wiederherstellen
+
+  SetForegroundWindow(Application.MainForm.Handle); // in den Vordergrund
+end;
 
 
 

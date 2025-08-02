@@ -28,7 +28,7 @@ object FrameAusbildung: TFrameAusbildung
       Caption = 'Jahr'
     end
     object Label3: TLabel
-      Left = 21
+      Left = 16
       Top = 21
       Width = 45
       Height = 21
@@ -44,11 +44,12 @@ object FrameAusbildung: TFrameAusbildung
       OnSelect = cbMonatSelect
     end
     object cbMonat: TComboBox
-      Left = 62
-      Top = 17
+      Left = 70
+      Top = 16
       Width = 145
       Height = 29
       Style = csDropDownList
+      DropDownCount = 13
       TabOrder = 1
       OnSelect = cbMonatSelect
       Items.Strings = (

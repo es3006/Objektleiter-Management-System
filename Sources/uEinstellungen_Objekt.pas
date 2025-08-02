@@ -23,8 +23,6 @@ type
     cbStellvObjektleiter: TComboBox;
     Label2: TLabel;
     btnSaveWaffenMunition: TButton;
-    Shape5: TShape;
-    Shape1: TShape;
     procedure FormShow(Sender: TObject);
     procedure btnSaveWaffenMunitionClick(Sender: TObject);
   private
@@ -50,37 +48,58 @@ procedure TfEinstellungen_Objekt.btnSaveWaffenMunitionClick(Sender: TObject);
 var
   SelOLID, SelSOLID: integer;
   FDQuery: TFDQuery;
+  i, a: integer;
 begin
-  SelOLID  := Integer(cbObjektleiter.Items.Objects[cbObjektleiter.ItemIndex]);
-  SelSOLID := Integer(cbStellvObjektleiter.Items.Objects[cbStellvObjektleiter.ItemIndex]);
+  i := cbObjektleiter.ItemIndex;
+  a := cbStellvObjektleiter.ItemIndex;
 
-  if(SELOLID <> 0) AND (SELSOLID <> 0) then
+
+  if(i > 0) then
   begin
-    FDQuery := TFDquery.Create(nil);
-    try
-      with FDQuery do
-      begin
-        Connection := fMain.FDConnection1;
+    SelOLID  := Integer(cbObjektleiter.Items.Objects[i]);
+  end
+  else
+  begin
+    SelOLID  := 0;
+  end;
 
-        SQL.Text := 'UPDATE einstellungen SET ObjektleiterID = :OLID, StellvObjektleiterID = :SOLID;';
-        Params.ParamByName('OLID').AsInteger := SelOLID;
-        Params.ParamByName('SOLID').AsInteger := SelSOLID;
 
-        try
-          ExecSQL;
-        except
-          on E: Exception do
-          begin
-            ShowMessage('Fehler beim speichern der Änderung in die Tabelle einstellungen: ' + E.Message);
-          end;
+  if(a > 0) then
+  begin
+    SelSOLID  := Integer(cbStellvObjektleiter.Items.Objects[a]);
+  end
+  else
+  begin
+    SelSOLID  := 0;
+  end;
+
+
+  FDQuery := TFDquery.Create(nil);
+  try
+    with FDQuery do
+    begin
+      Connection := fMain.FDConnection1;
+
+      SQL.Text := 'UPDATE einstellungen SET ObjektleiterID = :OLID, StellvObjektleiterID = :SOLID;';
+      Params.ParamByName('OLID').AsInteger := SelOLID;
+      Params.ParamByName('SOLID').AsInteger := SelSOLID;
+
+      try
+        ExecSQL;
+      except
+        on E: Exception do
+        begin
+          ShowMessage('Fehler beim speichern der Änderung in die Tabelle einstellungen: ' + E.Message);
         end;
       end;
-    finally
-      FDQuery.free;
-      ReadSettingsFromDB; //Objekt, Objektleiter, Waffen und Munition
-      ReadObjektleiterObjektSettings;
-      close;
     end;
+  finally
+    FDQuery.free;
+
+    ReadSettingsFromDB; //Objekt, Objektleiter, Waffen und Munition
+    ReadObjektleiterObjektSettings;
+
+    close;
   end;
 end;
 

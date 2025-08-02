@@ -28,7 +28,7 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
       Caption = 'Monat'
     end
     object Label10: TLabel
-      Left = 216
+      Left = 232
       Top = 20
       Width = 30
       Height = 19
@@ -191,11 +191,12 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
       ExplicitHeight = 72
     end
     object cbMonat: TComboBox
-      Left = 65
+      Left = 70
       Top = 16
       Width = 145
       Height = 27
       Style = csDropDownList
+      DropDownCount = 13
       TabOrder = 0
       OnSelect = cbMonatSelect
       Items.Strings = (
@@ -214,7 +215,7 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
         'Dezember')
     end
     object cbJahr: TComboBox
-      Left = 252
+      Left = 268
       Top = 16
       Width = 145
       Height = 27

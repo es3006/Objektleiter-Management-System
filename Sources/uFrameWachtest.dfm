@@ -251,7 +251,7 @@ object FrameWachtest: TFrameWachtest
     DetailView.Font.Style = []
     OnRightClickCell = lvWachtestRightClickCell
     Version = '1.9.1.1'
-    ExplicitTop = 63
+    ExplicitHeight = 420
   end
   object Panel1: TPanel
     Left = 0

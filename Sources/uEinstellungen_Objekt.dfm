@@ -11,10 +11,8 @@ object fEinstellungen_Objekt: TfEinstellungen_Objekt
   Font.Height = -16
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poMainFormCenter
   OnShow = FormShow
-  PixelsPerInch = 96
   TextHeight = 19
   object Label4: TLabel
     Left = 168
@@ -37,24 +35,6 @@ object fEinstellungen_Objekt: TfEinstellungen_Objekt
     Height = 19
     Caption = 'Stellvertretender Objektleiter'
   end
-  object Shape5: TShape
-    Left = 466
-    Top = 40
-    Width = 20
-    Height = 28
-    Brush.Color = clGreen
-    Pen.Color = clGreen
-    Pen.Style = psClear
-  end
-  object Shape1: TShape
-    Left = 466
-    Top = 120
-    Width = 20
-    Height = 28
-    Brush.Color = clGreen
-    Pen.Color = clGreen
-    Pen.Style = psClear
-  end
   object Panel1: TPanel
     Left = 0
     Top = 0
@@ -64,8 +44,6 @@ object fEinstellungen_Objekt: TfEinstellungen_Objekt
     Color = 12615680
     ParentBackground = False
     TabOrder = 0
-    ExplicitTop = -10
-    ExplicitHeight = 442
     object Image2: TImage
       Left = -104
       Top = -80
@@ -1606,7 +1584,7 @@ object fEinstellungen_Objekt: TfEinstellungen_Objekt
   object cbObjekt: TComboBox
     Left = 168
     Top = 40
-    Width = 305
+    Width = 318
     Height = 27
     AutoDropDown = True
     Style = csDropDownList
@@ -1623,7 +1601,7 @@ object fEinstellungen_Objekt: TfEinstellungen_Objekt
   object cbObjektleiter: TComboBox
     Left = 168
     Top = 120
-    Width = 305
+    Width = 318
     Height = 27
     AutoDropDown = True
     Style = csDropDownList
