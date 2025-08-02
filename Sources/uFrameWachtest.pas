@@ -45,6 +45,7 @@ type
     procedure sbInsertAllStammClick(Sender: TObject);
     procedure cbAushilfenSelect(Sender: TObject);
     procedure sbWeiterClick(Sender: TObject);
+    procedure lvWachtestClick(Sender: TObject);
   private
     s1, s2, s3, s4: String;
     currentIndex: Integer;
@@ -52,6 +53,9 @@ type
     procedure generatePrintableWachtestTestSachkundestand(jahr: integer);
     procedure showWachtestTestSachkundestandInListView(LV: TListView; jahr: integer);
     procedure InsertMitarbeiterInListView(lv: TListView; MitarbeiterID, jahr: integer);
+    procedure InsertItemInTableAusbildungen(mitarbeiterID, objektID, ausbildungsartID: integer; datum: TDate);
+    procedure DeleteItemFromTableAusbildungen(mitarbeiterID, ausbildungsartID: integer; datum: string);
+    procedure UpdateDatumInAusbildung(mitarbeiterID, objektID, ausbildungsartID: integer; datumAlt: string; neuesDatum: TDate);
   protected
     procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -60,10 +64,20 @@ type
 
 
 
+const
+  MonatsSpalten: array[2..14] of string = ('jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dez', 'tsw');
+  MONATSNAMEN: array[1..12] of string = ('jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dez');
+  Spaltenname: array[2..14] of string = ('Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember', 'TSW');
+
+
+
 var
   SelYear: integer;
   SelectedMitarbeiterID: integer;
-  Spaltenname: array[2..14] of string = ('Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember', 'TSW');
+
+
+
+
 
 implementation
 
@@ -130,9 +144,9 @@ begin
 
   // Hinweistexte für Timer
   s1 := 'Schnell eine neue Wachtest-Jahresübersicht erstellen'+#13#10+'klicken Sie auf den kleinen Button hinter dem Auswahlfeld für das Stammpersonal. (Die Liste muss dafür leer sein)';
-  s2 := 'Löschen eines Datums'+#13#10+'mit rechter Maustaste auf das zu löschende Datum klicken';
-  s3 := 'Löschen eines kompletten Eintrages'+#13#10+'mit rechter Maustaste auf den Mitarbeiternamen in der Liste klicken';
-  s4 := 'Datum eines Monats ändern'+#13#10+'Zeile auswählen, das neue Datum auswählen und auf "Speichern" klicken';
+  s2 := 'Zum löschen eines Datums mit der rechten Maustaste auf das zu löschende Datum klicken';
+  s3 := 'Zum löschen eines kompletten Eintrages mit rechter Maustaste auf den Mitarbeiternamen in der Liste klicken';
+  s4 := 'Zum ändern eines Datums im gewählten Monat das Datum in der Liste anklicken, unten das neue Datum auswählen und auf "Speichern" klicken';
   currentIndex := 2;  // Setze den Index auf den ersten String
   lbHinweis.Caption := s1;
 end;
@@ -143,12 +157,37 @@ end;
 
 
 
+procedure TFrameWachtest.lvWachtestClick(Sender: TObject);
+var
+  m, i: Integer;
+begin
+  i := lvWachtest.ItemIndex;
+  if(i <> -1) then
+  begin
+    for m := 0 to cbStammpersonal.Items.Count - 1 do
+    begin
+      if Integer(cbStammpersonal.Items.Objects[m]) = StrToInt(lvWachtest.Items[i].Caption) then
+      begin
+      //  SELENTRYID := StrToInt(lvWachtest.Items[i].Caption);
+        cbStammpersonal.ItemIndex := m;
+        Exit;
+      end;
+    end;
+  end;
+end;
+
+
+
+
 procedure TFrameWachtest.lvWachtestRightClickCell(Sender: TObject; iItem, iSubItem: Integer);
 var
   FDQuery: TFDQuery;
   s: string;
-  spalte: integer;
+  i, spalte: integer;
+  datumRaw, datum: string;
+  parsedDate: TDateTime;
 begin
+  i := lvWachtest.ItemIndex;
   spalte := iSubItem;
 
   if spalte = 1 then
@@ -182,51 +221,54 @@ begin
 
 
 
-  if spalte > 1 then
+  if(spalte > 1) then
   begin
-    if MessageDlg('Wollen Sie das Datum im "' + Spaltenname[spalte] + '" wirklich entfernen?', mtConfirmation, [mbYes, mbNo], 0, mbYes) = mrYes then
+    if(lvWachtest.Items[i].SubItems[spalte-1] <> '-----') then
     begin
-      FDQuery := TFDQuery.Create(nil);
-      try
-        with FDQuery do
-        begin
-          Connection := fMain.FDConnection1;
+      if MessageDlg('Wollen Sie das Datum im "' + Spaltenname[spalte] + '" wirklich entfernen?', mtConfirmation, [mbYes, mbNo], 0, mbYes) = mrYes then
+      begin
+        datumRaw := lvWachtest.Items[i].SubItems[spalte - 1];
 
-          case spalte of
-            2:  s := 'UPDATE ausbildung_wachtest_tsw SET jan = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            3:  s := 'UPDATE ausbildung_wachtest_tsw SET feb = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            4:  s := 'UPDATE ausbildung_wachtest_tsw SET mar = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            5:  s := 'UPDATE ausbildung_wachtest_tsw SET apr = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            6:  s := 'UPDATE ausbildung_wachtest_tsw SET mai = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            7:  s := 'UPDATE ausbildung_wachtest_tsw SET jun = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            8:  s := 'UPDATE ausbildung_wachtest_tsw SET jul = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            9:  s := 'UPDATE ausbildung_wachtest_tsw SET aug = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            10:  s := 'UPDATE ausbildung_wachtest_tsw SET sep = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            11: s := 'UPDATE ausbildung_wachtest_tsw SET okt = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            12: s := 'UPDATE ausbildung_wachtest_tsw SET nov = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            13: s := 'UPDATE ausbildung_wachtest_tsw SET dez = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            14: s := 'UPDATE ausbildung_wachtest_tsw SET tsw = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-          else
-            Exit; // Bei ungültigem Monatsindex abbrechen
+        if TryStrToDate(datumRaw, parsedDate) then
+          datum := FormatDateTime('yyyy-mm-dd', parsedDate)
+        else
+          datum := '';
+
+
+
+        FDQuery := TFDQuery.Create(nil);
+        try
+          with FDQuery do
+          begin
+            Connection := fMain.FDConnection1;
+
+            if (spalte < 2) or (spalte > 14) then
+              Exit; // ungültiger Index
+
+            s := Format('UPDATE ausbildung_wachtest_tsw SET %s = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;', [MonatsSpalten[spalte]]);
+
+            SQL.Text := s;
+            Params.ParamByName('DATUM').AsString := '';
+            Params.ParamByName('MAID').AsInteger := SelectedMitarbeiterID;
+            Params.ParamByName('JAHR').AsInteger := StrToInt(cbJahr.Text);
+
+            ExecSql;
+
+            lvWachtest.Items[iItem].SubItems[spalte-1] := '-----';
           end;
-
-          SQL.Text := s;
-          Params.ParamByName('DATUM').AsString := '';
-          Params.ParamByName('MAID').AsInteger := SelectedMitarbeiterID;
-          Params.ParamByName('JAHR').AsInteger := StrToInt(cbJahr.Text);
-
-          ExecSql;
-
-          lvWachtest.Items[iItem].SubItems[iSubItem-1] := '-----';
+        except
+          on E: Exception do
+          begin
+            ShowMessage('Fehler beim Speichern des Eintrags in der Datenbanktabelle ' + E.Message);
+            Exit;
+          end;
         end;
-      except
-        on E: Exception do
-        begin
-          ShowMessage('Fehler beim Speichern des Eintrags in der Datenbanktabelle ' + E.Message);
-          Exit;
-        end;
+        FDQuery.Free;
+
+
+        //Ausbildung auch aus der Tabelle ausbildung entfernen (ausbildungsartID = 2)
+        DeleteItemFromTableAusbildungen(SelectedMitarbeiterID, 2, datum);
       end;
-      FDQuery.Free;
     end;
   end;
 end;
@@ -285,121 +327,178 @@ end;
 
 
 
+
 procedure TFrameWachtest.btnSaveClick(Sender: TObject);
 var
   FDQuery: TFDQuery;
-  Jahr, ausbildungsart, monatsindex: integer;
-  s: string;
+  Jahr, ausbildungsart, monatsindex: Integer;
+  sqlText, datumSQL, monatSpalte, DatumAlt: string;
+  i: Integer;
+  EintragExistiert, MonatHatEintrag: Boolean;
 begin
-  if(cbStammpersonal.ItemIndex <> -1) OR (cbAushilfen.ItemIndex <> -1) then
+  i := lvWachtest.ItemIndex;
+  if (i = -1) or ((cbStammpersonal.ItemIndex = -1) and (cbAushilfen.ItemIndex = -1)) then
   begin
-    Jahr           := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
-    ausbildungsart := cbArt.ItemIndex;
-    monatsindex    := GetMonatsIndexFromDatum(DateToStr(dtpDatum.Date)); // Funktion, die den Monatsindex für das Datum zurückgibt
+    ShowMessage('Bitte wählen Sie einen Mitarbeiter aus dem Stammpersonal oder eine Aushilfe aus');
+    Exit;
+  end;
 
+  if (SelectedMitarbeiterID <= 0) or (cbJahr.ItemIndex = -1) or (cbArt.ItemIndex = -1) then
+  begin
+    ShowMessage('Bitte wählen Sie Mitarbeiter, Jahr, Art und ein Datum!');
+    Exit;
+  end;
 
-    if (SelectedMitarbeiterID <= 0) or (ausbildungsart = -1) then
+  Jahr := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
+  ausbildungsart := cbArt.ItemIndex;
+  monatsindex := GetMonatsIndexFromDatum(DateToStr(dtpDatum.Date));
+  monatSpalte := MONATSNAMEN[monatsindex];
+  datumSQL := ConvertGermanDateToSQLDate(DateToStr(dtpDatum.Date), false);
+  DatumAlt := '';
+  MonatHatEintrag := False;
+
+  FDQuery := TFDQuery.Create(nil);
+  try
+    FDQuery.Connection := fMain.FDConnection1;
+
+    // Prüfen, ob Datensatz mit MitarbeiterID + Jahr existiert und ob Monatsspalte gefüllt ist
+    FDQuery.SQL.Text := Format(
+      'SELECT %s FROM ausbildung_wachtest_tsw WHERE mitarbeiterid = :MAID AND jahr = :JAHR;',
+      [monatSpalte]
+    );
+    FDQuery.ParamByName('MAID').AsInteger := SelectedMitarbeiterID;
+    FDQuery.ParamByName('JAHR').AsInteger := Jahr;
+    FDQuery.Open;
+
+    EintragExistiert := not FDQuery.IsEmpty;
+    if EintragExistiert then
     begin
-      ShowMessage('Bitte wählen Sie einen Mitarbeiter, die Art und das Datum der Ausbildung!');
+      DatumAlt := Trim(FDQuery.FieldByName(monatSpalte).AsString);
+      MonatHatEintrag := DatumAlt <> '';
+    end;
+    FDQuery.Close;
+
+    // SQL vorbereiten
+    if ausbildungsart = 1 then
+    begin
+      // Ausbildungsart = TSW
+      if EintragExistiert then
+        sqlText := 'UPDATE ausbildung_wachtest_tsw SET tsw = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;'
+      else
+        sqlText := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, tsw) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
+    end
+    else
+    begin
+      // Monatsbasierte Ausbildung
+      if EintragExistiert then
+        sqlText := Format(
+          'UPDATE ausbildung_wachtest_tsw SET %s = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;',
+          [monatSpalte]
+        )
+      else
+        sqlText := Format(
+          'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, %s) VALUES (:MAID, :OBID, :JAHR, :DATUM);',
+          [monatSpalte]
+        );
+    end;
+
+    // Ausführen
+    FDQuery.SQL.Text := sqlText;
+    FDQuery.ParamByName('MAID').AsInteger := SelectedMitarbeiterID;
+    FDQuery.ParamByName('JAHR').AsInteger := Jahr;
+    FDQuery.ParamByName('DATUM').AsString := datumSQL;
+
+    if not EintragExistiert then
+    begin
+      FDQuery.ParamByName('OBID').AsInteger := OBJEKTID;
+    end;
+
+    FDQuery.ExecSQL;
+
+    // Daten in Tabelle "ausbildung" pflegen (UzwGBw-Theorie = 2)
+    if MonatHatEintrag and (DatumAlt <> datumSQL) then
+    begin
+      UpdateDatumInAusbildung(SelectedMitarbeiterID, OBJEKTID, 2, DatumAlt, dtpDatum.Date);
+    end
+    else if not MonatHatEintrag then
+    begin
+      InsertItemInTableAusbildungen(SelectedMitarbeiterID, OBJEKTID, 2, dtpDatum.Date);
+    end;
+  except
+    on E: Exception do
+    begin
+      ShowMessage('Fehler beim Speichern des Eintrags: ' + E.Message);
+      FDQuery.Free;
       Exit;
     end;
+  end;
 
-    FDQuery := TFDQuery.Create(nil);
-    try
-      with FDQuery do
-      begin
-        Connection := fMain.FDConnection1;
+  FDQuery.Free;
 
-        SQL.Clear;
-
-        //Abfrage ob bereits ein Eintrag mit der mitarbeiterid und dem jahr vorhanden ist
-        SQL.Clear;
-        SQL.Text := 'SELECT id FROM ausbildung_wachtest_tsw WHERE mitarbeiterid = :MAID AND jahr = :JAHR LIMIT 0, 1;';
-
-        Params.ParamByName('JAHR').AsInteger := Jahr;
-        Params.ParamByName('MAID').AsInteger := SelectedMitarbeiterID;
-
-        Open;
+  cbJahrSelect(Self);
+  SelectMitarbeiterInListView(lvWachtest, SelectedMitarbeiterID);
+end;
 
 
-        if not FDQuery.IsEmpty then
-        begin
-          //WACHTEST
-          case monatsindex of
-            1:  s := 'UPDATE ausbildung_wachtest_tsw SET jan = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            2:  s := 'UPDATE ausbildung_wachtest_tsw SET feb = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            3:  s := 'UPDATE ausbildung_wachtest_tsw SET mar = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            4:  s := 'UPDATE ausbildung_wachtest_tsw SET apr = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            5:  s := 'UPDATE ausbildung_wachtest_tsw SET mai = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            6:  s := 'UPDATE ausbildung_wachtest_tsw SET jun = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            7:  s := 'UPDATE ausbildung_wachtest_tsw SET jul = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            8:  s := 'UPDATE ausbildung_wachtest_tsw SET aug = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            9:  s := 'UPDATE ausbildung_wachtest_tsw SET sep = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            10: s := 'UPDATE ausbildung_wachtest_tsw SET okt = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            11: s := 'UPDATE ausbildung_wachtest_tsw SET nov = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-            12: s := 'UPDATE ausbildung_wachtest_tsw SET dez = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
-          else
-            Exit; // Bei ungültigem Monatsindex abbrechen
-          end;
 
-          //TSW
-          if(ausbildungsart = 1) then
-            s := 'UPDATE ausbildung_wachtest_tsw SET tsw = :DATUM WHERE mitarbeiterid = :MAID AND jahr = :JAHR;';
 
-          SQL.Text := s;
-          Params.ParamByName('MAID').AsInteger := SelectedMitarbeiterID;
-          Params.ParamByName('JAHR').AsInteger := Jahr;
-          Params.ParamByName('DATUM').AsString := ConvertGermanDateToSQLDate(DateToStr(dtpDatum.Date), false);
-        end
-        else
-        begin
-          //WACHTEST
-          case monatsindex of
-            1: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, jan) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            2: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, feb) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            3: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, mar) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            4: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, apr) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            5: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, mai) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            6: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, jun) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            7: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, jul) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            8: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, aug) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            9: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, sep) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            10: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, okt) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            11: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, nov) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            12: s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, dez) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
-            else
-              Exit; // Bei ungültigem Monatsindex abbrechen
-          end;
 
-          //TSW
-          if(ausbildungsart = 1) then
-            s := 'INSERT INTO ausbildung_wachtest_tsw (mitarbeiterid, objektid, jahr, tsw) VALUES (:MAID, :OBID, :JAHR, :DATUM);';
 
-          SQL.Text := s;
-          Params.ParamByName('MAID').AsInteger := SelectedMitarbeiterID;
-          Params.ParamByName('OBID').AsInteger := OBJEKTID;
-          Params.ParamByName('JAHR').AsInteger := Jahr;
-          Params.ParamByName('DATUM').AsString := ConvertGermanDateToSQLDate(DateToStr(dtpDatum.Date), false);
-        end;
 
+
+
+procedure TFrameWachtest.InsertItemInTableAusbildungen(mitarbeiterID, objektID, ausbildungsartID: integer; datum: TDate);
+var
+  FDQuery: TFDQuery;
+begin
+  FDQuery := TFDQuery.Create(nil);
+  try
+    with FDQuery do
+    begin
+      Connection := fMain.FDConnection1;
+
+      SQL.Text := 'INSERT INTO ausbildung (mitarbeiterID, objektID, ausbildungsartID, datum) ' +
+                  'VALUES (:MID, :OID, :AID, :DAT);';
+
+      Params.ParamByName('MID').AsInteger := mitarbeiterID;
+      Params.ParamByName('OID').AsInteger := objektID;
+      Params.ParamByName('AID').AsInteger := ausbildungsartID;
+      Params.ParamByName('DAT').AsString  := ConvertGermanDateToSQLDate(DateToStr(datum), false);
+      try
         ExecSQL;
-      end;
-    except
-      on E: Exception do
-      begin
-        ShowMessage('Fehler beim Speichern des Eintrags in der Datenbanktabelle ' + E.Message);
-        Exit;
+      except
+        on E: Exception do
+        begin
+          ShowMessage('Fehler beim Speichern des Eintrags in der Datenbanktabelle ausbildung: ' + E.Message);
+          Exit;
+        end;
       end;
     end;
+  finally
     FDQuery.Free;
+  end;
+end;
 
-    cbJahrSelect(self);
-    cbStammpersonal.ItemIndex := -1;
-    cbArt.ItemIndex := 0;
-  end
-  else
-  begin
-    showmessage('Bitte wählen Sie einen Mitarbeiter aus dem Stammpersonal oder eine Aushilfe aus');
+
+
+
+procedure TFrameWachtest.UpdateDatumInAusbildung(mitarbeiterID, objektID, ausbildungsartID: integer; datumAlt: string; neuesDatum: TDate);
+var
+  FDQuery: TFDQuery;
+begin
+  FDQuery := TFDQuery.Create(nil);
+  try
+    FDQuery.Connection := fMain.FDConnection1;
+    FDQuery.SQL.Text := 'UPDATE ausbildung SET datum = :NEU ' +
+                        'WHERE mitarbeiterID = :MID AND objektID = :OID AND ausbildungsartID = :AID AND datum = :ALT;';
+    FDQuery.ParamByName('MID').AsInteger := mitarbeiterID;
+    FDQuery.ParamByName('OID').AsInteger := objektID;
+    FDQuery.ParamByName('AID').AsInteger := ausbildungsartID;
+    FDQuery.ParamByName('ALT').AsString := datumAlt;
+    FDQuery.ParamByName('NEU').AsString := ConvertGermanDateToSQLDate(DateToStr(neuesDatum), False);
+    FDQuery.ExecSQL;
+  finally
+    FDQuery.Free;
   end;
 end;
 
@@ -407,6 +506,36 @@ end;
 
 
 
+
+procedure TFrameWachtest.DeleteItemFromTableAusbildungen(mitarbeiterID, ausbildungsartID: integer; datum: string);
+var
+  FDQuery: TFDQuery;
+begin
+  FDQuery := TFDQuery.Create(nil);
+  try
+    with FDQuery do
+    begin
+      Connection := fMain.FDConnection1;
+
+      SQL.Text := 'DELETE FROM ausbildung WHERE mitarbeiterID = :MID AND ausbildungsartID = :AID AND datum = :DAT;';
+
+      Params.ParamByName('MID').AsInteger := mitarbeiterID;
+      Params.ParamByName('AID').AsInteger := ausbildungsartID;
+      Params.ParamByName('DAT').AsString  := datum;
+      try
+        ExecSQL;
+      except
+        on E: Exception do
+        begin
+          ShowMessage('Fehler beim löschen des Eintrags aus der Datenbanktabelle ausbildung: ' + E.Message);
+          Exit;
+        end;
+      end;
+    end;
+  finally
+    FDQuery.Free;
+  end;
+end;
 
 
 

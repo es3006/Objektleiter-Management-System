@@ -79,6 +79,7 @@ end;
 procedure TFrameErsteHilfe.Initialize;
 begin
   showMitarbeiterInComboBox(cbMitarbeiter, MonthOf(now), YearOf(now), false, OBJEKTID, 3);
+
   showErsteHilfeInListView(lvErsteHilfe);
 
   SelEntry := -1;
@@ -339,7 +340,6 @@ begin
     begin
       Connection := fMain.FDConnection1;
 
-      showmessage('ID: ' + IntToStr(SelEntry));
       SQL.Text := 'DELETE FROM ausbildung WHERE id = :ID;';
 
       Params.ParamByName('ID').AsInteger    := SelEntry;

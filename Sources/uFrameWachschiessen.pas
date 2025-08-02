@@ -144,58 +144,96 @@ var
   MaID: integer;
   Nachname: string;
   Datum: TDate;
+  DatumSQL: string;
   i: integer;
+
+  function EintragExistiert(aArtID: Integer): Boolean;
+  begin
+    FDQuery.SQL.Text :=
+      'SELECT COUNT(*) FROM ausbildung ' +
+      'WHERE mitarbeiterID = :MAID AND objektID = :OBID AND ausbildungsartID = :ARTID AND datum = :DATUM;';
+    FDQuery.ParamByName('MAID').AsInteger := MaID;
+    FDQuery.ParamByName('OBID').AsInteger := OBJEKTID;
+    FDQuery.ParamByName('ARTID').AsInteger := aArtID;
+    FDQuery.ParamByName('DATUM').AsString := DatumSQL;
+
+    FDQuery.Open;
+    Result := FDQuery.Fields[0].AsInteger > 0;
+    FDQuery.Close;
+  end;
+
 begin
   i := lvWachschiessen.ItemIndex;
   if i <> -1 then
   begin
     MaID     := StrToInt(lvWachschiessen.Items[i].Caption);
     Nachname := lvWachschiessen.Items[i].SubItems[0];
-    Datum    := StrToDate(DateToStr(dtpDatum.Date));
+    Datum    := dtpDatum.Date;
   end
   else
   begin
-    showmessage('Bitte wählen Sie einen Mitarbeiter aus der Liste aus.');
-    exit;
+    ShowMessage('Bitte wählen Sie einen Mitarbeiter aus der Liste aus.');
+    Exit;
   end;
 
-  if (MaID = -1) then
+  if MaID = -1 then
   begin
     ShowMessage('Bitte wählen Sie einen Mitarbeiter aus!');
     Exit;
   end;
 
+  DatumSQL := ConvertGermanDateToSQLDate(DateToStr(Datum), false);
 
   FDQuery := TFDQuery.Create(nil);
   try
-    with FDQuery do
+    FDQuery.Connection := fMain.FDConnection1;
+
+    if EintragExistiert(4) then
     begin
-      Connection := fMain.FDConnection1;
-
-
-      SQL.Text := 'INSERT INTO ausbildung (mitarbeiterID, objektID, ausbildungsartID, datum) ' +
-                  'VALUES (:MAID, :OBID, :AUSBILDUNGSARTID, :DATUM);';
-
-      Params.ParamByName('MAID').AsInteger  := MaID;
-      Params.ParamByName('OBID').AsInteger  := OBJEKTID;
-      Params.ParamByName('AUSBILDUNGSARTID').AsInteger  := 4;
-      Params.ParamByName('DATUM').AsString  := ConvertGermanDateToSQLDate(DateToStr(Datum), false);
-
-      ExecSQL;
-    end;
-  except
-    on E: Exception do
-    begin
-      ShowMessage('Fehler beim Speichern des Eintrags in der Datenbanktabelle ausbildung: ' + E.Message);
+      ShowMessage('Das Wachschiessen am ' + DateToStr(Datum) + ' wurde bereits gespeichert!');
       Exit;
     end;
-  end;
-  FDQuery.Free;
 
-  cbJahrSelect(nil);
-  cbStammpersonal.ItemIndex := -1;
-  cbStammpersonal.SetFocus;
+    if EintragExistiert(1) then
+    begin
+      ShowMessage('Das Datum "' + DateToStr(Datum) + '" wurde bereits in den Ausbildungsunterlagen unter "Waffenhandhabung / Sachkunde" gespeichert!');
+      Exit;
+    end;
+
+    fMain.FDConnection1.StartTransaction;
+    try
+      // Eintrag für Ausbildungsart 4
+      FDQuery.SQL.Text := 'INSERT INTO ausbildung (mitarbeiterID, objektID, ausbildungsartID, datum) ' +
+                          'VALUES (:MAID, :OBID, :AUSBILDUNGSARTID, :DATUM);';
+      FDQuery.ParamByName('MAID').AsInteger := MaID;
+      FDQuery.ParamByName('OBID').AsInteger := OBJEKTID;
+      FDQuery.ParamByName('AUSBILDUNGSARTID').AsInteger := 4;
+      FDQuery.ParamByName('DATUM').AsString := DatumSQL;
+      FDQuery.ExecSQL;
+
+      // Eintrag für Ausbildungsart 1
+      FDQuery.ParamByName('AUSBILDUNGSARTID').AsInteger := 1;
+      FDQuery.ExecSQL;
+
+      fMain.FDConnection1.Commit;
+    except
+      on E: Exception do
+      begin
+        fMain.FDConnection1.Rollback;
+        ShowMessage('Fehler beim Speichern der Einträge: ' + E.Message);
+        Exit;
+      end;
+    end;
+  finally
+    FDQuery.Free;
+  end;
+
+  cbJahrSelect(Self);
+  SelectMitarbeiterInListView(lvWachschiessen, MaID);
+  lvWachschiessenClick(Self);
 end;
+
+
 
 
 
@@ -492,47 +530,64 @@ var
   FDQuery: TFDQuery;
   Datum: string;
   i, spalte, MitarbeiterID: integer;
-  Trenner: string;
 begin
   i := lvWachschiessen.ItemIndex;
-
   spalte := iSubItem - 1;
-
 
   if spalte > 1 then
   begin
-    if MessageDlg('Wollen Sie das Datum "' + lvWachschiessen.Items[i].SubItems[spalte] + '" wirklich entfernen?', mtConfirmation, [mbYes, mbNo], 0, mbYes) = mrYes then
+    if(lvWachschiessen.Items[i].SubItems[spalte] <> '-----') then
     begin
-      MitarbeiterID := StrToInt(lvWachschiessen.Items[i].Caption);
-      Datum := ConvertGermanDateToSQLDate(lvWachschiessen.Items[i].SubItems[spalte], false);
+      if MessageDlg('Wollen Sie das Datum "' + lvWachschiessen.Items[i].SubItems[spalte] + '" wirklich entfernen?',
+                    mtConfirmation, [mbYes, mbNo], 0, mbYes) = mrYes then
+      begin
+        MitarbeiterID := StrToInt(lvWachschiessen.Items[i].Caption);
+        Datum := ConvertGermanDateToSQLDate(lvWachschiessen.Items[i].SubItems[spalte], false);
 
-      FDQuery := TFDQuery.Create(nil);
-      try
-        with FDQuery do
-        begin
-          Connection := fMain.FDConnection1;
+        FDQuery := TFDQuery.Create(nil);
+        try
+          fMain.FDConnection1.StartTransaction;
 
-          SQL.Text := 'DELETE FROM ausbildung WHERE mitarbeiterID = :MITARBEITERID AND datum = :DATUM;';
-          Params.ParamByName('MITARBEITERID').AsInteger := MitarbeiterID;
-          Params.ParamByName('DATUM').AsString  := Datum;
+          with FDQuery do
+          begin
+            Connection := fMain.FDConnection1;
 
-          ExecSql;
+            SQL.Text :=
+              'DELETE FROM ausbildung ' +
+              'WHERE mitarbeiterID = :MITARBEITERID ' +
+              'AND datum = :DATUM ' +
+              'AND ausbildungsartID IN (1, 4);';
 
+            ParamByName('MITARBEITERID').AsInteger := MitarbeiterID;
+            ParamByName('DATUM').AsString := Datum;
+
+            ExecSQL;
+          end;
+
+          fMain.FDConnection1.Commit;
           cbQuartalSelect(nil);
+        except
+          on E: Exception do
+          begin
+            fMain.FDConnection1.Rollback;
+            ShowMessage('Fehler beim Löschen aus der Tabelle "ausbildung": ' + E.Message);
+            Exit;
+          end;
+        end;
 
-        //  lvWachschiessen.Items[i].SubItems[spalte] := Trenner;
-        end;
-      except
-        on E: Exception do
-        begin
-          ShowMessage('Fehler beim löschen des Datums aus der Datenbanktabelle "ausbildung":' + E.Message);
-          Exit;
-        end;
+        FDQuery.Free;
+
+        cbJahrSelect(Self);
+        SelectMitarbeiterInListView(lvWachschiessen, MitarbeiterID);
+        lvWachschiessenClick(Self);
       end;
-      FDQuery.Free;
     end;
   end;
 end;
+
+
+
+
 
 
 

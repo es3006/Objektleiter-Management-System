@@ -214,6 +214,7 @@ object FrameWachtest: TFrameWachtest
     RowSelect = True
     TabOrder = 1
     ViewStyle = vsReport
+    OnClick = lvWachtestClick
     OnSelectItem = lvWachtestSelectItem
     ColumnSize.Stretch = True
     FilterTimeOut = 0
@@ -250,7 +251,7 @@ object FrameWachtest: TFrameWachtest
     DetailView.Font.Style = []
     OnRightClickCell = lvWachtestRightClickCell
     Version = '1.9.1.1'
-    ExplicitHeight = 420
+    ExplicitTop = 63
   end
   object Panel1: TPanel
     Left = 0
