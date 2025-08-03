@@ -176,15 +176,12 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
     TabHeight = 50
     TabOrder = 1
     TabWidth = 200
-    OnChange = edKG1Change
     object AdvTabSheet8: TAdvTabSheet
       Caption = 'Informatives'
       Color = clWhite
       ColorTo = clNone
       TabColor = clBtnFace
       TabColorTo = clNone
-      ExplicitTop = 30
-      ExplicitHeight = 560
       object GridPanel1: TGridPanel
         Left = 0
         Top = 0
@@ -216,7 +213,6 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
         ShowCaption = False
         TabOrder = 0
         VerticalAlignment = taAlignTop
-        ExplicitHeight = 560
         object Panel4: TPanel
           Left = 596
           Top = 1
@@ -226,7 +222,6 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
           BevelOuter = bvNone
           ShowCaption = False
           TabOrder = 0
-          ExplicitHeight = 558
           DesignSize = (
             595
             532)
@@ -296,9 +291,11 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 0
             Text = '-----'
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edKB2: TEdit
             Left = 20
@@ -306,8 +303,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 1
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edKB3: TEdit
             Left = 20
@@ -315,8 +314,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 2
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edAu1: TEdit
             Left = 20
@@ -324,9 +325,11 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 3
             Text = '-----'
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edAu2: TEdit
             Left = 20
@@ -334,8 +337,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 4
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edAr1: TEdit
             Left = 20
@@ -343,9 +348,11 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 5
             Text = '-----'
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edAr2: TEdit
             Left = 20
@@ -353,8 +360,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 6
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edSo1: TEdit
             Left = 20
@@ -362,9 +371,11 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 7
             Text = '-----'
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edSo2: TEdit
             Left = 20
@@ -372,8 +383,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 8
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
         end
         object Panel3: TPanel
@@ -385,7 +398,6 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
           BevelOuter = bvNone
           ShowCaption = False
           TabOrder = 1
-          ExplicitHeight = 558
           DesignSize = (
             595
             532)
@@ -455,9 +467,11 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 0
             Text = '-----'
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edKG2: TEdit
             Left = 28
@@ -465,8 +479,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 1
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edKG3: TEdit
             Left = 28
@@ -474,8 +490,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 2
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edPB1: TEdit
             Left = 28
@@ -483,9 +501,11 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 3
             Text = '-----'
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edPB2: TEdit
             Left = 28
@@ -493,8 +513,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 4
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edMd1: TEdit
             Left = 28
@@ -502,9 +524,11 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 5
             Text = '-----'
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edMd2: TEdit
             Left = 28
@@ -512,8 +536,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 6
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edVk1: TEdit
             Left = 28
@@ -521,9 +547,11 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 7
             Text = '-----'
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
           object edVk2: TEdit
             Left = 28
@@ -531,8 +559,10 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
             Width = 550
             Height = 27
             Anchors = [akLeft, akTop, akRight]
+            MaxLength = 110
             TabOrder = 8
             OnChange = edKG1Change
+            OnExit = edKG1Exit
           end
         end
       end
@@ -543,8 +573,6 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
       ColorTo = clNone
       TabColor = clBtnFace
       TabColorTo = clNone
-      ExplicitTop = 30
-      ExplicitHeight = 560
       object Label10: TLabel
         Left = 21
         Top = 68
@@ -749,6 +777,7 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
         Width = 120
         Height = 27
         Alignment = taCenter
+        MaxLength = 100
         TabOrder = 1
         OnChange = edKG1Change
       end
@@ -778,6 +807,7 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
         Width = 120
         Height = 27
         Alignment = taCenter
+        MaxLength = 100
         TabOrder = 3
         OnChange = edKG1Change
       end
@@ -787,6 +817,7 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
         Width = 120
         Height = 27
         Alignment = taCenter
+        MaxLength = 100
         TabOrder = 5
         OnChange = edKG1Change
       end
@@ -806,6 +837,7 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
         Width = 120
         Height = 27
         Alignment = taCenter
+        MaxLength = 100
         TabOrder = 7
         OnChange = edKG1Change
       end
@@ -815,6 +847,7 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
         Width = 120
         Height = 27
         Alignment = taCenter
+        MaxLength = 100
         TabOrder = 9
         OnChange = edKG1Change
       end
@@ -844,6 +877,7 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
         Width = 120
         Height = 27
         Alignment = taCenter
+        MaxLength = 100
         TabOrder = 11
         OnChange = edKG1Change
       end
@@ -868,11 +902,12 @@ object FrameWochenberichtEdit: TFrameWochenberichtEdit
         OnChange = edKG1Change
       end
       object edSoWer: TEdit
-        Left = 275
+        Left = 274
         Top = 213
         Width = 120
         Height = 27
         Alignment = taCenter
+        MaxLength = 100
         TabOrder = 13
         OnChange = edKG1Change
       end

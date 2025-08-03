@@ -98,6 +98,7 @@ type
     procedure btnUpdateWochenberichtClick(Sender: TObject);
     procedure btnNeuerWochenberichtClick(Sender: TObject);
     procedure edKG1Change(Sender: TObject);
+    procedure edKG1Exit(Sender: TObject);
   private
     procedure ClearWochenbericht;
     procedure ShowWochenbericht(id: integer);
@@ -171,6 +172,14 @@ begin
   else
     TEdit(Sender).Color := clWindow;
 end;
+
+procedure TFrameWochenberichtEdit.edKG1Exit(Sender: TObject);
+begin
+  fMain.StatusBar1.Panels[1].Text := '';
+end;
+
+
+
 
 procedure TFrameWochenberichtEdit.btnNeuerWochenberichtClick(Sender: TObject);
 begin
@@ -756,7 +765,7 @@ begin
 
 
       //Dateiname für zu speichernde Datei erzeugen
-      filename := 'Wochenbericht_KW_' + KW + '_' + IntToStr(jahr) + '_' + OBJEKTNAME + '_' + OBJEKTORT;
+      filename := 'Wochenbericht KW ' + KW + ' ' + IntToStr(jahr) + ' ' + OBJEKTNAME + ' ' + OBJEKTORT;
 
       //Aus Resource-Datei temporäre Html-Datei und daraus eine PDF-Datei im TEMP Verzeichnis erzeugen
       CreateHtmlAndPdfFileFromResource(filename, stl, 'print_portrait.bat');
