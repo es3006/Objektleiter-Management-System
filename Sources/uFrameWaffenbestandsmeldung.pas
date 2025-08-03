@@ -261,72 +261,69 @@ var
   l: TListItem;
   i, a, Monat, Jahr: integer;
   startDate: TDateTime;
+  waffenNutzer: string;
 begin
   Monat := selMonth;
   Jahr  := selYear;
 
-  i := 0;
-  a := WAFFENBESTAND;
+  i := 0;                   // Laufende Nummer für echte Nutzer
+  a := WAFFENBESTAND;       // Rückwärtslaufende Nummer für Aushilfen
 
   ClearListView(lvWaffenbestandsliste);
 
+  startDate := EncodeDate(Jahr, Monat, 1);
 
-
-
-  FDQuery := TFDQuery.Create(nil);
+  FDQuery := TFDQuery.Create(Self);
   try
     with FDQuery do
     begin
       Connection := fMain.FDConnection1;
 
-      SQL.Text := 'SELECT W.id, W.pos, W.nrwbk, W.waffentyp, ' +
-                  'COALESCE((SELECT M.nachname || " " || M.vorname FROM mitarbeiter M ' +
-                  'WHERE M.waffennummer = W.seriennr ' +
-                  'AND (M.austrittsdatum IS NULL OR ' +
-                  'M.austrittsdatum = "" OR DATE(M.austrittsdatum) >= DATE(:STARTDATE)) ' +
-                  'ORDER BY M.eintrittsdatum DESC LIMIT 1 ), "Aushilfe") AS Waffennutzer,' +
-                  'W.seriennr, W.fach, ' +
-                  '(SELECT CASE  WHEN M.objektid = :OBJEKTID THEN 0  ELSE 1 END FROM mitarbeiter M ' +
-                  'WHERE M.waffennummer = W.seriennr ' +
-                  'AND (M.austrittsdatum IS NULL OR M.austrittsdatum = "" OR ' +
-                  'DATE(M.austrittsdatum) >= DATE(:STARTDATE)) ' +
-                  'ORDER BY M.eintrittsdatum DESC LIMIT 1) AS Sortierung ' +
-                  'FROM Waffenbestand W ORDER BY Sortierung DESC, Waffennutzer COLLATE NOCASE;';
+      SQL.Text :=
+        'SELECT W.id, W.pos, W.nrwbk, W.waffentyp, ' +
+        'COALESCE((SELECT M.nachname || " " || M.vorname ' +
+        '          FROM mitarbeiter M ' +
+        '          WHERE M.waffennummer = W.seriennr ' +
+        '            AND M.objektid = :OBJEKTID ' +
+        '            AND (M.austrittsdatum IS NULL OR M.austrittsdatum = "" OR DATE(M.austrittsdatum) >= DATE(:STARTDATE)) ' +
+        '          ORDER BY M.nachname ASC LIMIT 1), "Aushilfe") AS Waffennutzer, ' +
+        'W.seriennr, W.fach, ' +
+        '(SELECT CASE ' +
+        '          WHEN EXISTS (SELECT 1 FROM mitarbeiter M ' +
+        '                      WHERE M.waffennummer = W.seriennr ' +
+        '                        AND M.objektid = :OBJEKTID ' +
+        '                        AND (M.austrittsdatum IS NULL OR M.austrittsdatum = "" OR DATE(M.austrittsdatum) >= DATE(:STARTDATE))) ' +
+        '          THEN 0 ELSE 1 END) AS Sortierung ' +
+        'FROM Waffenbestand W ' +
+        'ORDER BY Sortierung ASC, Waffennutzer COLLATE NOCASE;';
 
-      StartDate := EncodeDate(jahr, monat, 1);
-      Params.ParamByName('STARTDATE').AsDate := StartDate;
+      Params.ParamByName('STARTDATE').AsDate := startDate;
       Params.ParamByName('OBJEKTID').AsInteger := OBJEKTID;
 
       Open;
 
       while not Eof do
       begin
+        waffenNutzer := FieldByName('Waffennutzer').AsString;
         l := lvWaffenbestandsliste.Items.Add;
         l.Caption := FieldByName('id').AsString;
 
-
-        if(FieldByName('Waffennutzer').AsString <> 'Aushilfe') then
+        if waffenNutzer <> 'Aushilfe' then
         begin
-          //Waffe der ein Nutzer zugewiesen ist
-          inc(i);
-          l.SubItems.Add(inttostr(i));
-          l.SubItems.Add(FieldByname('nrwbk').AsString);
-          l.SubItems.Add(FieldByname('waffentyp').AsString);
-          l.SubItems.Add(FieldByname('Waffennutzer').AsString);
-          l.SubItems.Add(FieldByname('seriennr').AsString);
-          l.SubItems.Add(FieldByname('fach').AsString);
+          Inc(i);
+          l.SubItems.Add(IntToStr(i));  // Laufende Nummer
         end
         else
         begin
-          //Waffe der kein Nutzer zugewiesen ist
-          l.SubItems.Add(inttostr(a));
-          l.SubItems.Add(FieldByname('nrwbk').AsString);
-          l.SubItems.Add(FieldByname('waffentyp').AsString);
-          l.SubItems.Add('Aushilfe');
-          l.SubItems.Add(FieldByname('seriennr').AsString);
-          l.SubItems.Add(FieldByname('fach').AsString);
-          DEC(a);
+          l.SubItems.Add(IntToStr(a));  // Rückwärtslauf für Aushilfen
+          Dec(a);
         end;
+
+        l.SubItems.Add(FieldByName('nrwbk').AsString);
+        l.SubItems.Add(FieldByName('waffentyp').AsString);
+        l.SubItems.Add(waffenNutzer);
+        l.SubItems.Add(FieldByName('seriennr').AsString);
+        l.SubItems.Add(FieldByName('fach').AsString);
 
         Next;
       end;
@@ -335,13 +332,14 @@ begin
     FDQuery.Free;
   end;
 
-  ColumnToSort := 1; // Initial keine Spalte sortiert
-  SortDir      := 0; // Aufsteigende Sortierung
-  LastSorted   := 0; // Keine letzte Sortierung
+  ColumnToSort := 1;
+  SortDir      := 0;
+  LastSorted   := 0;
   lvWaffenbestandsliste.AlphaSort;
 
   InsertWaffenbestandslisteInDB;
 end;
+
 
 
 
