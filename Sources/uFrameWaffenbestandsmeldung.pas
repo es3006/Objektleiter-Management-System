@@ -8,7 +8,7 @@ uses
   Vcl.StdCtrls, Vcl.Imaging.pngimage, Vcl.ExtCtrls, TaskDialog,
   inifiles, AdvDateTimePicker, System.UITypes, DateUtils, System.Math, ShellApi,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, FireDAC.Stan.Param,
-  System.Actions, Vcl.ActnList, Vcl.Menus, Vcl.Buttons;
+  System.Actions, Vcl.ActnList, Vcl.Menus, Vcl.Buttons, HTMLabel;
 
 type
   TFrameWaffenbestandsmeldung = class(TFrame)
@@ -131,11 +131,13 @@ begin
 
   // Hinweistexte für Timer
   s1 := 'Zum Erstellen einer neuen Waffenbestandsliste klicken Sie auf den Button "Alle Waffen in die Liste eintragen"';
-  s2 := 'Passen Sie gegebenenfalls die Waffennutzer an, indem Sie den zu ändernden Namen in der Liste auswählen'+#13#10+'und anschließend einen anderen Namen aus dem Auswahlfeld auswählen. (Aushilfen)';
-  s3 := 'Mitarbeiter eine andere Waffe zuweisen?'+#13#10+'Gehen Sie ins Hauptmenü auf "Bestandsdaten / Mitarbeiter" und vergeben Sie dort eine andere Waffennummer';
-  s4 := 'Änderungen an der Waffe nehmen Sie über das Hauptmenü "Bestandsdaten / Waffenbestand" vor!';
+  s2 := 'Es werden alle Waffen des Objektes ausgegeben. Dabei werden erst die, dem jeweiligen Mitarbeiter zugewiesenen Waffen angezeigt und darunter die nicht zugewiesenen Waffen als "Aushilfe"';
+  s3 := 'Passen Sie die Zuordnung einer Waffe zu einer Aushilfe gegebenfalls an, indem Sie die entsprechende Waffe auswählen, unten den Namen der Aushilfe auswählen und dann auf "Speichern" klicken!';
+  s4 := 'Sie können einem Mitarbeiter eine andere Waffe zuweisen, indem Sie im Hauptmenü auf "Bestandsdaten / Mitarbeiter" klicken, den Mitarbeiter in der Liste mit einem Doppelklick auswählen und anschließend auf dem Tab "Dienstlich" die Waffe auswählen.';
   currentIndex := 2;  // Setze den Index auf den ersten String
   lbHinweis.Caption := s1;
+
+
 
   if(lvWaffenbestandsliste.Items.Count = WAFFENBESTAND) then
   begin

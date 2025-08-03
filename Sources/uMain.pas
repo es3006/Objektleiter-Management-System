@@ -4,9 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DB, Menus,
+  Dialogs, DB, Menus, System.DateUtils,
   StdCtrls, ComCtrls, inifiles, ExtCtrls, ActnList, AdvListV,
-  DateUtils, Math, ShellApi, System.UITypes, System.Actions,
+  Math, ShellApi, System.UITypes, System.Actions,
   Vcl.Imaging.pngimage, AdvCustomControl, AdvTableView, AdvTypes,
   System.ImageList, Vcl.ImgList,
   Vcl.OleCtrls, SHDocVw, AdvMenus, Vcl.ToolWin, AdvUtils, StrUtils,
@@ -18,7 +18,7 @@ uses
   AdvPageControl, uFrameWochenberichtEdit, uFrameWachpersonal,
   uFrameGesamtausbildung, uFrameWachtest, uFrameWachschiessen, uFrameMunTausch,
   uFrameWaffenbestandsmeldung, uFrameTheorieausbildung, uFrameAusbildung, uFrameErsteHilfe,
-  FireDAC.Phys.SQLiteWrapper.Stat;
+  FireDAC.Phys.SQLiteWrapper.Stat, AdvMetroHint;
 
 
 type
@@ -79,6 +79,13 @@ type
     ErsteHilfe2: TMenuItem;
     N5: TMenuItem;
     N6: TMenuItem;
+    AdvMetroHint1: TAdvMetroHint;
+    pmCheckDaten: TPopupMenu;
+    PrfeaufablaufendeAusweise1: TMenuItem;
+    PrfeaufablaufendeAusweise2: TMenuItem;
+    N7: TMenuItem;
+    PrfeauffehlendeStammdaten1: TMenuItem;
+    PrfeauffehlendeStammdaten2: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure Einstellungen1Click(Sender: TObject);
@@ -109,6 +116,8 @@ type
     procedure mProgrammeinstellungenClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure N4Click(Sender: TObject);
+    procedure PrfeauffehlendeStammdaten2Click(Sender: TObject);
+    procedure PrfeauffehlendeStammdaten1Click(Sender: TObject);
   private
 
   public
@@ -182,7 +191,11 @@ uses uFirstStart, uDBSettings, uDBFunktionen, uFunktionen, uWebBrowser, uMitarbe
 procedure TfMain.ReadSettingsFromIni;
 var
   ini: TIniFile;
+  LetzterCheck, Heute: TDateTime;
+  CheckAusweiseStr: string;
 begin
+  Heute := now;
+
   ini := TIniFile.Create(PATH + 'settings.ini');
   try
     SAVEPATH_Wochenberichte := ini.ReadString('PATH','Wochenberichte','');
@@ -196,10 +209,22 @@ begin
     SAVEPATH_WachschiessenGutscheinAntrag := ini.ReadString('PATH','WachschiessenGutscheinAntrag','');
     SAVEPATH_ZuordnungWaffeSchliessfach := ini.ReadString('PATH','ZuordnungWaffenSchliessfach','');
     SAVEPATH_Munitionstausch := ini.ReadString('PATH','Munitionstausch','');
+
+    CheckAusweiseStr := Ini.ReadString('Check', 'CheckAusweisGueltigkeit', '');
+    if not TryStrToDate(CheckAusweiseStr, LetzterCheck) then LetzterCheck := 0;
+
+    if (Trunc(LetzterCheck) = 0) or (DaysBetween(Date, Trunc(LetzterCheck)) >= 7) then
+    begin
+      CheckFehlendeAusweisdaten(OBJEKTID);
+      CheckAblaufendeAusweise(OBJEKTID);
+      Ini.WriteString('Check', 'CheckAusweisGueltigkeit', DateToStr(Date));
+    end;
   finally
     ini.Free;
   end;
 end;
+
+
 
 
 
@@ -403,11 +428,12 @@ begin
   else
   begin
     ReadSettingsFromDB; //Objekt, Objektleiter, Waffen und Munition
-    ReadSettingsFromIni;
 
     ReadObjektleiterObjektSettings;
 
     fAnmeldung.ShowModal;
+
+    ReadSettingsFromIni;
 
     AddDogDatabaseTables;
 
@@ -549,6 +575,16 @@ end;
 procedure TfMain.ObjektObjektleiter1Click(Sender: TObject);
 begin
   fEinstellungen_Objekt.Show;
+end;
+
+procedure TfMain.PrfeauffehlendeStammdaten1Click(Sender: TObject);
+begin
+  CheckFehlendeAusweisdaten(OBJEKTID);
+end;
+
+procedure TfMain.PrfeauffehlendeStammdaten2Click(Sender: TObject);
+begin
+  CheckAblaufendeAusweise(OBJEKTID);
 end;
 
 procedure TfMain.mProgrammeinstellungenClick(Sender: TObject);

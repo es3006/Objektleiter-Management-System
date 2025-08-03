@@ -401,8 +401,9 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
       Caption = '...'
       Color = clBtnFace
       ParentColor = False
-      ExplicitWidth = 15
-      ExplicitHeight = 19
+      WordWrap = True
+      ExplicitLeft = 201
+      ExplicitTop = 8
     end
     object sbWeiter: TSpeedButton
       Left = 1176

@@ -6,10 +6,11 @@ uses
   Windows, Classes, Forms, SysUtils, Vcl.StdCtrls, Vcl.ComCtrls, Dialogs, Controls, ExtCtrls, DateUtils,
   Graphics, StrUtils, ShellApi, System.UITypes, System.Zip, System.IOUtils,
   FireDAC.Stan.Param, FireDAC.Phys.SQLite, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  FireDAC.Stan.Def, FireDAC.Phys.SQLiteWrapper;
+  FireDAC.Stan.Def, FireDAC.Phys.SQLiteWrapper, System.Generics.Collections;
 
 
-
+procedure CheckFehlendeAusweisdaten(OBJEKTID: Integer);
+procedure CheckAblaufendeAusweise(OBJEKTID: Integer);
 procedure BackupDatabase;
 procedure CreateDatabaseTables;
 procedure CreateIndexes;
@@ -39,6 +40,226 @@ implementation
 
 uses
   uMain, uFunktionen, uDBSettings, uWebBrowser;
+
+
+
+
+procedure CheckFehlendeAusweisdaten(OBJEKTID: Integer);
+var
+  FDQuery: TFDQuery;
+  StammText, AushilfeText: string;
+  Name, Typ: string;
+  StartDate: TDateTime;
+begin
+  StartDate := Now;
+
+  FDQuery := TFDQuery.Create(nil);
+  try
+    FDQuery.Connection := fMain.FDConnection1;
+
+    FDQuery.SQL.Text :=
+      // Stammmitarbeiter
+      'SELECT nachname || " " || vorname AS name, 0 AS typ_sort, "Stammpersonal" AS typ ' +
+      'FROM mitarbeiter ' +
+      'WHERE objektid = :OBJEKTID ' +
+      '  AND (austrittsdatum IS NULL OR austrittsdatum = "" OR DATE(austrittsdatum) >= DATE(:STARTDATE)) ' +
+      '  AND (ausweisnr IS NULL OR ausweisnr = "" ' +
+      '    OR ausweisgueltigbis IS NULL OR ausweisgueltigbis = "" ' +
+      '    OR sonderausweisnr IS NULL OR sonderausweisnr = "" ' +
+      '    OR sonderausweisgueltigbis IS NULL OR sonderausweisgueltigbis = "") ' +
+
+      'UNION ALL ' +
+
+      // Aushilfen (nur falls objektid nicht identisch)
+      'SELECT M.nachname || " " || M.vorname AS name, 1 AS typ_sort, "Aushilfen" AS typ ' +
+      'FROM mitarbeiter M ' +
+      'JOIN mitarbeiter_objekte MO ON MO.mitarbeiterid = M.id ' +
+      'WHERE MO.objektid = :OBJEKTID ' +
+      '  AND M.objektid <> :OBJEKTID ' +
+      '  AND (M.austrittsdatum IS NULL OR M.austrittsdatum = "" OR DATE(M.austrittsdatum) >= DATE(:STARTDATE)) ' +
+      '  AND (M.ausweisnr IS NULL OR M.ausweisnr = "" ' +
+      '    OR M.ausweisgueltigbis IS NULL OR M.ausweisgueltigbis = "" ' +
+      '    OR M.sonderausweisnr IS NULL OR M.sonderausweisnr = "" ' +
+      '    OR M.sonderausweisgueltigbis IS NULL OR M.sonderausweisgueltigbis = "") ' +
+
+      'ORDER BY typ_sort ASC, name COLLATE NOCASE ASC;';
+
+    FDQuery.Params.ParamByName('OBJEKTID').AsInteger := OBJEKTID;
+    FDQuery.Params.ParamByName('STARTDATE').AsDate := StartDate;
+
+    FDQuery.Open;
+
+    StammText := '';
+    AushilfeText := '';
+
+    while not FDQuery.Eof do
+    begin
+      Name := FDQuery.FieldByName('name').AsString;
+      Typ := FDQuery.FieldByName('typ').AsString;
+
+      if Typ = 'Stammpersonal' then
+        StammText := StammText + '- ' + Name + sLineBreak
+      else if Typ = 'Aushilfen' then
+        AushilfeText := AushilfeText + '- ' + Name + sLineBreak;
+
+      FDQuery.Next;
+    end;
+
+    if (StammText <> '') or (AushilfeText <> '') then
+      ShowMessage(
+        'Bei folgenden Mitarbeitern fehlen Personalausweis oder Sonder- und WaffenausweisNr oder das Ablaufdatum für einen Ausweis wurde nicht angegeben:' + sLineBreak + sLineBreak +
+        IfThen(StammText <> '', 'Stammpersonal' + sLineBreak + StammText + sLineBreak) +
+        IfThen(AushilfeText <> '', 'Aushilfen' + sLineBreak + AushilfeText)
+      );
+  finally
+    FDQuery.Free;
+  end;
+end;
+
+
+
+
+
+
+
+
+procedure CheckAblaufendeAusweise(OBJEKTID: Integer);
+var
+  FDQuery: TFDQuery;
+  StammDict, AushilfeDict: TDictionary<string, string>;
+  Name, Typ, AusweisTyp, GueltigBis, AblaufText, Existing: string;
+  Ablauf: TDate;
+  RestTage, Monate: Integer;
+  StartDate: TDateTime;
+  Key: string;
+begin
+  StartDate := Now;
+
+  FDQuery := TFDQuery.Create(nil);
+  StammDict := TDictionary<string, string>.Create;
+  AushilfeDict := TDictionary<string, string>.Create;
+
+  try
+    FDQuery.Connection := fMain.FDConnection1;
+
+    FDQuery.SQL.Text :=
+      'SELECT nachname || " " || vorname AS name, 0 AS typ_sort, "Stammpersonal" AS typ, ' +
+      'ausweisgueltigbis AS gueltig_bis, "Personalausweis" AS ausweis_typ ' +
+      'FROM mitarbeiter ' +
+      'WHERE objektid = :OBJEKTID ' +
+      '  AND ausweisgueltigbis IS NOT NULL AND ausweisgueltigbis != "" ' +
+      '  AND DATE(ausweisgueltigbis) <= DATE("now", "+6 months") ' +
+      '  AND DATE(ausweisgueltigbis) >= DATE("now") ' +
+      '  AND (austrittsdatum IS NULL OR austrittsdatum = "" OR DATE(austrittsdatum) >= DATE(:STARTDATE)) ' +
+
+      'UNION ALL ' +
+
+      'SELECT nachname || " " || vorname AS name, 0 AS typ_sort, "Stammpersonal" AS typ, ' +
+      'sonderausweisgueltigbis AS gueltig_bis, "Sonder- und Waffenausweis" AS ausweis_typ ' +
+      'FROM mitarbeiter ' +
+      'WHERE objektid = :OBJEKTID ' +
+      '  AND sonderausweisgueltigbis IS NOT NULL AND sonderausweisgueltigbis != "" ' +
+      '  AND DATE(sonderausweisgueltigbis) <= DATE("now", "+6 months") ' +
+      '  AND DATE(sonderausweisgueltigbis) >= DATE("now") ' +
+      '  AND (austrittsdatum IS NULL OR austrittsdatum = "" OR DATE(austrittsdatum) >= DATE(:STARTDATE)) ' +
+
+      'UNION ALL ' +
+
+      'SELECT M.nachname || " " || M.vorname AS name, 1 AS typ_sort, "Aushilfen" AS typ, ' +
+      'M.ausweisgueltigbis AS gueltig_bis, "Personalausweis" AS ausweis_typ ' +
+      'FROM mitarbeiter M ' +
+      'JOIN mitarbeiter_objekte MO ON MO.mitarbeiterid = M.id ' +
+      'WHERE MO.objektid = :OBJEKTID ' +
+      '  AND M.objektid <> :OBJEKTID ' +
+      '  AND M.ausweisgueltigbis IS NOT NULL AND M.ausweisgueltigbis != "" ' +
+      '  AND DATE(M.ausweisgueltigbis) <= DATE("now", "+6 months") ' +
+      '  AND DATE(M.ausweisgueltigbis) >= DATE("now") ' +
+      '  AND (M.austrittsdatum IS NULL OR M.austrittsdatum = "" OR DATE(M.austrittsdatum) >= DATE(:STARTDATE)) ' +
+
+      'UNION ALL ' +
+
+      'SELECT M.nachname || " " || M.vorname AS name, 1 AS typ_sort, "Aushilfen" AS typ, ' +
+      'M.sonderausweisgueltigbis AS gueltig_bis, "Sonder- und Waffenausweis" AS ausweis_typ ' +
+      'FROM mitarbeiter M ' +
+      'JOIN mitarbeiter_objekte MO ON MO.mitarbeiterid = M.id ' +
+      'WHERE MO.objektid = :OBJEKTID ' +
+      '  AND M.objektid <> :OBJEKTID ' +
+      '  AND M.sonderausweisgueltigbis IS NOT NULL AND M.sonderausweisgueltigbis != "" ' +
+      '  AND DATE(M.sonderausweisgueltigbis) <= DATE("now", "+6 months") ' +
+      '  AND DATE(M.sonderausweisgueltigbis) >= DATE("now") ' +
+      '  AND (M.austrittsdatum IS NULL OR M.austrittsdatum = "" OR DATE(M.austrittsdatum) >= DATE(:STARTDATE)) ' +
+
+      'ORDER BY typ_sort ASC, name COLLATE NOCASE ASC;';
+
+    FDQuery.Params.ParamByName('OBJEKTID').AsInteger := OBJEKTID;
+    FDQuery.Params.ParamByName('STARTDATE').AsDate := StartDate;
+    FDQuery.Open;
+
+    while not FDQuery.Eof do
+    begin
+      Name       := FDQuery.FieldByName('name').AsString;
+      Typ        := FDQuery.FieldByName('typ').AsString;
+      AusweisTyp := FDQuery.FieldByName('ausweis_typ').AsString;
+      GueltigBis := FDQuery.FieldByName('gueltig_bis').AsString;
+
+      Ablauf     := ISO8601ToDate(GueltigBis, True);
+      RestTage   := DaysBetween(Date, Ablauf);
+      Monate     := RestTage div 30;
+
+      if Monate = 0 then
+        AblaufText := Format('  %s läuft in diesem Monat ab' + sLineBreak, [AusweisTyp])
+      else if Monate = 1 then
+        AblaufText := Format('  %s läuft ab in 1 Monat' + sLineBreak, [AusweisTyp])
+      else
+        AblaufText := Format('  %s läuft ab in %d Monaten' + sLineBreak, [AusweisTyp, Monate]);
+
+      if Typ = 'Stammpersonal' then
+      begin
+        if StammDict.TryGetValue(Name, Existing) then
+          StammDict[Name] := Existing + AblaufText
+        else
+          StammDict.Add(Name, AblaufText);
+      end
+      else
+      begin
+        if AushilfeDict.TryGetValue(Name, Existing) then
+          AushilfeDict[Name] := Existing + AblaufText
+        else
+          AushilfeDict.Add(Name, AblaufText);
+      end;
+
+      FDQuery.Next;
+    end;
+
+    if (StammDict.Count > 0) or (AushilfeDict.Count > 0) then
+    begin
+      var Ausgabe := 'Folgende Ausweise laufen demnächst ab:' + sLineBreak + sLineBreak;
+
+      if StammDict.Count > 0 then
+      begin
+        Ausgabe := Ausgabe + 'Stammpersonal' + sLineBreak;
+        for Key in StammDict.Keys do
+          Ausgabe := Ausgabe + Key + sLineBreak + StammDict[Key] + sLineBreak;
+      end;
+
+      if AushilfeDict.Count > 0 then
+      begin
+        Ausgabe := Ausgabe + 'Aushilfen' + sLineBreak;
+        for Key in AushilfeDict.Keys do
+          Ausgabe := Ausgabe + Key + sLineBreak + AushilfeDict[Key] + sLineBreak;
+      end;
+
+      ShowMessage(Ausgabe.Trim);
+    end;
+  finally
+    FDQuery.Free;
+    StammDict.Free;
+    AushilfeDict.Free;
+  end;
+end;
+
+
+
 
 
 

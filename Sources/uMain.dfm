@@ -871,6 +871,8 @@ object fMain: TfMain
       Caption = 'Wochenberichte'
       Down = True
       ImageIndex = 22
+      ParentShowHint = False
+      ShowHint = False
       OnClick = tbWochenberichtClick
     end
     object tbWachpersonal: TToolButton
@@ -881,6 +883,8 @@ object fMain: TfMain
       Hint = 'Wachpersonal'
       Caption = 'Wachpersonal'
       ImageIndex = 17
+      ParentShowHint = False
+      ShowHint = False
       OnClick = tbWachpersonalClick
     end
     object tbMuntausch: TToolButton
@@ -890,6 +894,8 @@ object fMain: TfMain
       Hint = 'Munitionstausch'
       Caption = 'Munitionstausch'
       ImageIndex = 9
+      ParentShowHint = False
+      ShowHint = False
       OnClick = tbMuntauschClick
     end
     object tbWaffenbestandsliste: TToolButton
@@ -900,23 +906,30 @@ object fMain: TfMain
       Hint = 'Waffenbestandsmeldung'
       Caption = 'Waffenbestandsm.'
       ImageIndex = 20
+      ParentShowHint = False
+      ShowHint = False
       OnClick = tbWaffenbestandslisteClick
     end
     object tbAusbildung: TToolButton
       Left = 456
       Top = 0
       Cursor = crHandPoint
+      Hint = 'Ausbildung Eingabe'
       Caption = 'Ausbildung'
       ImageIndex = 0
+      ParentShowHint = False
+      ShowHint = False
       OnClick = tbAusbildungClick
     end
     object tbWachtestTestSachkunde: TToolButton
       Left = 570
       Top = 0
       Cursor = crHandPoint
-      Hint = 'WachtestTestSachkundestand'
+      Hint = 'Wachtest / Sachkundestand'
       Caption = 'Wachtest / Sachk.'
       ImageIndex = 19
+      ParentShowHint = False
+      ShowHint = False
       OnClick = tbWachtestTestSachkundeClick
     end
     object tbWachschiessen: TToolButton
@@ -926,13 +939,19 @@ object fMain: TfMain
       Hint = 'Wachschiessen'
       Caption = 'Wachschie'#223'en'
       ImageIndex = 18
+      ParentShowHint = False
+      ShowHint = False
       OnClick = tbWachschiessenClick
     end
     object tbErsteHilfe: TToolButton
       Left = 798
       Top = 0
+      Cursor = crHandPoint
+      Hint = 'Erste Hilfe'
       Caption = 'Erste Hilfe'
       ImageIndex = 3
+      ParentShowHint = False
+      ShowHint = False
       OnClick = tbErsteHilfeClick
     end
     object tbGesamtausbildung: TToolButton
@@ -943,6 +962,8 @@ object fMain: TfMain
       Hint = 'Gesamtausbildung'
       Caption = 'Gesamtausbildung'
       ImageIndex = 2
+      ParentShowHint = False
+      ShowHint = False
       OnClick = tbGesamtausbildungClick
     end
   end
@@ -994,6 +1015,19 @@ object fMain: TfMain
       object Diensthunde1: TMenuItem
         Caption = 'Diensthunde'
         OnClick = Diensthunde1Click
+      end
+      object N7: TMenuItem
+        Caption = '-'
+      end
+      object PrfeauffehlendeStammdaten1: TMenuItem
+        Caption = 'Pr'#252'fe auf fehlende Stammdaten'
+        ShortCut = 49235
+        OnClick = PrfeauffehlendeStammdaten1Click
+      end
+      object PrfeauffehlendeStammdaten2: TMenuItem
+        Caption = 'Pr'#252'fe auf ablaufende Ausweise'
+        ShortCut = 49217
+        OnClick = PrfeauffehlendeStammdaten2Click
       end
     end
     object Einstellungen2: TMenuItem
@@ -21700,6 +21734,28 @@ object fMain: TfMain
     object N6: TMenuItem
       Caption = 'Mitarbeiter'
       OnClick = Mitarbeiter2Click
+    end
+  end
+  object AdvMetroHint1: TAdvMetroHint
+    HintFont.Charset = ANSI_CHARSET
+    HintFont.Color = clWhite
+    HintFont.Height = -15
+    HintFont.Name = 'Segoe UI Semibold'
+    HintFont.Style = [fsBold]
+    Line = [hlTop, hlLeft, hlRight, hlBottom]
+    Shadow = True
+    Version = '1.0.2.0'
+    Left = 488
+    Top = 352
+  end
+  object pmCheckDaten: TPopupMenu
+    Left = 120
+    Top = 384
+    object PrfeaufablaufendeAusweise1: TMenuItem
+      Caption = 'Pr'#252'fe auf ablaufende Ausweise'
+    end
+    object PrfeaufablaufendeAusweise2: TMenuItem
+      Caption = 'Pr'#252'fe auf fehlende Stammdaten'
     end
   end
 end
