@@ -195,14 +195,11 @@ end;
 procedure TFrameWochenberichtEdit.btnUpdateWochenberichtClick(Sender: TObject);
 var
   FDQuery: TFDQuery;
-  ERROR: boolean;
 begin
   uDatumMeldender.MELDENDER  := MELDENDER;
   uDatumMeldender.MELDEDATUM := ConvertSQLDateToGermanDate(MELDEDATUM, false);
   uDatumMeldender.ABSENDER := 'uFrameWochenberichtEdit';
   fDatumMeldender.ShowModal;
-
-  ERROR := false;
 
 
   FDQuery := TFDquery.Create(nil);
@@ -329,7 +326,6 @@ begin
       except
         on E: Exception do
         begin
-          ERROR := true;
           ShowMessage('Fehler beim Ändern des Wochenberichtes in der Tabelle wochenbericht_Data: ' + E.Message);
         end;
       end;
@@ -347,7 +343,6 @@ begin
       Except
         on E: Exception do
         begin
-          ERROR := true;
           ShowMessage('Fehler beim Ändern des Wochenberichtes in der Tabelle wochenberichte: ' + E.Message);
         end;
       end;
@@ -564,6 +559,9 @@ var
   VWM, MFW, SMM, KW, MEL, DAT: string;
   kontrollewann, kontrollewer: string;
 begin
+  stl := nil;
+  res := nil;
+
   FDQuery := TFDquery.Create(nil);
   try
     with FDQuery do
@@ -774,8 +772,8 @@ begin
       SpeicherePDFDatei(filename, SAVEPATH_Wochenberichte);
   finally
     FDQuery.Free;
-    stl.Free;
-    res.Free;
+    if Assigned(stl) then stl.Free;
+    if Assigned(res) then res.Free;
   end;
 end;
 

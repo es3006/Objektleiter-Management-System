@@ -66,23 +66,7 @@ type
     FDSQLiteBackup1: TFDSQLiteBackup;
     N1: TMenuItem;
     N4: TMenuItem;
-    TrayIcon1: TTrayIcon;
-    pmTray: TPopupMenu;
-    est11: TMenuItem;
-    est21: TMenuItem;
-    est22: TMenuItem;
-    Waffnbestandsmeldung1: TMenuItem;
-    Waffnbestandsmeldung2: TMenuItem;
-    WachtestSachkunde1: TMenuItem;
-    WachtestSachkunde2: TMenuItem;
-    ErsteHilfe1: TMenuItem;
-    ErsteHilfe2: TMenuItem;
-    N5: TMenuItem;
-    N6: TMenuItem;
     AdvMetroHint1: TAdvMetroHint;
-    pmCheckDaten: TPopupMenu;
-    PrfeaufablaufendeAusweise1: TMenuItem;
-    PrfeaufablaufendeAusweise2: TMenuItem;
     N7: TMenuItem;
     PrfeauffehlendeStammdaten1: TMenuItem;
     PrfeauffehlendeStammdaten2: TMenuItem;
@@ -317,15 +301,19 @@ begin
   ShowMessage('Datenbanktabellen wurden im Verzeichnis "DBDUMPS" gesichert');
 end;
 
+
+
+
 procedure TfMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   PlayResourceMP3('WHOOSH', 'TEMP\Whoosh.wav');
 end;
 
+
+
+
 procedure TfMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  TrayIcon1.Visible := false;
-
   if(FDConnection1.Connected) then FDConnection1.Connected := false; //Verbindung zur Datenbank trennen
   DeleteFiles(PATH+'TEMP\*.*'); //Temp Verzeichnis leeren
 end;

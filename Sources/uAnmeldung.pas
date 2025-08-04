@@ -100,8 +100,6 @@ begin
         fMain.tbWochenberichtClick(nil);
         Timer1.Enabled := true;
 
-        fMain.TrayIcon1.Visible := true;
-
         exit;
       end
       else

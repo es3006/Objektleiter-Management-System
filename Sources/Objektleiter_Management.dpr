@@ -38,7 +38,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.MainFormOnTaskbar := True;
+  Application.MainFormOnTaskbar := true;
   Application.CreateForm(TfMain, fMain);
   Application.CreateForm(TfFirstStart, fFirstStart);
   Application.CreateForm(TfDBSettings, fDBSettings);

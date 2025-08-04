@@ -14,6 +14,9 @@ uses
   System.IOUtils;
 
 
+function ListViewContainsIntInColumn(AListView: TListView; AValue: Integer; AColumn: Integer): Boolean;
+procedure SelectListViewItemByIntInColumn(AListView: TListView; AValue: Integer; AColumn: Integer);
+
 procedure CreateDirectoriesAndExtractFilesFromRes;
 //procedure SpeicherePDFDatei(const TempDateiPfad, ZielVerzeichnis, VorgeschlagenerName: string);
 procedure SpeicherePDFDatei(filename, ZielVerzeichnis: string);
@@ -50,6 +53,61 @@ implementation
 
 uses
   uMain, uMitarbeiterNeu, uEinstellungen_Programm;
+
+
+
+//In einer ListView nach einer ID in einer Spalte suchen
+//Rückgabe wenn gefunden = true
+function ListViewContainsIntInColumn(AListView: TListView; AValue: Integer; AColumn: Integer): Boolean;
+var
+  i: Integer;
+  text: string;
+begin
+  Result := False;
+  for i := 0 to AListView.Items.Count - 1 do
+  begin
+    if AColumn = 0 then
+      text := AListView.Items[i].Caption
+    else if AColumn <= AListView.Items[i].SubItems.Count then
+      text := AListView.Items[i].SubItems[AColumn - 1]
+    else
+      Continue;
+
+    if StrToIntDef(text, -1) = AValue then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+
+
+//Einen Eintrag in einer ListView suchen und wenn gefunden diesen selektieren
+procedure SelectListViewItemByIntInColumn(AListView: TListView; AValue: Integer; AColumn: Integer);
+var
+  i: Integer;
+  text: string;
+begin
+  for i := 0 to AListView.Items.Count - 1 do
+  begin
+    if AColumn = 0 then
+      text := AListView.Items[i].Caption
+    else if AColumn <= AListView.Items[i].SubItems.Count then
+      text := AListView.Items[i].SubItems[AColumn - 1]
+    else
+      Continue;
+
+    if StrToIntDef(text, -1) = AValue then
+    begin
+      AListView.Selected := AListView.Items[i];
+      AListView.ItemFocused := AListView.Items[i];
+      AListView.Selected.MakeVisible(False);
+      Exit;
+    end;
+  end;
+end;
+
 
 
 
@@ -449,6 +507,7 @@ var
   ColumnIndex: Integer;
   SearchText: string;
   ItemText: string;
+  ColumnValue: integer;
 begin
   SearchText := LowerCase(suchbegriff);
 
@@ -473,7 +532,7 @@ begin
       else
         Continue;
 
-      if Pos(SearchText, LowerCase(ItemText)) > 0 then
+      if TryStrToInt(ItemText, ColumnValue) and (ColumnValue = StrToIntDef(SearchText, -999999)) then
       begin
         lv.Selected := lv.Items[Index];
         lv.Selected.MakeVisible(False);
@@ -499,7 +558,7 @@ begin
         else
           Continue;
 
-        if Pos(SearchText, LowerCase(ItemText)) > 0 then
+        if TryStrToInt(ItemText, ColumnValue) and (ColumnValue = StrToIntDef(SearchText, -999999)) then
         begin
           lv.Selected := lv.Items[Index];
           lv.Selected.MakeVisible(False);

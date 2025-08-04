@@ -28,18 +28,16 @@ type
     Mitarbeiterentfernen1: TMenuItem;
     ActionList1: TActionList;
     acDelMaFromWachpersonal: TAction;
-    Image1: TImage;
+    btnSavePDF: TImage;
     lvWachpersonal: TAdvListView;
     cbAushilfen: TComboBox;
-    sbInsertAllStamm: TSpeedButton;
     btnDelWachpersonalListe: TButton;
     Panel1: TPanel;
     lbHinweis: TLabel;
-    Label4: TLabel;
-    Label3: TLabel;
     sbWeiter: TSpeedButton;
-    Label1: TLabel;
+    lbWaffennummer: TLabel;
     cbWaffennummer: TComboBox;
+    btnInsertAllStamm: TButton;
     procedure Initialize;
     procedure cbMonatSelect(Sender: TObject);
     procedure cbStammpersonalSelect(Sender: TObject);
@@ -47,17 +45,17 @@ type
     procedure lvWachpersonalCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
     procedure lvWachpersonalKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure lvWachpersonalKeyPress(Sender: TObject; var Key: Char);
-    procedure Image1Click(Sender: TObject);
+    procedure btnSavePDFClick(Sender: TObject);
     procedure AdvInputTaskDialog1DialogButtonClick(Sender: TObject; ButtonID: Integer);
     procedure acDelMaFromWachpersonalExecute(Sender: TObject);
     procedure acDelMaFromWachpersonalUpdate(Sender: TObject);
-    procedure sbInsertAllStammClick(Sender: TObject);
     procedure btnDelWachpersonalListeClick(Sender: TObject);
     procedure sbWeiterClick(Sender: TObject);
     procedure lvWachpersonalClick(Sender: TObject);
     procedure cbWaffennummerSelect(Sender: TObject);
+    procedure btnInsertAllStammClick(Sender: TObject);
   private
-    s1, s2, s3, s4, s5: String;
+    s1, s2, s3: String;
     currentIndex: Integer;
     procedure DisplayHinweisString;
     procedure showWachpersonalInListView(LV: TListView; Monat, Jahr: integer);
@@ -101,9 +99,14 @@ end;
 
 procedure TFrameWachpersonal.Initialize;
 var
-  Index: integer;
   CurrentMonth, CurrentYear, start: Integer;
 begin
+  // Hinweistexte
+  s1 := 'Schnell eine neue Wachpersonalliste erstellen:'+#13#10+'Klicken Sie auf den Button "Komplettes Stammpersonal hinzufügen und wählen Sie danach alle Mitarbeiter, die im gewählten Monat ausgeholfen haben!';
+  s2 := 'Wählen Sie die Mitarbeiter, die im gewählten Monat ausgeholfen haben und geben Sie an welche Waffe ihnen zugewiesen wurde.';
+  s3 := 'Löschen eines Eintrages mit rechter Maustaste'+sLineBreak+'Sortieren der Liste mit den + und - Tasten';
+
+
   //Jahre in Combobox einfügen
   CurrentYear := YearOf(Now);
   for start := STARTYEAR to CurrentYear + 1 do
@@ -115,42 +118,14 @@ begin
   CurrentMonth := MonthOf(Now); // Den aktuellen Monat ermitteln (1 bis 12)
   cbMonat.ItemIndex := CurrentMonth;
 
-
- {
-  //Aktuelles Jahr anzeigen
-  CurrentYear := YearOf(Now); // Das aktuelle Jahr ermitteln
-  Index := cbJahr.Items.IndexOf(IntToStr(CurrentYear));  // Den Index des Eintrags mit dem aktuellen Jahr finden
-  if Index <> -1 then // Wenn der Index gefunden wurde, den Eintrag selektieren
-    cbJahr.ItemIndex := Index;
-}
- // cbMonatSelect(nil);
-
-
   SELMONTH := CurrentMonth;
   SELYEAR  := CurrentYear;
-
-{  showWachpersonalInListView(lvWachpersonal, CurrentMonth, CurrentYear);
-
-  showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, false, OBJEKTID, 1);  //Stammpersonal des gewählten Objektes
-  showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
-  showAlleSerienNummernInCB(cbWaffennummer);
-}
 
   cbMonatSelect(Self);
 
   cbStammpersonal.ItemIndex := 0;
   cbAushilfen.ItemIndex     := 0;
   cbWaffennummer.ItemIndex  := 0;
-
-
-  // Hinweistexte für Timer
-  s1 := 'Schnell eine neue Wachpersonalliste erstellen:'+#13#10+'Klicken Sie auf den kleinen Button hinter dem Auswahlfeld für das Stammpersonal. (Die Liste muss dafür leer sein)';
-  s2 := 'Aushilfen zur Liste hinzufügen:'+#13#10+'Wählen Sie im Auswahlfeld "Aushilfen" die Namen die Sie der Liste hinzufügen wollen';
-  s3 := 'Löschen eines Eintrages mit rechter Maustaste';
-  s4 := 'Sortieren der Liste mit den + und - Tasten';
-  s5 := 'Änderungen an den Mitarbeiterdaten:'+#13#10+'Über das Hauptmenü "Bestandsdaten / Mitarbeiter"';
-  currentIndex := 2;  // Setze den Index auf den ersten String
-  lbHinweis.Caption := s1;
 end;
 
 
@@ -288,7 +263,7 @@ begin
     finally
       FDQuery.Free;
       cbMonatSelect(self);
-      btnDelWachpersonalListe.Enabled := false;
+      btnDelWachpersonalListe.Visible := false;
     end;
   end;
 end;
@@ -300,30 +275,124 @@ end;
 
 
 
+procedure TFrameWachpersonal.btnInsertAllStammClick(Sender: TObject);
+var
+  FDQuery: TFDQuery;
+  StartDate: TDateTime;
+  i, maid, pos: integer;
+begin
+  i := lvWachpersonal.Items.Count;
+
+  if i = 0 then
+  begin
+    pos := 0;
+
+    FDQuery := TFDquery.Create(nil);
+    try
+      with FDQuery do
+      begin
+        Connection := fMain.FDConnection1;
+
+        //Alle Mitarbeiter des Stammobjektes auslesen, die im übergebenen Monat und Jahr nicht ausgetreten sind
+        SQL.Text := 'SELECT id FROM mitarbeiter ' +
+                    'WHERE objektid = :OBJEKTID ' +
+                    'AND (austrittsdatum IS NULL OR austrittsdatum = '''' OR DATE(austrittsdatum) >= DATE(:STARTDATE)) ' +
+                    'ORDER BY nachname ASC;';
+        Params.ParamByName('OBJEKTID').AsInteger := ObjektID;
+        StartDate := EncodeDate(SELYEAR, SELMONTH, 1);
+        Params.ParamByName('STARTDATE').AsDate := StartDate;
+
+        Open;
+
+        while not Eof do
+        begin
+          inc(pos);
+
+          maid := FieldByName('id').AsInteger;
+
+          InsertMitarbeiterInWachpersonal(lvWachpersonal, maid, SELMONTH, SELYEAR, pos); //id des Mitarbeiters aus der ComboBox übergeben
+
+          Next;
+        end;
+      end;
+    finally
+      FDQuery.free;
+    end;
+    btnInsertAllStamm.Visible := false;
+    cbStammPersonal.Visible := true;
+    cbAushilfen.Visible := true;
+    lbWaffennummer.Visible := true;
+    cbWaffennummer.Visible := true;
+    btnDelWachpersonalListe.Visible := true;
+    btnSavePDF.Visible := true;
+
+    //Hinweistext anzeigen
+    currentIndex := 1;  // Setze den Index auf den ersten String
+    lbHinweis.Caption := s1;
+  end
+  else
+  begin
+    cbStammPersonal.Visible := false;
+    cbAushilfen.Visible := false;
+    lbWaffennummer.Visible := false;
+    cbWaffennummer.Visible := false;
+    btnDelWachpersonalListe.Visible := false;
+    btnSavePDF.Visible := false;
+
+    //Hinweistext anzeigen
+    currentIndex := 2;  // Setze den Index auf den ersten String
+    lbHinweis.Caption := s2;
+
+    PlayResourceMP3('BLING', 'TEMP\bling.wav');
+    showmessage('Diese Funktion kann nur genutzt werden wenn die Liste leer ist.'+#13#10+'Fügen Sie weitere Mitarbeiter bitte einzeln hinzu!');
+    exit;
+  end;
+end;
+
+
+
+
+
 procedure TFrameWachpersonal.cbStammpersonalSelect(Sender: TObject);
 var
-  SelectedIndex: Integer;
+  mitarbeiterID: Integer;
   m, j: integer;
   posLastEntry: integer;
 begin
   m := cbMonat.ItemIndex;
   j := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
-  SelectedIndex := -1;
 
+  //Setzen der Nummer für die Sortierung
   if(lvWachpersonal.Items.Count = 0) then
     posLastEntry := 1
   else
     posLastEntry := StrToInt(lvWachpersonal.Items[lvWachpersonal.Items.Count-1].SubItems[1])+1;
 
+  //Es wurde ein Mitarbeitzer aus dem Stammpersonal ausgewählt
   if TComboBox(Sender).ItemIndex > 0 then
   begin
-    SelectedIndex := Integer(TComboBox(Sender).Items.Objects[TComboBox(Sender).ItemIndex]);
-    InsertMitarbeiterInWachpersonal(lvWachpersonal, SelectedIndex, m, j, PosLastEntry); //id des Mitarbeiters aus der ComboBox übergeben
+    //Die Mitarbeiterliste aus der ComboBox in mitarbeiterID schreiben
+    mitarbeiterID := Integer(TComboBox(Sender).Items.Objects[TComboBox(Sender).ItemIndex]);
+
+    //prüfen ob Mitarbeiter mit der übergebenen ID schon in der Liste steht
+    if(ListViewContainsIntInColumn(lvWachpersonal, mitarbeiterID, 1) = true) then
+    begin
+      //In Spalte 1 nach der MitarbeiterID suchen die von der ComboBox übergeben wurde
+      SelectListViewItemByIntInColumn(lvWachpersonal, mitarbeiterID, 1);
+    end
+    else
+    begin
+      //Wenn der Mitarbeiter nicht in der ListView steht, diesen einfügen
+      InsertMitarbeiterInWachpersonal(lvWachpersonal, mitarbeiterID, m, j, PosLastEntry); //id des Mitarbeiters aus der ComboBox übergeben
+      SelectListViewItemByIntInColumn(lvWachpersonal, mitarbeiterID, 1);
+      lvWachpersonalClick(Self);
+    end;
   end;
 
   TComboBox(Sender).ItemIndex := 0;
 
-  SearchAndHighlight(lvWachpersonal, IntToStr(SelectedIndex), [1]);
+//  SearchAndHighlight(lvWachpersonal, IntToStr(mitarbeiterID), [1]);
+
 end;
 
 
@@ -379,29 +448,62 @@ procedure TFrameWachpersonal.cbMonatSelect(Sender: TObject);
 var
   c, monat, jahr: integer;
 begin
-  monat := cbMonat.ItemIndex;
-  jahr  := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
+  if(cbMonat.ItemIndex > 0) AND (cbJahr.ItemIndex > 0) then
+  begin
+    monat := cbMonat.ItemIndex;
+    jahr  := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
 
-  SELMONTH := monat;
-  SELYEAR  := jahr;
+    SELMONTH := monat;
+    SELYEAR  := jahr;
 
+    showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, false, OBJEKTID, 1);  //Stammpersonal des gewählten Objektes
+    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
+    showAlleSerienNummernInCB(cbWaffennummer);
 
-  showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, false, OBJEKTID, 1);  //Stammpersonal des gewählten Objektes
-  showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
-  showAlleSerienNummernInCB(cbWaffennummer);
+    showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, false, OBJEKTID, 1);
 
-  showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, false, OBJEKTID, 1);
+    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, false, OBJEKTID, 2);
 
-  showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, false, OBJEKTID, 2);
+    showWachpersonalInListView(lvWachpersonal, SELMONTH, SELYEAR);
 
-  showWachpersonalInListView(lvWachpersonal, SELMONTH, SELYEAR);
+    c := lvWachpersonal.Items.Count;
 
-  c := lvWachpersonal.Items.Count;
+    if(c <= 0) then
+    begin
+      btnInsertAllStamm.Visible := true;
+      cbStammPersonal.Visible := false;
+      cbAushilfen.Visible := false;
+      lbWaffennummer.Visible := false;
+      cbWaffennummer.Visible := false;
+      btnDelWachpersonalListe.Visible := false;
+      btnSavePDF.Visible := false;
 
-  if(c <= 0) then
-    btnDelWachpersonalListe.Enabled := false
+      //Hinweistext anzeigen
+      currentIndex := 1;  // Setze den Index auf den ersten String
+      lbHinweis.Caption := s1;
+    end
+    else
+    begin
+      btnInsertAllStamm.Visible := false;
+      cbStammPersonal.Visible := true;
+      cbAushilfen.Visible := true;
+      lbWaffennummer.Visible := true;
+      cbWaffennummer.Visible := true;
+      btnDelWachpersonalListe.Visible := true;
+      btnSavePDF.Visible := true;
+
+      cbStammPersonal.ItemIndex := 0;
+      cbAushilfen.ItemIndex := 0;
+
+      //Hinweistext anzeigen
+      currentIndex := 2;  // Setze den Index auf den ersten String
+      lbHinweis.Caption := s2;
+    end;
+  end
   else
-    btnDelWachpersonalListe.Enabled := true;
+  begin
+    showmessage('Bitte wählen Sie eienn Monat');
+  end;
 end;
 
 
@@ -410,8 +512,7 @@ end;
 
 
 
-
-procedure TFrameWachpersonal.Image1Click(Sender: TObject);
+procedure TFrameWachpersonal.btnSavePDFClick(Sender: TObject);
 var
   mDatum: TDate;
 begin
@@ -451,62 +552,6 @@ end;
 {******************************************************************************************
   Alle Mitarbeiter aus Datenbank-Tabelle wachpersonal auslesen und in ListView anzeigen   *
 ******************************************************************************************}
-procedure TFrameWachpersonal.sbInsertAllStammClick(Sender: TObject);
-var
-  FDQuery: TFDQuery;
-  StartDate: TDateTime;
-  i, maid, pos: integer;
-begin
-  i := lvWachpersonal.Items.Count;
-
-  if i = 0 then
-  begin
-    pos := 0;
-
-    FDQuery := TFDquery.Create(nil);
-    try
-      with FDQuery do
-      begin
-        Connection := fMain.FDConnection1;
-
-        //Alle Mitarbeiter des Stammobjektes auslesen, die im übergebenen Monat und Jahr nicht ausgetreten sind
-        SQL.Text := 'SELECT id FROM mitarbeiter ' +
-                    'WHERE objektid = :OBJEKTID ' +
-                    'AND (austrittsdatum IS NULL OR austrittsdatum = '''' OR DATE(austrittsdatum) >= DATE(:STARTDATE)) ' +
-                    'ORDER BY nachname ASC;';
-        Params.ParamByName('OBJEKTID').AsInteger := ObjektID;
-        StartDate := EncodeDate(SELYEAR, SELMONTH, 1);
-        Params.ParamByName('STARTDATE').AsDate := StartDate;
-
-        Open;
-
-        while not Eof do
-        begin
-          inc(pos);
-
-          maid := FieldByName('id').AsInteger;
-
-          InsertMitarbeiterInWachpersonal(lvWachpersonal, maid, SELMONTH, SELYEAR, pos); //id des Mitarbeiters aus der ComboBox übergeben
-
-          Next;
-        end;
-      end;
-    finally
-      FDQuery.free;
-    end;
-  end
-  else
-  begin
-    PlayResourceMP3('BLING', 'TEMP\bling.wav');
-    showmessage('Diese Funktion kann nur genutzt werden wenn die Liste leer ist.'+#13#10+'Fügen Sie weitere Mitarbeiter bitte einzeln hinzu!');
-    exit;
-  end;
-end;
-
-
-
-
-
 procedure TFrameWachpersonal.sbWeiterClick(Sender: TObject);
 begin
   DisplayHinweisString;
@@ -754,7 +799,7 @@ begin
 
   if i <> -1 then
   begin
-    btnDelWachpersonalListe.Enabled := true;
+    btnDelWachpersonalListe.Visible := true;
 
     Waffennr := lvWachpersonal.Items[i].SubItems[10];
 
@@ -767,7 +812,7 @@ begin
   else
   begin
     cbWaffennummer.ItemIndex := 0;
-    btnDelWachpersonalListe.Enabled := false
+    btnDelWachpersonalListe.Visible := false
   end;
 end;
 
@@ -1065,16 +1110,13 @@ end;
 
 procedure TFrameWachpersonal.DisplayHinweisString;
 begin
+  currentIndex := currentIndex mod 3 + 1;
+
   case currentIndex of
     1: lbHinweis.Caption := s1;
     2: lbHinweis.Caption := s2;
     3: lbHinweis.Caption := s3;
-    4: lbHinweis.Caption := s4;
-    5: lbHinweis.Caption := s5;
   end;
-
-  // Inkrementiere den Index und setze ihn zurück auf 1, wenn er 4 erreicht
-  currentIndex := currentIndex mod 5 + 1;
 end;
 
 
