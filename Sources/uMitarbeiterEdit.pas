@@ -74,10 +74,11 @@ type
     procedure FormShow(Sender: TObject);
     procedure btnDelClick(Sender: TObject);
     procedure cbDiensthundChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
    function UsereintraegeInDBTablesGefunden(USERID: string): Boolean;
   public
-    USERID: string;
+    USERID, ABSENDER: string;
   end;
 
 var
@@ -410,17 +411,20 @@ begin
     FDQuery.Free;
   end;
 
-  a := fMitarbeiter.lvMitarbeiter.ItemIndex;
-  with fMitarbeiter.lvMitarbeiter.Items[a] do
+  if(ABSENDER = '') then
   begin
-    SubItems[0] := edPersonalNr.Text;
-    SubItems[1] := edNachname.Text;
-    SubItems[2] := edVorname.Text;
-    SubItems[3] := edAusweisNr.Text;
-    SubItems[4] := edAusweisGueltigkeit.Text;
-    SubItems[5] := edSonderausweisnr.Text;
-    SubItems[6] := edSonderausweisGueltigkeit.Text;
-    SubItems[7] := cbWaffennummer.Text;
+    a := fMitarbeiter.lvMitarbeiter.ItemIndex;
+    with fMitarbeiter.lvMitarbeiter.Items[a] do
+    begin
+      SubItems[0] := edPersonalNr.Text;
+      SubItems[1] := edNachname.Text;
+      SubItems[2] := edVorname.Text;
+      SubItems[3] := edAusweisNr.Text;
+      SubItems[4] := edAusweisGueltigkeit.Text;
+      SubItems[5] := edSonderausweisnr.Text;
+      SubItems[6] := edSonderausweisGueltigkeit.Text;
+      SubItems[7] := cbWaffennummer.Text;
+    end;
   end;
 
   edPersonalNr.Clear;
@@ -470,6 +474,15 @@ begin
     TMaskEditEx(Sender).Clear;
     TMaskEditEx(Sender).SelectAll;
   end;
+end;
+
+
+
+
+
+procedure TfMitarbeiterEdit.FormCreate(Sender: TObject);
+begin
+  ABSENDER := '';
 end;
 
 

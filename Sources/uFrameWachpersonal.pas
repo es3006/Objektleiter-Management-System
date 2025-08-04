@@ -56,6 +56,7 @@ type
     procedure btnInsertAllStammClick(Sender: TObject);
     procedure btnSaveEntryInDBClick(Sender: TObject);
     procedure cbWaffennummerSelect(Sender: TObject);
+    procedure lvWachpersonalDblClick(Sender: TObject);
   private
     s1, s2, s3: String;
     currentIndex: Integer;
@@ -82,7 +83,7 @@ implementation
 {$R *.dfm}
 {$R WachpersonallisteAllInOne.RES}
 
-uses uMain, uFunktionen, uDBFunktionen, uWebBrowser, uDatumMeldender;
+uses uMain, uFunktionen, uDBFunktionen, uWebBrowser, uDatumMeldender,uMitarbeiterEdit;
 
 
 
@@ -670,6 +671,12 @@ end;
 
 
 
+procedure SetParamStr(FD: TFDQuery; const ParamName, Value: string);
+begin
+  FD.Params.ParamByName(ParamName).AsString := Value;
+end;
+
+
 
 
 
@@ -715,7 +722,7 @@ begin
         Open;
 
 //Ausgelesene Werte Variablen zuweisen
-        id             := FieldByName('id').AsInteger;
+       // id             := FieldByName('id').AsInteger;
         Nachname       := FieldByName('nachname').AsString;
         Vorname        := FieldByName('vorname').AsString;
         EintrDatum     := FieldByName('eintrittsdatum').AsString;
@@ -729,23 +736,9 @@ begin
           Diensthund     := FieldByName('diensthundname').AsString
         else
           Diensthund  := '-----';
+
         Position       := IntToStr(posLastEntry);
 
-//Mitarbeiter in ListView eintragen
-        l := LV.Items.Add;
-        l.Caption := IntToStr(id);  //id
-        l.SubItems.Add(IntToStr(MitarbeiterID)); //mitarbeiterid
-        l.SubItems.Add(Position);  //sortierung
-        l.SubItems.Add(Nachname);
-        l.SubItems.Add(Vorname);
-        if(EintrDatum <> '') then l.SubItems.Add(ConvertSQLDateToGermanDate(EintrDatum, false)) else l.subItems.Add('-----');
-        if(GebDatum <> '') then l.SubItems.Add(ConvertSQLDateToGermanDate(GebDatum, false)) else l.SubItems.Add('-----');
-        l.SubItems.Add(PassNr);
-        if(PassGueltigBis <> '') then l.SubItems.Add(ConvertSQLDateToGermanDate(PassGueltigBis, false)) else l.SubItems.Add('-----');
-        if(SaNr <> '') then l.SubItems.Add(SaNr) else l.SubItems.Add('-----');
-        if(SaGueltigBis <> '') then l.SubItems.Add(ConvertSQLDateToGermanDate(SaGueltigBis, false)) else l.SubItems.Add('-----');
-        l.SubItems.Add(WaffenNr);
-        l.SubItems.Add(Diensthund);
 
 //Mitarbeiter in Datenbanktabelle "wachpersonal" schreiben
         with FDQuery do
@@ -762,37 +755,37 @@ begin
           Params.ParamByName('JAHR').AsInteger          := jahr;
           Params.ParamByName('NACHNAME').AsString       := Nachname;
           Params.ParamByName('VORNAME').AsString        := Vorname;
-
-          if(EintrDatum <> '') then
-            Params.ParamByName('EINTRDATUM').AsString := EintrDatum
-          else
-            Params.ParamByName('EINTRDATUM').AsString := '';
-
-          if(GebDatum <> '') then
-            Params.ParamByName('GEBDATUM').AsString := GebDatum
-          else
-            Params.ParamByName('GEBDATUM').AsString := '';
-
           Params.ParamByName('PASSNR').AsString := PassNr;
-
-          if(PassGueltigBis <> '') then
-            Params.ParamByName('PASSGUELTIGBIS').AsString := PassGueltigBis
-          else
-            Params.ParamByName('PASSGUELTIGBIS').AsString := '';
-
           Params.ParamByName('SANR').AsString := SaNr;
-
-          if(SaGueltigBis <> '') then
-            Params.ParamByName('SAGUELTIGBIS').AsString := SaGueltigBis
-          else
-            Params.ParamByName('SAGUELTIGBIS').AsString := '';
-
-
-
           Params.ParamByName('WAFFENNR').AsString   := WaffenNr;
           Params.ParamByName('DIENSTHUND').AsString := Diensthund;
           Params.ParamByName('POSITION').AsString   := Position;
+
+          SetParamStr(FDQuery, 'EINTRDATUM', EintrDatum);
+          SetParamStr(FDQuery, 'GEBDATUM', GebDatum);
+          SetParamStr(FDQuery, 'PASSGUELTIGBIS', PassGueltigBis);
+          SetParamStr(FDQuery, 'SAGUELTIGBIS', SaGueltigBis);
+
           ExecSQL;
+
+          // Hier: ID des zuletzt eingefügten wachpersonal-Eintrags holen
+          id := FDQuery.Connection.ExecSQLScalar('SELECT last_insert_rowid();');
+
+          //Mitarbeiter in ListView eintragen
+          l := LV.Items.Add;
+          l.Caption := IntToStr(id);  //id
+          l.SubItems.Add(IntToStr(MitarbeiterID)); //mitarbeiterid
+          l.SubItems.Add(Position);  //sortierung
+          l.SubItems.Add(Nachname);
+          l.SubItems.Add(Vorname);
+          if(EintrDatum <> '') then l.SubItems.Add(ConvertSQLDateToGermanDate(EintrDatum, false)) else l.subItems.Add('-----');
+          if(GebDatum <> '') then l.SubItems.Add(ConvertSQLDateToGermanDate(GebDatum, false)) else l.SubItems.Add('-----');
+          l.SubItems.Add(PassNr);
+          if(PassGueltigBis <> '') then l.SubItems.Add(ConvertSQLDateToGermanDate(PassGueltigBis, false)) else l.SubItems.Add('-----');
+          if(SaNr <> '') then l.SubItems.Add(SaNr) else l.SubItems.Add('-----');
+          if(SaGueltigBis <> '') then l.SubItems.Add(ConvertSQLDateToGermanDate(SaGueltigBis, false)) else l.SubItems.Add('-----');
+          l.SubItems.Add(WaffenNr);
+          l.SubItems.Add(Diensthund);
         end;
       end
       else
@@ -842,6 +835,8 @@ begin
   end;
 
   btnSaveEntryInDB.Visible := false;
+
+  lvWachpersonal.SetFocus;
 end;
 
 
@@ -872,6 +867,26 @@ end;
 
 
 
+procedure TFrameWachpersonal.lvWachpersonalDblClick(Sender: TObject);
+var
+  i: integer;
+  mitarbeiterID: string;
+begin
+  i := lvWachpersonal.ItemIndex;
+
+  if i <> -1 then
+  begin
+    mitarbeiterID := lvWachpersonal.Items[i].SubItems[0];
+    fMitarbeiterEdit.USERID := mitarbeiterID;
+    fMitarbeiterEdit.ABSENDER := 'FrameWachpersonal';
+    fMitarbeiterEdit.Show;
+  end;
+end;
+
+
+
+
+
 procedure TFrameWachpersonal.lvWachpersonalKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
   i: integer;
@@ -880,12 +895,12 @@ var
   posVorher, posNachher: integer;
   UPDATEDB: boolean;
 begin
-  UPDATEDB   := false;
-  PosNachher := 0;
-
-  if lvWachpersonal.Selected <> nil then
+  i := lvWachpersonal.ItemIndex;
+  if(i<>-1) then
   begin
-    i  := lvWachpersonal.ItemIndex;
+    UPDATEDB   := false;
+    PosNachher := 0;
+
     id := StrToInt(lvWachpersonal.Items[i].Caption);
     m  := cbMonat.ItemIndex;
     j  := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
@@ -928,11 +943,12 @@ begin
         FDQuery.free;
       end;
     end;
+
+    //Wachpersonalliste beim start automatisch nach Laufender Nummer sortieren
+    ColumnToSort := 2; //Spalte 0=Caption, 1=erstes SubItem
+    SortDir      := 0; //Aufsteigend- oder absteigend sortieren 0 = A-Z, 1 = Z-A
+    lvWachpersonal.AlphaSort; //Sortierung anwenden
   end;
-  //Wachpersonalliste beim start automatisch nach Laufender Nummer sortieren
-  ColumnToSort := 2; //Spalte 0=Caption, 1=erstes SubItem
-  SortDir      := 0; //Aufsteigend- oder absteigend sortieren 0 = A-Z, 1 = Z-A
-  lvWachpersonal.AlphaSort; //Sortierung anwenden
 end;
 
 

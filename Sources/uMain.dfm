@@ -985,6 +985,23 @@ object fMain: TfMain
       OnClick = tbErsteHilfeClick
     end
   end
+  object pnLogedUser: TPanel
+    Left = 804
+    Top = 189
+    Width = 185
+    Height = 41
+    BevelOuter = bvNone
+    Caption = 'Angemeldet als'
+    Color = 15249018
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentBackground = False
+    ParentFont = False
+    TabOrder = 2
+  end
   object MainMenu1: TMainMenu
     Left = 216
     Top = 160

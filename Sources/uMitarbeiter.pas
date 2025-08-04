@@ -187,6 +187,7 @@ begin
     with lvMitarbeiter.Items[lvMitarbeiter.ItemIndex] do
     begin
       fMitarbeiterEdit.USERID := caption;
+      fMitarbeiterEdit.ABSENDER := '';
       fMitarbeiterEdit.ShowModal;
     end;
   end;

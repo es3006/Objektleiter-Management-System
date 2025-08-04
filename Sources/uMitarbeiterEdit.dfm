@@ -14,6 +14,7 @@ object fMitarbeiterEdit: TfMitarbeiterEdit
   Font.Style = []
   KeyPreview = True
   Position = poDesktopCenter
+  OnCreate = FormCreate
   OnShow = FormShow
   TextHeight = 19
   object Panel1: TPanel
@@ -1666,7 +1667,7 @@ object fMitarbeiterEdit: TfMitarbeiterEdit
         object Label21: TLabel
           Left = 245
           Top = 270
-          Width = 83
+          Width = 80
           Height = 19
           Caption = 'Diensthund'
         end

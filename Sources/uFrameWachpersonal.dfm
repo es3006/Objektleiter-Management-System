@@ -187,9 +187,9 @@
       OnSelect = cbWaffennummerSelect
     end
     object btnInsertAllStamm: TButton
-      Left = 16
+      Left = 88
       Top = 20
-      Width = 329
+      Width = 257
       Height = 40
       Caption = 'Komplettes Stammpersonal hinzuf'#252'gen'
       TabOrder = 3
@@ -223,7 +223,7 @@
       item
         Caption = 'MitarbeiterID'
         MaxWidth = 1
-        Width = 0
+        Width = 1
       end
       item
         Caption = 'Sortierung'
@@ -276,7 +276,7 @@
       item
         Alignment = taCenter
         Caption = 'DH-Name'
-        Width = 210
+        Width = 209
       end>
     GridLines = True
     HideSelection = False
@@ -291,6 +291,7 @@
     OnClick = lvWachpersonalClick
     OnColumnClick = lvWachpersonalColumnClick
     OnCompare = lvWachpersonalCompare
+    OnDblClick = lvWachpersonalDblClick
     OnKeyDown = lvWachpersonalKeyDown
     OnKeyPress = lvWachpersonalKeyPress
     AutoHint = True
@@ -331,7 +332,6 @@
     DetailView.Font.Name = 'Tahoma'
     DetailView.Font.Style = []
     Version = '1.9.1.1'
-    ExplicitHeight = 471
   end
   object Panel1: TPanel
     Left = 0

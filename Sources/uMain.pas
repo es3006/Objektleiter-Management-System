@@ -72,6 +72,7 @@ type
     PrfeauffehlendeStammdaten2: TMenuItem;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
+    pnLogedUser: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure Einstellungen1Click(Sender: TObject);
@@ -404,7 +405,17 @@ procedure TfMain.FormShow(Sender: TObject);
 var
   Frame: TFrameWochenberichtEdit;
   i: integer;
+  r: TRect;
 begin
+  StatusBar1.Perform(SB_GETRECT, 0, Integer(@R));
+  pnLogedUser.Parent := Statusbar1;  //adopt the Progressbar
+
+  pnLogedUser.Top    := r.Top;      //set size of
+  pnLogedUser.Left   := r.Left;      //Progressbar to
+  pnLogedUser.Width  := r.Right - r.Left; //fit with panel
+  pnLogedUser.Height := r.Bottom - r.Top;
+
+
   // Globale FormatSettings konfigurieren
   GlobalFormatSettings := TFormatSettings.Create;
   GlobalFormatSettings.DateSeparator   := '-';
@@ -451,7 +462,7 @@ begin
     NEWWOCHENBERICHT := false;
   end;
 
-  StatusBar1.Panels[0].Text := 'Angemeldet als: ' + OBJEKTLEITERNAME;
+  pnLogedUser.Caption := 'Angemeldet als: ' + OBJEKTLEITERNAME;
 end;
 
 
