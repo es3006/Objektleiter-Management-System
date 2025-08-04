@@ -1,4 +1,4 @@
-object FrameWachpersonal: TFrameWachpersonal
+﻿object FrameWachpersonal: TFrameWachpersonal
   Left = 0
   Top = 0
   Width = 1200
@@ -124,14 +124,21 @@ object FrameWachpersonal: TFrameWachpersonal
       1200
       80)
     object lbWaffennummer: TLabel
-      Left = 638
+      Left = 462
       Top = 31
       Width = 76
       Height = 19
       Caption = 'Waffen Nr.'
       Visible = False
     end
-    object cbStammpersonal: TComboBox
+    object lbHinzufügen: TLabel
+      Left = 256
+      Top = 32
+      Width = 80
+      Height = 19
+      Caption = 'Hinzuf'#252'gen'
+    end
+    object cbAushilfen: TComboBox
       Left = 16
       Top = 27
       Width = 233
@@ -144,28 +151,11 @@ object FrameWachpersonal: TFrameWachpersonal
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ImeName = 'German'
       ParentFont = False
       TabOrder = 0
       Visible = False
-      OnSelect = cbStammpersonalSelect
-    end
-    object cbAushilfen: TComboBox
-      Left = 255
-      Top = 27
-      Width = 233
-      Height = 27
-      AutoDropDown = True
-      Style = csDropDownList
-      DropDownCount = 20
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -16
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 1
-      Visible = False
-      OnSelect = cbStammpersonalSelect
+      OnSelect = cbAushilfenSelect
     end
     object btnDelWachpersonalListe: TButton
       Left = 952
@@ -174,12 +164,12 @@ object FrameWachpersonal: TFrameWachpersonal
       Height = 40
       Anchors = [akRight, akBottom]
       Caption = 'Wachpersonalliste l'#246'schen'
-      TabOrder = 2
+      TabOrder = 1
       Visible = False
       OnClick = btnDelWachpersonalListeClick
     end
     object cbWaffennummer: TComboBox
-      Left = 720
+      Left = 544
       Top = 27
       Width = 201
       Height = 27
@@ -192,19 +182,29 @@ object FrameWachpersonal: TFrameWachpersonal
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 3
+      TabOrder = 2
       Visible = False
       OnSelect = cbWaffennummerSelect
     end
     object btnInsertAllStamm: TButton
       Left = 16
       Top = 20
-      Width = 322
+      Width = 337
       Height = 40
       Caption = 'Komplettes Stammpersonal hinzuf'#252'gen'
-      TabOrder = 4
+      TabOrder = 3
       Visible = False
       OnClick = btnInsertAllStammClick
+    end
+    object btnSaveEntryInDB: TButton
+      Left = 760
+      Top = 20
+      Width = 121
+      Height = 40
+      Caption = 'Speichern'
+      TabOrder = 4
+      Visible = False
+      OnClick = btnSaveEntryInDBClick
     end
   end
   object lvWachpersonal: TAdvListView

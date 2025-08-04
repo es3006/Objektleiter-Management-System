@@ -22,7 +22,7 @@ type
     cbJahr: TComboBox;
     cbMonat: TComboBox;
     Panel3: TPanel;
-    cbStammpersonal: TComboBox;
+    cbAushilfen: TComboBox;
     AdvInputTaskDialog1: TAdvInputTaskDialog;
     pmWachpersonal: TPopupMenu;
     Mitarbeiterentfernen1: TMenuItem;
@@ -30,7 +30,6 @@ type
     acDelMaFromWachpersonal: TAction;
     btnSavePDF: TImage;
     lvWachpersonal: TAdvListView;
-    cbAushilfen: TComboBox;
     btnDelWachpersonalListe: TButton;
     Panel1: TPanel;
     lbHinweis: TLabel;
@@ -38,9 +37,11 @@ type
     lbWaffennummer: TLabel;
     cbWaffennummer: TComboBox;
     btnInsertAllStamm: TButton;
+    lbHinzufügen: TLabel;
+    btnSaveEntryInDB: TButton;
     procedure Initialize;
     procedure cbMonatSelect(Sender: TObject);
-    procedure cbStammpersonalSelect(Sender: TObject);
+    procedure cbAushilfenSelect(Sender: TObject);
     procedure lvWachpersonalColumnClick(Sender: TObject; Column: TListColumn);
     procedure lvWachpersonalCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
     procedure lvWachpersonalKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -52,8 +53,9 @@ type
     procedure btnDelWachpersonalListeClick(Sender: TObject);
     procedure sbWeiterClick(Sender: TObject);
     procedure lvWachpersonalClick(Sender: TObject);
-    procedure cbWaffennummerSelect(Sender: TObject);
     procedure btnInsertAllStammClick(Sender: TObject);
+    procedure btnSaveEntryInDBClick(Sender: TObject);
+    procedure cbWaffennummerSelect(Sender: TObject);
   private
     s1, s2, s3: String;
     currentIndex: Integer;
@@ -123,7 +125,6 @@ begin
 
   cbMonatSelect(Self);
 
-  cbStammpersonal.ItemIndex := 0;
   cbAushilfen.ItemIndex     := 0;
   cbWaffennummer.ItemIndex  := 0;
 end;
@@ -319,7 +320,6 @@ begin
       FDQuery.free;
     end;
     btnInsertAllStamm.Visible := false;
-    cbStammPersonal.Visible := true;
     cbAushilfen.Visible := true;
     lbWaffennummer.Visible := true;
     cbWaffennummer.Visible := true;
@@ -332,7 +332,6 @@ begin
   end
   else
   begin
-    cbStammPersonal.Visible := false;
     cbAushilfen.Visible := false;
     lbWaffennummer.Visible := false;
     cbWaffennummer.Visible := false;
@@ -353,7 +352,7 @@ end;
 
 
 
-procedure TFrameWachpersonal.cbStammpersonalSelect(Sender: TObject);
+procedure TFrameWachpersonal.cbAushilfenSelect(Sender: TObject);
 var
   mitarbeiterID: Integer;
   m, j: integer;
@@ -368,8 +367,8 @@ begin
   else
     posLastEntry := StrToInt(lvWachpersonal.Items[lvWachpersonal.Items.Count-1].SubItems[1])+1;
 
-  //Es wurde ein Mitarbeitzer aus dem Stammpersonal ausgewählt
-  if TComboBox(Sender).ItemIndex > 0 then
+  //Es wurde ein Mitarbeiter aus dem Feld Aushilfen ausgewählt
+  if cbAushilfen.ItemIndex > 0 then
   begin
     //Die Mitarbeiterliste aus der ComboBox in mitarbeiterID schreiben
     mitarbeiterID := Integer(TComboBox(Sender).Items.Objects[TComboBox(Sender).ItemIndex]);
@@ -385,21 +384,105 @@ begin
       //Wenn der Mitarbeiter nicht in der ListView steht, diesen einfügen
       InsertMitarbeiterInWachpersonal(lvWachpersonal, mitarbeiterID, m, j, PosLastEntry); //id des Mitarbeiters aus der ComboBox übergeben
       SelectListViewItemByIntInColumn(lvWachpersonal, mitarbeiterID, 1);
-      lvWachpersonalClick(Self);
     end;
+    lvWachpersonalClick(Self);
   end;
-
-  TComboBox(Sender).ItemIndex := 0;
-
-//  SearchAndHighlight(lvWachpersonal, IntToStr(mitarbeiterID), [1]);
-
 end;
 
 
 
 
 
+procedure TFrameWachpersonal.cbMonatSelect(Sender: TObject);
+var
+  c, monat, jahr: integer;
+begin
+  if(cbMonat.ItemIndex > 0) AND (cbJahr.ItemIndex > 0) then
+  begin
+    monat := cbMonat.ItemIndex;
+    jahr  := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
+
+    SELMONTH := monat;
+    SELYEAR  := jahr;
+
+    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, true, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
+
+    showAlleSerienNummernInCB(cbWaffennummer);
+
+    showWachpersonalInListView(lvWachpersonal, SELMONTH, SELYEAR);
+
+    c := lvWachpersonal.Items.Count;
+
+    if(c <= 0) then
+    begin
+      btnInsertAllStamm.Visible := true;
+      cbAushilfen.Visible := false;
+      lbWaffennummer.Visible := false;
+      cbWaffennummer.Visible := false;
+      btnDelWachpersonalListe.Visible := false;
+      btnSavePDF.Visible := false;
+      lbHinzufügen.Visible := false;
+
+      //Hinweistext anzeigen
+      currentIndex := 1;  // Setze den Index auf den ersten String
+      lbHinweis.Caption := s1;
+    end
+    else
+    begin
+      btnInsertAllStamm.Visible := false;
+      cbAushilfen.Visible := true;
+      lbWaffennummer.Visible := true;
+      cbWaffennummer.Visible := true;
+      btnDelWachpersonalListe.Visible := true;
+      btnSavePDF.Visible := true;
+      lbHinzufügen.Visible := true;
+
+      cbAushilfen.ItemIndex := 0;
+
+      //Hinweistext anzeigen
+      currentIndex := 2;  // Setze den Index auf den ersten String
+      lbHinweis.Caption := s2;
+    end;
+  end
+  else
+  begin
+    showmessage('Bitte wählen Sie einen Monat');
+  end;
+
+  lbWaffennummer.Visible := false;
+  cbWaffennummer.Visible := false;
+  btnSaveEntryInDB.Visible := false;
+end;
+
+
+
+
+
+
+
 procedure TFrameWachpersonal.cbWaffennummerSelect(Sender: TObject);
+var
+  i: integer;
+begin
+  i := cbWaffennummer.ItemIndex;
+  if(i<>-1) then
+  begin
+    if(cbWaffennummer.Items[i] <> lvWachpersonal.Items[lvWachpersonal.ItemIndex].SubItems[10]) then
+    begin
+      btnSaveEntryInDB.Visible := true;
+    end
+    else
+    begin
+      btnSaveEntryInDB.Visible := false;
+    end;
+  end;
+end;
+
+
+
+
+
+procedure TFrameWachpersonal.btnSaveEntryInDBClick(Sender: TObject);
 var
   i, entryID: integer;
   waffennr: string;
@@ -436,77 +519,13 @@ begin
     finally
       FDQuery.free;
     end;
-
+    lbWaffennummer.Visible := false;
+    cbWaffennummer.Visible := false;
+    btnSaveEntryInDB.Visible := false;
+    lvWachpersonal.ItemIndex := -1;
+    cbAushilfen.ItemIndex := -1;
   end;
 end;
-
-
-
-
-
-procedure TFrameWachpersonal.cbMonatSelect(Sender: TObject);
-var
-  c, monat, jahr: integer;
-begin
-  if(cbMonat.ItemIndex > 0) AND (cbJahr.ItemIndex > 0) then
-  begin
-    monat := cbMonat.ItemIndex;
-    jahr  := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
-
-    SELMONTH := monat;
-    SELYEAR  := jahr;
-
-    showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, true, false, OBJEKTID, 1);  //Stammpersonal des gewählten Objektes
-    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, true, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
-    showAlleSerienNummernInCB(cbWaffennummer);
-
-    showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, true, false, OBJEKTID, 1);
-
-    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, true, false, OBJEKTID, 2);
-
-    showWachpersonalInListView(lvWachpersonal, SELMONTH, SELYEAR);
-
-    c := lvWachpersonal.Items.Count;
-
-    if(c <= 0) then
-    begin
-      btnInsertAllStamm.Visible := true;
-      cbStammPersonal.Visible := false;
-      cbAushilfen.Visible := false;
-      lbWaffennummer.Visible := false;
-      cbWaffennummer.Visible := false;
-      btnDelWachpersonalListe.Visible := false;
-      btnSavePDF.Visible := false;
-
-      //Hinweistext anzeigen
-      currentIndex := 1;  // Setze den Index auf den ersten String
-      lbHinweis.Caption := s1;
-    end
-    else
-    begin
-      btnInsertAllStamm.Visible := false;
-      cbStammPersonal.Visible := true;
-      cbAushilfen.Visible := true;
-      lbWaffennummer.Visible := true;
-      cbWaffennummer.Visible := true;
-      btnDelWachpersonalListe.Visible := true;
-      btnSavePDF.Visible := true;
-
-      cbStammPersonal.ItemIndex := 0;
-      cbAushilfen.ItemIndex := 0;
-
-      //Hinweistext anzeigen
-      currentIndex := 2;  // Setze den Index auf den ersten String
-      lbHinweis.Caption := s2;
-    end;
-  end
-  else
-  begin
-    showmessage('Bitte wählen Sie eienn Monat');
-  end;
-end;
-
-
 
 
 
@@ -808,11 +827,15 @@ begin
     begin
       cbWaffennummer.ItemIndex := Index;
     end;
+    lbWaffennummer.Visible := true;
+    cbWaffennummer.Visible := true;
+    btnDelWachpersonalListe.Visible := true;
   end
   else
   begin
-    cbWaffennummer.ItemIndex := 0;
-    btnDelWachpersonalListe.Visible := false
+    lbWaffennummer.Visible := false;
+    cbWaffennummer.Visible := false;
+    btnDelWachpersonalListe.Visible := false;
   end;
 end;
 
