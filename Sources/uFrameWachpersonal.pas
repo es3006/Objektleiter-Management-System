@@ -837,6 +837,8 @@ begin
     cbWaffennummer.Visible := false;
     btnDelWachpersonalListe.Visible := false;
   end;
+
+  btnSaveEntryInDB.Visible := false;
 end;
 
 

@@ -537,6 +537,7 @@ begin
     lbMitarbeiter.Visible := false;
     cbMitarbeiter.Visible := false;
   end;
+  btnUpdate.Visible := false;
 end;
 
 
