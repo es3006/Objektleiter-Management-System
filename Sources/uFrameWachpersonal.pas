@@ -321,10 +321,12 @@ begin
     end;
     btnInsertAllStamm.Visible := false;
     cbAushilfen.Visible := true;
+    lbHinzufügen.Visible := true;
     lbWaffennummer.Visible := true;
     cbWaffennummer.Visible := true;
     btnDelWachpersonalListe.Visible := true;
     btnSavePDF.Visible := true;
+    lbHinweis.Visible := true;
 
     //Hinweistext anzeigen
     currentIndex := 1;  // Setze den Index auf den ersten String
@@ -335,6 +337,7 @@ begin
     cbAushilfen.Visible := false;
     lbWaffennummer.Visible := false;
     cbWaffennummer.Visible := false;
+    lbHinzufügen.Visible := false;
     btnDelWachpersonalListe.Visible := false;
     btnSavePDF.Visible := false;
 
@@ -405,7 +408,7 @@ begin
     SELMONTH := monat;
     SELYEAR  := jahr;
 
-    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, true, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
+    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, true, false, OBJEKTID, 3); //Aushilfen die im gewählten Objekt aushelfen dürfen
 
     showAlleSerienNummernInCB(cbWaffennummer);
 

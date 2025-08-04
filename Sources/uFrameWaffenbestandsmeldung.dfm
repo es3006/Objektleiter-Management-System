@@ -142,7 +142,7 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
     end
     object btnUpdate: TButton
       Left = 368
-      Top = 30
+      Top = 20
       Width = 197
       Height = 40
       Anchors = [akTop, akRight]
@@ -153,7 +153,7 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
     end
     object btnDelWaffenbestandsmeldung: TButton
       Left = 935
-      Top = 30
+      Top = 20
       Width = 231
       Height = 40
       Anchors = [akTop, akRight]
@@ -164,7 +164,7 @@ object FrameWaffenbestandsmeldung: TFrameWaffenbestandsmeldung
     end
     object btnAddAllGunsInListView: TButton
       Left = 16
-      Top = 30
+      Top = 20
       Width = 321
       Height = 40
       Caption = 'Alle Waffen in die Liste eintragen'

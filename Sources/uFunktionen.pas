@@ -49,6 +49,10 @@ function ShortPath(const LongPath: string): string;
 
 procedure CreateHtmlAndPdfFileFromResource(dateiname: string; stl: TStringList; ausrichtung: string = 'print_landscape.bat');
 
+
+
+
+
 implementation
 
 uses
@@ -959,6 +963,8 @@ begin
   // Datei abspielen
   PlaySound(PChar(TempFileName), 0, SND_FILENAME or SND_ASYNC);
 end;
+
+
 
 
 

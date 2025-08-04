@@ -189,7 +189,7 @@
     object btnInsertAllStamm: TButton
       Left = 16
       Top = 20
-      Width = 337
+      Width = 329
       Height = 40
       Caption = 'Komplettes Stammpersonal hinzuf'#252'gen'
       TabOrder = 3

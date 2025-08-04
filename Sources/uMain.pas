@@ -382,6 +382,9 @@ begin
   FDConnection1.Open(); // Verbindung öffnen
 
   FDSQLiteBackup1.Database := DBNAME;
+
+  SaveResourceToFile('LOGINCLOSED', TEMPPATH+'Schloss_Zu_256.png');
+  SaveResourceToFile('LOGINOPENED', TEMPPATH+'Schloss_Offen_256.png');
 end;
 
 
