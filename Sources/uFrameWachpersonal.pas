@@ -456,13 +456,13 @@ begin
     SELMONTH := monat;
     SELYEAR  := jahr;
 
-    showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, false, OBJEKTID, 1);  //Stammpersonal des gewählten Objektes
-    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
+    showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, true, false, OBJEKTID, 1);  //Stammpersonal des gewählten Objektes
+    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, true, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
     showAlleSerienNummernInCB(cbWaffennummer);
 
-    showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, false, OBJEKTID, 1);
+    showMitarbeiterInComboBox(cbStammpersonal, SELMONTH, SELYEAR, true, false, OBJEKTID, 1);
 
-    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, false, OBJEKTID, 2);
+    showMitarbeiterInComboBox(cbAushilfen, SELMONTH, SELYEAR, true, false, OBJEKTID, 2);
 
     showWachpersonalInListView(lvWachpersonal, SELMONTH, SELYEAR);
 

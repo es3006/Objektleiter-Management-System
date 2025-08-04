@@ -23,27 +23,21 @@ type
     Image1: TImage;
     Panel1: TPanel;
     Panel3: TPanel;
-    cbStammpersonal: TComboBox;
-    Label4: TLabel;
+    cbMitarbeiter: TComboBox;
     btnSave: TButton;
-    Label1: TLabel;
+    lbDatum: TLabel;
     dtpDatum: TDateTimePicker;
     cbArt: TComboBox;
     Label2: TLabel;
-    sbInsertAllStamm: TSpeedButton;
-    cbAushilfen: TComboBox;
-    Label3: TLabel;
     lbHinweis: TLabel;
     sbWeiter: TSpeedButton;
     procedure Initialize;
     procedure Image1Click(Sender: TObject);
     procedure cbJahrSelect(Sender: TObject);
-    procedure cbStammpersonalSelect(Sender: TObject);
+    procedure cbMitarbeiterSelect(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure lvWachtestSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure lvWachtestRightClickCell(Sender: TObject; iItem, iSubItem: Integer);
-    procedure sbInsertAllStammClick(Sender: TObject);
-    procedure cbAushilfenSelect(Sender: TObject);
     procedure sbWeiterClick(Sender: TObject);
     procedure lvWachtestClick(Sender: TObject);
   private
@@ -56,6 +50,7 @@ type
     procedure InsertItemInTableAusbildungen(mitarbeiterID, objektID, ausbildungsartID: integer; datum: TDate);
     procedure DeleteItemFromTableAusbildungen(mitarbeiterID, ausbildungsartID: integer; datum: string);
     procedure UpdateDatumInAusbildung(mitarbeiterID, objektID, ausbildungsartID: integer; datumAlt: string; neuesDatum: TDate);
+    procedure AddMonthColumn(L: TListItem; const Value: string; MonthIndex: Integer);
   protected
     procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -129,14 +124,12 @@ begin
   SelMonth := 1;
   SelYear  := CurrentYear;
 
-  showMitarbeiterInComboBox(cbStammpersonal, SelMonth, SelYear, false, OBJEKTID, 1);
-  showMitarbeiterInComboBox(cbAushilfen, SelMonth, SelYear, false, OBJEKTID, 2); //Aushilfen die im gewählten Objekt aushelfen dürfen
-
+  showMitarbeiterInComboBox(cbMitarbeiter, SelMonth, SelYear, true, false, OBJEKTID, 3);
+  
   lvWachtest.ItemIndex := -1;
   lvWachtest.Selected := nil;
-  cbStammpersonal.ItemIndex := -1;
-  cbAushilfen.ItemIndex := -1;
-  cbStammpersonal.SetFocus;
+  cbMitarbeiter.ItemIndex := 0;
+  cbMitarbeiter.SetFocus;
   cbArt.ItemIndex := 0;
   dtpDatum.Date := Date;
 
@@ -164,15 +157,25 @@ begin
   i := lvWachtest.ItemIndex;
   if(i <> -1) then
   begin
-    for m := 0 to cbStammpersonal.Items.Count - 1 do
+    lbDatum.Visible := true;
+    dtpDatum.Visible := true;
+    btnSave.Visible := true;
+
+    for m := 0 to cbMitarbeiter.Items.Count - 1 do
     begin
-      if Integer(cbStammpersonal.Items.Objects[m]) = StrToInt(lvWachtest.Items[i].Caption) then
+      if Integer(cbMitarbeiter.Items.Objects[m]) = StrToInt(lvWachtest.Items[i].Caption) then
       begin
       //  SELENTRYID := StrToInt(lvWachtest.Items[i].Caption);
-        cbStammpersonal.ItemIndex := m;
+        cbMitarbeiter.ItemIndex := m;
         Exit;
       end;
     end;
+  end
+  else
+  begin
+    lbDatum.Visible := false;
+    dtpDatum.Visible := false;
+    btnSave.Visible := false;
   end;
 end;
 
@@ -223,7 +226,7 @@ begin
 
   if(spalte > 1) then
   begin
-    if(lvWachtest.Items[i].SubItems[spalte-1] <> '-----') then
+    if(lvWachtest.Items[i].SubItems[spalte-1] <> '-----') AND (lvWachtest.Items[i].SubItems[spalte-1] <> '') then
     begin
       if MessageDlg('Wollen Sie das Datum im "' + Spaltenname[spalte] + '" wirklich entfernen?', mtConfirmation, [mbYes, mbNo], 0, mbYes) = mrYes then
       begin
@@ -254,7 +257,7 @@ begin
 
             ExecSql;
 
-            lvWachtest.Items[iItem].SubItems[spalte-1] := '-----';
+            lvWachtest.Items[iItem].SubItems[spalte-1] := '';
           end;
         except
           on E: Exception do
@@ -288,26 +291,13 @@ begin
     maid := StrToInt(lvWachtest.Items[a].Caption);
     SelectedMitarbeiterID := maid;
 
-    for i := 0 to cbStammpersonal.Items.Count - 1 do
+    for i := 0 to cbMitarbeiter.Items.Count - 1 do
     begin
-      if (cbStammpersonal.Items.Objects[i] is TObject) then
+      if (cbMitarbeiter.Items.Objects[i] is TObject) then
       begin
-        if Integer(cbStammpersonal.Items.Objects[i]) = maid then
+        if Integer(cbMitarbeiter.Items.Objects[i]) = maid then
         begin
-          cbStammpersonal.ItemIndex := i;
-          Exit;
-        end;
-      end;
-    end;
-
-
-    for i := 0 to cbAushilfen.Items.Count - 1 do
-    begin
-      if (cbAushilfen.Items.Objects[i] is TObject) then
-      begin
-        if Integer(cbAushilfen.Items.Objects[i]) = maid then
-        begin
-          cbAushilfen.ItemIndex := i;
+          cbMitarbeiter.ItemIndex := i;
           Exit;
         end;
       end;
@@ -315,10 +305,8 @@ begin
   end
   else
   begin
-    cbStammpersonal.ItemIndex := 0;
-    cbAushilfen.ItemIndex := 0;
+    cbMitarbeiter.ItemIndex := 0;
     dtpDatum.Date := date;
-    cbAushilfen.SetFocus;
   end;
 end;
 
@@ -337,15 +325,15 @@ var
   EintragExistiert, MonatHatEintrag: Boolean;
 begin
   i := lvWachtest.ItemIndex;
-  if (i = -1) or ((cbStammpersonal.ItemIndex = -1) and (cbAushilfen.ItemIndex = -1)) then
+  if (i = -1) or ((cbMitarbeiter.ItemIndex = 0)) then
   begin
-    ShowMessage('Bitte wählen Sie einen Mitarbeiter aus dem Stammpersonal oder eine Aushilfe aus');
+    ShowMessage('Bitte wählen Sie einen Mitarbeiter aus und geben Sie das Datum an, an dem der Mitarbeiter den Wachtest geschrieben hat!');
     Exit;
   end;
 
   if (SelectedMitarbeiterID <= 0) or (cbJahr.ItemIndex = -1) or (cbArt.ItemIndex = -1) then
   begin
-    ShowMessage('Bitte wählen Sie Mitarbeiter, Jahr, Art und ein Datum!');
+    ShowMessage('Bitte wählen Sie oben das Jahr und die Art der Ausbildung und anschließend unten den Mitarbeiter und das Datum der Ausbildung!');
     Exit;
   end;
 
@@ -437,6 +425,7 @@ begin
 
   cbJahrSelect(Self);
   SelectMitarbeiterInListView(lvWachtest, SelectedMitarbeiterID);
+  cbMitarbeiter.ItemIndex := -1;
 end;
 
 
@@ -542,29 +531,6 @@ end;
 
 
 
-procedure TFrameWachtest.cbAushilfenSelect(Sender: TObject);
-var
-  SelectedIndex: Integer;
-  j: integer;
-begin
-  j := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
-  SelectedIndex := -1;
-
-
-  if cbAushilfen.ItemIndex <> -1 then
-  begin
-    SelectedIndex := Integer(cbAushilfen.Items.Objects[cbAushilfen.ItemIndex]);
-    InsertMitarbeiterInListView(lvWachtest, SelectedIndex, j);
-  end;
-
-  cbAushilfen.ItemIndex := -1;
-
-  SearchAndHighlight(lvWachtest, IntToStr(SelectedIndex), [1]);
-end;
-
-
-
-
 procedure TFrameWachtest.cbJahrSelect(Sender: TObject);
 var
   CurrentDate: TDateTime;
@@ -579,11 +545,12 @@ begin
   NewDate := EncodeDate(SelYear, Month, Day);
   dtpDatum.Date := NewDate;
 
-  cbStammpersonal.ItemIndex := 0;
-  cbAushilfen.ItemIndex := 0;
+  showMitarbeiterInComboBox(cbMitarbeiter, 1, SelYear, true, false, OBJEKTID, 3);
+  cbMitarbeiter.ItemIndex := 0;
 
-  showMitarbeiterInComboBox(cbStammpersonal, 1, SelYear, false, OBJEKTID, 1);
-  showMitarbeiterInComboBox(cbAushilfen, 1, SelYear, false, OBJEKTID, 2);
+  lbDatum.Visible := false;
+  dtpDatum.Visible := false;
+  btnSave.Visible := false;
 
   showWachtestTestSachkundestandInListView(lvWachtest, SelYear);
 end;
@@ -609,23 +576,22 @@ end;
 
 
 
-procedure TFrameWachtest.cbStammpersonalSelect(Sender: TObject);
+procedure TFrameWachtest.cbMitarbeiterSelect(Sender: TObject);
 var
   MitarbeiterID: Integer;
   i: integer;
 begin
-  i := cbStammpersonal.ItemIndex;
+  i := cbMitarbeiter.ItemIndex;
   if i <> -1 then
   begin
-    if cbStammpersonal.ItemIndex > 0 then
+    if cbMitarbeiter.ItemIndex > 0 then
     begin
-      MitarbeiterID := Integer(cbStammpersonal.Items.Objects[i]);
+      MitarbeiterID := Integer(cbMitarbeiter.Items.Objects[i]);
       InsertMitarbeiterInListView(lvWachtest, MitarbeiterID, SelYear); //id des Mitarbeiters aus der ComboBox übergeben
       SelectMitarbeiterInListView(lvWachtest, MitarbeiterID);
     end;
 
-    cbStammpersonal.ItemIndex := -1;
-    dtpDatum.SetFocus;
+    cbMitarbeiter.ItemIndex := 0;
   end
   else
   begin
@@ -888,39 +854,15 @@ end;
 
 
 
-{******************************************************************************************
-  Alle Waffen aus der Waffenbestandsmeldung aus Datenbank-Tabelle Waffenbestandsliste     *
-  auslesen und in ListView anzeigen                                                       *
-******************************************************************************************}
-procedure TFrameWachtest.sbInsertAllStammClick(Sender: TObject);
-var
-  a, x: integer;
-begin
-  x := lvWachtest.Items.Count;
-
-  if x = 0 then
-  begin
-    for a := 1 to cbStammpersonal.Items.Count do
-    begin
-      cbStammpersonal.ItemIndex := a;
-      cbStammpersonalSelect(self);
-    end;
-  end
-  else
-  begin
-    PlayResourceMP3('BLING', 'TEMP\bling.wav');
-    showmessage('Diese Funktion steht nur zur Verfügung wenn die Liste leer ist.');
-  end;
-end;
-
-
-
-
-
 procedure TFrameWachtest.sbWeiterClick(Sender: TObject);
 begin
   DisplayHinweisString;
 end;
+
+
+
+
+
 
 procedure TFrameWachtest.showWachtestTestSachkundestandInListView(LV: TListView; jahr: integer);
 var
@@ -946,7 +888,6 @@ begin
 
       Open;
 
-
       while not Eof do
       begin
         Jan := ConvertSQLDateToGermanDate(FieldByName('jan').AsString, false, true);
@@ -966,19 +907,21 @@ begin
         l := LV.Items.Add;
         l.Caption := FieldByName('id').AsString;
         l.SubItems.Add(FieldByName('Nachname').AsString);
-        if(Jan<>'') then l.SubItems.Add(Jan) else l.SubItems.Add('-----');
-        if(Feb<>'') then l.SubItems.Add(Feb) else l.SubItems.Add('-----');
-        if(Mar<>'') then l.SubItems.Add(Mar) else l.SubItems.Add('-----');
-        if(Apr<>'') then l.SubItems.Add(Apr) else l.SubItems.Add('-----');
-        if(Mai<>'') then l.SubItems.Add(Mai) else l.SubItems.Add('-----');
-        if(Jun<>'') then l.SubItems.Add(Jun) else l.SubItems.Add('-----');
-        if(Jul<>'') then l.SubItems.Add(Jul) else l.SubItems.Add('-----');
-        if(Aug<>'') then l.SubItems.Add(Aug) else l.SubItems.Add('-----');
-        if(Sep<>'') then l.SubItems.Add(Sep) else l.SubItems.Add('-----');
-        if(Okt<>'') then l.SubItems.Add(Okt) else l.SubItems.Add('-----');
-        if(Nov<>'') then l.SubItems.Add(Nov) else l.SubItems.Add('-----');
-        if(Dez<>'') then l.SubItems.Add(Dez) else l.SubItems.Add('-----');
-        if(TSW<>'') then l.SubItems.Add(TSW) else l.SubItems.Add('-----');
+
+        AddMonthColumn(L, Jan, 1);
+        AddMonthColumn(L, Feb, 2);
+        AddMonthColumn(L, Mar, 3);
+        AddMonthColumn(L, Apr, 4);
+        AddMonthColumn(L, Mai, 5);
+        AddMonthColumn(L, Jun, 6);
+        AddMonthColumn(L, Jul, 7);
+        AddMonthColumn(L, Aug, 8);
+        AddMonthColumn(L, Sep, 9);
+        AddMonthColumn(L, Okt, 10);
+        AddMonthColumn(L, Nov, 11);
+        AddMonthColumn(L, Dez, 12);
+
+        AddMonthColumn(L, TSW, 12);
 
         Next;
       end;
@@ -986,6 +929,21 @@ begin
   finally
     FDQuery.free;
   end;
+end;
+
+
+
+
+
+
+procedure TFrameWachtest.AddMonthColumn(L: TListItem; const Value: string; MonthIndex: Integer);
+begin
+  if Value <> '' then
+    L.SubItems.Add(Value)
+  else if MonthIndex < MonthOf(Now) then
+    L.SubItems.Add('-----')
+  else
+    L.SubItems.Add('');
 end;
 
 

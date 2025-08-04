@@ -70,6 +70,8 @@ type
     N7: TMenuItem;
     PrfeauffehlendeStammdaten1: TMenuItem;
     PrfeauffehlendeStammdaten2: TMenuItem;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure Einstellungen1Click(Sender: TObject);

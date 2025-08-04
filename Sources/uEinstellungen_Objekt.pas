@@ -127,7 +127,7 @@ begin
   end;
 
   //Objektleiter
-  showMitarbeiterInComboBox(cbObjektleiter, MonthOf(now), YearOf(now), false, OBJEKTID, 3);
+  showMitarbeiterInComboBox(cbObjektleiter, MonthOf(now), YearOf(now), true, false, OBJEKTID, 3);
 
   //Gespeicherten Objektleiter selektieren
   for i := 0 to cbObjektleiter.Items.Count - 1 do
@@ -141,7 +141,7 @@ begin
 
 
   //Stellvertretender Objektleiter
-  showMitarbeiterInComboBox(cbStellvObjektleiter, MonthOf(now), YearOf(now), false, OBJEKTID, 3);
+  showMitarbeiterInComboBox(cbStellvObjektleiter, MonthOf(now), YearOf(now), true, false, OBJEKTID, 3);
 
   //Gespeicherten Stellvertretenden Objektleiter selektieren
   for i := 0 to cbStellvObjektleiter.Items.Count - 1 do

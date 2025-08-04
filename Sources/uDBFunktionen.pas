@@ -17,7 +17,7 @@ procedure CreateIndexes;
 procedure ReadSettingsFromDB;
 procedure ReadObjektleiterObjektSettings;
 procedure showAdmins(LV: TListView);
-procedure showMitarbeiterInComboBox(cb: TComboBox; monat, jahr: integer; aushilfe: boolean = false; ObjektID: integer = 0; art: integer = 1);
+procedure showMitarbeiterInComboBox(cb: TComboBox; monat, jahr: integer; showTitleInCB: boolean = true; aushilfe: boolean = false; ObjektID: integer = 0; art: integer = 1);
 procedure showSerienNrByNrWBKInCB(cb: TComboBox; NrWBK: String);
 procedure showObjekteInComboBox(CB: TComboBox; ort: boolean = false);
 procedure showObjekteInListView(LV: TListView);
@@ -967,7 +967,7 @@ end;
   art = 2 (Nur Aushilfen)                                                                                       *
   art = 3 (Stammpersonal und Aushilfen)                                                                         *
 ****************************************************************************************************************}
-procedure showMitarbeiterInComboBox(cb: TComboBox; monat, jahr: integer; aushilfe: boolean = false; ObjektID: integer = 0; art: integer = 1);
+procedure showMitarbeiterInComboBox(cb: TComboBox; monat, jahr: integer; showTitleInCB: boolean = true; aushilfe: boolean = false; ObjektID: integer = 0; art: integer = 1);
 var
   id, ma: TField;
   FDQuery: TFDQuery;
@@ -997,7 +997,7 @@ begin
       end
       else if (objektid <> 0) AND (art = 2) then
       begin
-        s := 'Aushilfen';
+        s := 'Aushilfe';
         SQL.Text := 'SELECT M.id, M.objektid, nachname || " " || vorname AS Mitarbeiter ' +
                     'FROM mitarbeiter AS M ' +
                     'INNER JOIN mitarbeiter_objekte AS O ON O.mitarbeiterid = M.id ' +
@@ -1045,7 +1045,8 @@ begin
       id := FieldByName('id');
       ma := FieldByName('Mitarbeiter');
 
-      cb.Items.Add(s);
+      if(showTitleInCB= true) then
+        cb.Items.Add(s);
 
       if(aushilfe = true) then
       begin

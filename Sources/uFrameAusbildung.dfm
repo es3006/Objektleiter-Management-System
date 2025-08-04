@@ -314,6 +314,7 @@ object FrameAusbildung: TFrameAusbildung
       DetailView.Font.Style = []
       OnRightClickCell = lvAusbildung1RightClickCell
       Version = '1.9.1.1'
+      ExplicitWidth = 402
     end
     object lvAusbildung2: TAdvListView
       Tag = 2
@@ -426,6 +427,7 @@ object FrameAusbildung: TFrameAusbildung
       DetailView.Font.Style = []
       OnRightClickCell = lvAusbildung1RightClickCell
       Version = '1.9.1.1'
+      ExplicitWidth = 396
     end
     object lvAusbildung3: TAdvListView
       Tag = 3
@@ -538,6 +540,7 @@ object FrameAusbildung: TFrameAusbildung
       DetailView.Font.Style = []
       OnRightClickCell = lvAusbildung1RightClickCell
       Version = '1.9.1.1'
+      ExplicitWidth = 397
     end
     object Panel6: TPanel
       Left = 1
@@ -703,16 +706,14 @@ object FrameAusbildung: TFrameAusbildung
       AlignWithMargins = True
       Left = 17
       Top = 6
-      Width = 1149
-      Height = 48
+      Width = 9
+      Height = 21
       Margins.Left = 16
       Margins.Top = 5
       Margins.Right = 10
       Margins.Bottom = 5
       Align = alClient
       Caption = '...'
-      ExplicitWidth = 9
-      ExplicitHeight = 21
     end
     object sbWeiter: TSpeedButton
       Left = 1176

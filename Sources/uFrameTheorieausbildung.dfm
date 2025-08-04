@@ -189,7 +189,7 @@ object FrameTheorieausbildung: TFrameTheorieausbildung
     DetailView.Font.Style = []
     OnRightClickCell = lvTheorieausbildungRightClickCell
     Version = '1.9.1.1'
-    ExplicitHeight = 449
+    ExplicitWidth = 1199
   end
   object Panel3: TPanel
     Left = 0
@@ -288,16 +288,14 @@ object FrameTheorieausbildung: TFrameTheorieausbildung
       AlignWithMargins = True
       Left = 17
       Top = 6
-      Width = 1149
-      Height = 48
+      Width = 15
+      Height = 19
       Margins.Left = 16
       Margins.Top = 5
       Margins.Right = 10
       Margins.Bottom = 5
       Align = alClient
       Caption = '...'
-      ExplicitWidth = 15
-      ExplicitHeight = 19
     end
     object sbWeiter: TSpeedButton
       Left = 1176

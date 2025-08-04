@@ -13,10 +13,8 @@ object fZugangsdaten: TfZugangsdaten
   Font.Name = 'Tahoma'
   Font.Style = []
   KeyPreview = True
-  OldCreateOrder = False
   Position = poMainFormCenter
   OnShow = FormShow
-  PixelsPerInch = 96
   TextHeight = 19
   object Panel1: TPanel
     Left = 0
@@ -86,6 +84,7 @@ object fZugangsdaten: TfZugangsdaten
       end>
     GridLines = True
     HideSelection = False
+    Items.ItemData = {050000000000000000}
     OwnerDraw = True
     ReadOnly = True
     RowSelect = True
@@ -127,8 +126,8 @@ object fZugangsdaten: TfZugangsdaten
     DetailView.Font.Name = 'Tahoma'
     DetailView.Font.Style = []
     OnRightClickCell = lvZugangsdatenRightClickCell
-    Version = '1.9.0.0'
-    ExplicitHeight = 310
+    Version = '1.9.1.1'
+    ExplicitWidth = 844
   end
   object Panel2: TPanel
     Left = 0
@@ -161,6 +160,7 @@ object fZugangsdaten: TfZugangsdaten
       EditLabel.Caption = 'Passwort'
       PasswordChar = '*'
       TabOrder = 2
+      Text = ''
     end
     object btnSpeichern: TButton
       Left = 645
@@ -198,6 +198,7 @@ object fZugangsdaten: TfZugangsdaten
       EditLabel.Height = 19
       EditLabel.Caption = 'Username'
       TabOrder = 1
+      Text = ''
     end
   end
 end

@@ -10,7 +10,7 @@ uses
   FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait, FireDAC.Stan.Param,
   FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Stan.ExprFuncs,
   FireDAC.Phys.SQLiteDef, FireDAC.Phys.SQLite, Data.DB, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, DateUtils, System.hash, System.UITypes;
+  FireDAC.Comp.Client, DateUtils, System.hash, System.UITypes, Vcl.Mask;
 
 type
   TfZugangsdaten = class(TForm)
@@ -200,7 +200,7 @@ begin
   ENTRYID := -1;
   DBPW := '';
 
-  showMitarbeiterInComboBox(cbMitarbeiter, MonthOf(now), YearOf(now), false, OBJEKTID, 3);
+  showMitarbeiterInComboBox(cbMitarbeiter, MonthOf(now), YearOf(now), true, false, OBJEKTID, 3);
   showAdminsInListView(lvZugangsdaten);
 end;
 

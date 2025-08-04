@@ -18,7 +18,6 @@ type
     cbMonat: TComboBox;
     cbJahr: TComboBox;
     imgCreateWaffenzuordnungAlsPdf: TImage;
-    imgCreatePDF: TImage;
     Panel3: TPanel;
     cbMitarbeiter: TComboBox;
     lvWaffenbestandsliste: TAdvListView;
@@ -35,7 +34,6 @@ type
     procedure lvWaffenbestandslisteCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
     procedure lvWaffenbestandslisteKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure lvWaffenbestandslisteKeyPress(Sender: TObject; var Key: Char);
-    procedure imgCreatePDFClick(Sender: TObject);
     procedure imgCreateWaffenzuordnungAlsPdfClick(Sender: TObject);
     procedure btnUpdateClick(Sender: TObject);
     procedure btnAddAllGunsInListViewClick(Sender: TObject);
@@ -43,6 +41,8 @@ type
     procedure btnDelWaffenbestandsmeldungClick(Sender: TObject);
     procedure lvWaffenbestandslisteSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
+    procedure cbMitarbeiterSelect(Sender: TObject);
+    procedure lvWaffenbestandslisteClick(Sender: TObject);
   private
     s1, s2, s3, s4: String;
     currentIndex: Integer;
@@ -117,8 +117,8 @@ begin
 
   OBJEKTID := uMain.OBJEKTID;
 
-  showMitarbeiterInComboBox(cbMitarbeiter, SELMONTH, SELYEAR, false, OBJEKTID, 3);
-  cbMitarbeiter.Items.Add('Aushilfe');
+  showMitarbeiterInComboBox(cbMitarbeiter, SELMONTH, SELYEAR, false, true, OBJEKTID, 3);
+
   showWaffenbestandslisteInListView(lvWaffenbestandsliste, CurrentMonth, CurrentYear);
 
   WAFFENPROSEITE := 16; //Wie viele Einträge sollen auf der Waffenbestandsmeldung pro Seite erscheinen?
@@ -141,11 +141,14 @@ begin
 
   if(lvWaffenbestandsliste.Items.Count = WAFFENBESTAND) then
   begin
-    btnUpdate.Visible := true;
-    btnUpdate.enabled := true;
+//    btnUpdate.Visible := true;
     btnAddAllGunsInListView.Visible := false;
-    lbMitarbeiter.Visible := true;
+//    lbMitarbeiter.Visible := true;
   end;
+
+  lbMitarbeiter.Visible := false;
+  cbMitarbeiter.Visible := false;
+  btnUpdate.Visible := false;
 end;
 
 
@@ -241,7 +244,13 @@ begin
     end;
     FDQuery.Free;
 
+    lbMitarbeiter.Visible := false;
+    cbMitarbeiter.Visible := false;
+    btnUpdate.Visible := false;
+
     lvWaffenbestandsliste.Items[i].SubItems[3] := Mitarbeiter;
+    lvWaffenbestandslisteClick(Self);
+
   end
   else
   begin
@@ -424,6 +433,21 @@ end;
 
 
 
+procedure TFrameWaffenbestandsmeldung.cbMitarbeiterSelect(Sender: TObject);
+var
+  i: integer;
+begin
+  i := cbMitarbeiter.ItemIndex;
+  if(i<>-1) AND (cbMitarbeiter.Items[i] <> lvWaffenbestandsliste.Items[lvWaffenbestandsliste.ItemIndex].SubItems[3]) then
+  begin
+    btnUpdate.Visible := true;
+  end
+  else
+  begin
+    btnUpdate.Visible := false;
+  end;
+end;
+
 procedure TFrameWaffenbestandsmeldung.cbMonatSelect(Sender: TObject);
 var
   monat, jahr: integer;
@@ -433,53 +457,19 @@ begin
   SelMonth := monat;
   SelYear  := jahr;
 
-  showMitarbeiterInComboBox(cbMitarbeiter, SELMONTH, SELYEAR, false, OBJEKTID, 3);
-  cbMitarbeiter.Items.Add('Aushilfe');
+  showMitarbeiterInComboBox(cbMitarbeiter, SELMONTH, SELYEAR, false, true, OBJEKTID, 3);
+
   showWaffenbestandslisteInListView(lvWaffenbestandsliste, SelMonth, SelYear);
 
   if(lvWaffenbestandsliste.Items.Count = 0) then
-  begin
-    btnAddAllGunsInListView.Visible := true;
-    lbMitarbeiter.Visible := false;
-    btnUpdate.Visible := false;
-  end
+    btnAddAllGunsInListView.Visible := true
   else
-  begin
     btnAddAllGunsInListView.Visible := false;
-    lbMitarbeiter.Visible := true;
-    btnUpdate.Visible := true;
-    btnUpdate.Enabled := false;
-  end;
-end;
 
 
-
-
-
-
-procedure TFrameWaffenbestandsmeldung.imgCreatePDFClick(Sender: TObject);
-var
-  mDatum: TDate;
-begin
-   if(cbMonat.ItemIndex < 1) OR (cbJahr.Text = '') then
-  begin
-    showmessage('Bitte wählen Sie den Monat und das Jahr für den Sie die Waffenbestandsmeldung generieren wollen!');
-    exit;
-  end;
-
-
-  mDatum := GetLastDayOfMonth(SelYear, SelMonth);
-  uDatumMeldender.MELDEDATUM := DateToStr(mDatum);
-  uDatumMeldender.MELDENDER  := OBJEKTLEITERNAME;
-  uDatumMeldender.ABSENDER := 'uFrameWaffenbestandsmeldung';
-
-  if fDatumMeldender.ShowModal = mrOk then
-  begin
-    if (MELDEDATUM = '') then
-      MELDEDATUM := DateToStr(mDatum);
-
-    GeneratePrintableWaffenSchliessfachZuordnung(MELDEDATUM);
-  end;
+  lbMitarbeiter.Visible := false;
+  cbMitarbeiter.Visible := false;
+  btnUpdate.Visible := false;
 end;
 
 
@@ -488,6 +478,8 @@ end;
 
 
 procedure TFrameWaffenbestandsmeldung.imgCreateWaffenzuordnungAlsPdfClick(Sender: TObject);
+var
+  mDatum: TDate;
 begin
   if(cbMonat.ItemIndex < 1) OR (cbJahr.Text = '') then
   begin
@@ -495,25 +487,57 @@ begin
     exit;
   end;
 
-  //Werte an fDatumMeldender übergeben und Form anzeigen
-  uDatumMeldender.MELDEDATUM := DateToStr(date);
+  mDatum := GetLastDayOfMonth(SelYear, SelMonth);
+
+  //Werte an Form DatumMeldender übergeben und Form anzeigen
+  uDatumMeldender.MELDEDATUM := DateToStr(mDatum);
   uDatumMeldender.MELDENDER  := OBJEKTLEITERNAME;
   uDatumMeldender.ABSENDER := 'uFrameWaffenbestandsmeldung';
 
 
+  //Werte von Form fDatumMeldender übergeben
+  if(ShowMunitionstausch = false) then
+  begin
+    if MessageDlg('Im gewählten Zeitraum wurde noch kein Munitionstausch durchgeführt!'+#13#10+'Wollen Sie die Waffenbestandsmeldung trotzdem anlegen?', mtConfirmation, [mbyes, mbno], 0) = mrNo then
+      exit;
+  end;
+
+  //Formular mit Auswahlfeld für Datum und Objektleiter anzeigen
   if fDatumMeldender.ShowModal = mrOk then
   begin
-    //Werte von Form fDatumMeldender übergeben
-    if(ShowMunitionstausch = false) then
-    begin
-      if MessageDlg('Im gewählten Zeitraum wurde noch kein Munitionstausch durchgeführt!'+#13#10+'Wollen Sie die Waffenbestandsmeldung trotzdem anlegen?', mtConfirmation, [mbyes, mbno], 0) = mrNo then
-        exit;
-    end;
+    if (MELDEDATUM = '') then
+      MELDEDATUM := DateToStr(mDatum);
 
     GeneratePrintableWaffenbestandslisteAllInOne(MELDEDATUM);
+
+    if MessageDlg('Wollen Sie auch die Zuordnung der Waffen und Schließfächer als PDF speichern?', mtConfirmation, [mbYes, mbNo], 0, mbYes) = mrYes then
+    begin
+      GeneratePrintableWaffenSchliessfachZuordnung(MELDEDATUM);
+    end;
   end;
 end;
 
+
+
+
+
+
+procedure TFrameWaffenbestandsmeldung.lvWaffenbestandslisteClick(Sender: TObject);
+var
+  i: integer;
+begin
+  i := lvWaffenbestandsliste.ItemIndex;
+  if i <> -1 then
+  begin
+    lbMitarbeiter.Visible := true;
+    cbMitarbeiter.Visible := true;
+  end
+  else
+  begin
+    lbMitarbeiter.Visible := false;
+    cbMitarbeiter.Visible := false;
+  end;
+end;
 
 
 
@@ -622,12 +646,37 @@ end;
 
 
 procedure TFrameWaffenbestandsmeldung.lvWaffenbestandslisteSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+var
+  mitarbeiterName: string;
+  idx: Integer;
 begin
+  lvWaffenbestandslisteClick(Self);
+
+  if not Selected or (Item = nil) then
+    Exit;
+
+  if Item.SubItems.Count >= 4 then
+  begin
+    mitarbeiterName := Item.SubItems[3]; // SubItems[3] = Spalte 4 (0-basiert)
+    idx := cbMitarbeiter.Items.IndexOf(mitarbeiterName);
+    if idx >= 0 then
+      cbMitarbeiter.ItemIndex := idx;
+  end;
+
   if(Selected = true) then
-    btnUpdate.Enabled := true
+  begin
+    lbMitarbeiter.Visible := true;
+    cbMitarbeiter.Visible := true;
+  end
   else
-    btnUpdate.Enabled := false;
+  begin
+    lbMitarbeiter.Visible := false;
+    cbMitarbeiter.Visible := false;
+  end;
 end;
+
+
+
 
 procedure TFrameWaffenbestandsmeldung.sbWeiterClick(Sender: TObject);
 begin
@@ -996,12 +1045,12 @@ begin
 
   if LV.Items.Count <= 0 then
   begin
-    btnAddAllGunsInListView.enabled := true;
+    btnAddAllGunsInListView.visible := true;
     btnDelWaffenbestandsmeldung.Visible := false;
   end
   else
   begin
-    btnAddAllGunsInListView.enabled := false;
+    btnAddAllGunsInListView.visible := false;
     btnDelWaffenbestandsmeldung.Visible := true;
   end;
 end;

@@ -111,8 +111,8 @@ begin
   cbMonatSelect(self);
 
   showAusbildungInListView(lvTheorieausbildung, selectedAusbildungsartID, selectedMonth, selectedYear);
-  showMitarbeiterInComboBox(cbStammpersonal, selectedMonth, selectedYear, false, OBJEKTID, 1);  //Stammpersonal des gewählten Objektes
-  showMitarbeiterInComboBox(cbAushilfen, selectedMonth, selectedYear, false, OBJEKTID, 2);      //Aushilfen die im gewählten Objekt aushelfen dürfen
+  showMitarbeiterInComboBox(cbStammpersonal, selectedMonth, selectedYear, true, false, OBJEKTID, 1);  //Stammpersonal des gewählten Objektes
+  showMitarbeiterInComboBox(cbAushilfen, selectedMonth, selectedYear, true, false, OBJEKTID, 2);      //Aushilfen die im gewählten Objekt aushelfen dürfen
 
   cbStammpersonal.ItemIndex := 0;
   cbAushilfen.ItemIndex     := 0;
@@ -408,8 +408,8 @@ begin
     selectedMonth    := monat;
     selectedYear     := jahr;
 
-    showMitarbeiterInComboBox(cbStammpersonal, selectedMonth, selectedYear, false, OBJEKTID, 1);
-    showMitarbeiterInComboBox(cbAushilfen, selectedMonth, selectedYear, false, OBJEKTID, 2);
+    showMitarbeiterInComboBox(cbStammpersonal, selectedMonth, selectedYear, true, false, OBJEKTID, 1);
+    showMitarbeiterInComboBox(cbAushilfen, selectedMonth, selectedYear, true, false, OBJEKTID, 2);
 
     showAusbildungInListView(lvTheorieausbildung, selectedAusbildungsartID, selectedMonth, selectedYear);
 

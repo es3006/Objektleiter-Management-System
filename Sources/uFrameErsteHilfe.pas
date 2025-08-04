@@ -78,7 +78,7 @@ end;
 
 procedure TFrameErsteHilfe.Initialize;
 begin
-  showMitarbeiterInComboBox(cbMitarbeiter, MonthOf(now), YearOf(now), false, OBJEKTID, 3);
+  showMitarbeiterInComboBox(cbMitarbeiter, MonthOf(now), YearOf(now), true, false, OBJEKTID, 3);
 
   showErsteHilfeInListView(lvErsteHilfe);
 

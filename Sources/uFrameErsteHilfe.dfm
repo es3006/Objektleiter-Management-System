@@ -148,7 +148,7 @@ object FrameErsteHilfe: TFrameErsteHilfe
     DetailView.Font.Style = []
     OnRightClickCell = lvErsteHilfeRightClickCell
     Version = '1.9.1.1'
-    ExplicitHeight = 599
+    ExplicitWidth = 1199
   end
   object Panel2: TPanel
     Left = 0
@@ -164,7 +164,7 @@ object FrameErsteHilfe: TFrameErsteHilfe
       Left = 1152
       Top = 0
       Width = 48
-      Height = 60
+      Height = 48
       Cursor = crHandPoint
       Hint = 'Diese Liste als PDF speichern|Diese Liste als PDF speichern'
       Align = alRight
@@ -199,7 +199,6 @@ object FrameErsteHilfe: TFrameErsteHilfe
       ShowHint = True
       ExplicitLeft = 1151
       ExplicitTop = 1
-      ExplicitHeight = 48
     end
   end
   object Panel1: TPanel
@@ -215,16 +214,14 @@ object FrameErsteHilfe: TFrameErsteHilfe
       AlignWithMargins = True
       Left = 17
       Top = 6
-      Width = 1149
-      Height = 48
+      Width = 15
+      Height = 19
       Margins.Left = 16
       Margins.Top = 5
       Margins.Right = 10
       Margins.Bottom = 5
       Align = alClient
       Caption = '...'
-      ExplicitWidth = 15
-      ExplicitHeight = 19
     end
     object sbWeiter: TSpeedButton
       Left = 1176

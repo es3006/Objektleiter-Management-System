@@ -323,9 +323,9 @@ begin
     selectedMonth    := monat;
     selectedYear     := jahr;
 
-    showMitarbeiterInComboBox(cbPersonal1, selectedMonth, selectedYear, false, OBJEKTID, 3);
-    showMitarbeiterInComboBox(cbPersonal2, selectedMonth, selectedYear, false, OBJEKTID, 3);
-    showMitarbeiterInComboBox(cbPersonal3, selectedMonth, selectedYear, false, OBJEKTID, 3);
+    showMitarbeiterInComboBox(cbPersonal1, selectedMonth, selectedYear, true, false, OBJEKTID, 3);
+    showMitarbeiterInComboBox(cbPersonal2, selectedMonth, selectedYear, true, false, OBJEKTID, 3);
+    showMitarbeiterInComboBox(cbPersonal3, selectedMonth, selectedYear, true, false, OBJEKTID, 3);
 
     showAusbildungInListView(lvAusbildung1, 1, selectedMonth, selectedYear);
     showAusbildungInListView(lvAusbildung2, 2, selectedMonth, selectedYear);

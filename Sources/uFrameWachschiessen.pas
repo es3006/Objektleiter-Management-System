@@ -30,7 +30,6 @@ type
     dtpDatum: TDateTimePicker;
     lbHinweis: TLabel;
     sbWeiter: TSpeedButton;
-    imgTankgutschein: TImage;
     cbQuartal: TComboBox;
     Label3: TLabel;
     procedure Initialize;
@@ -43,7 +42,6 @@ type
     procedure lvWachschiessenClick(Sender: TObject);
     procedure lvWachschiessenRightClickCell(Sender: TObject; iItem, iSubItem: Integer);
     procedure sbWeiterClick(Sender: TObject);
-    procedure imgTankgutscheinClick(Sender: TObject);
     procedure cbQuartalSelect(Sender: TObject);
   private
     s1, s2: String;
@@ -116,7 +114,7 @@ begin
 
   AusbildungsartID := 4; // 4 = Wachschiessen
 
-  showMitarbeiterInComboBox(cbStammpersonal, 1, SelYear, false, OBJEKTID, 1);
+  showMitarbeiterInComboBox(cbStammpersonal, 1, SelYear, true, false, OBJEKTID, 1);
 
   cbJahrSelect(nil);
 
@@ -127,8 +125,6 @@ begin
   s2 := 'Ändern des Datums in einem Quartal'+#13#10+'Wählen Sie den Eintrag in der Liste und geben Sie das gewünschte Datum ein. Je nach gewähltem Datum wird das Datum im richtigen Quartal geändert"';
   currentIndex := 2;
   lbHinweis.Caption := s1;
-
-  imgTankgutschein.Visible := false;
 
   cbQuartal.ItemIndex := 0;
   cbQuartalSelect(nil);
@@ -262,7 +258,7 @@ begin
 
     cbStammpersonal.ItemIndex := 0;
 
-    showMitarbeiterInComboBox(cbStammpersonal, 1, SelYear, false, OBJEKTID, 1);
+    showMitarbeiterInComboBox(cbStammpersonal, 1, SelYear, true, false, OBJEKTID, 1);
 
     showAusbildungInListView(lvWachschiessen, AusbildungsartID, SelYear);
   end;
@@ -286,7 +282,6 @@ begin
 
   if (i <> -1) AND (q > 0) then
   begin
-    imgTankgutschein.Visible := true;
     jahr        := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
     quartal     := cbQuartal.ItemIndex;
     SelYear     := jahr;
@@ -304,7 +299,6 @@ begin
 
   if(i <> -1) AND (q = 0) then
   begin
-    imgTankgutschein.Visible := false;
     jahr        := StrToInt(cbJahr.Items[cbJahr.ItemIndex]);
     SelYear     := jahr;
 
@@ -325,31 +319,30 @@ end;
 
 
 procedure TFrameWachschiessen.Image1Click(Sender: TObject);
-begin
-  generatePrintableWachschiessenJahresansicht(selectedYear);
-end;
-
-
-
-
-
-
-
-
-
-
-procedure TFrameWachschiessen.imgTankgutscheinClick(Sender: TObject);
 var
   i: integer;
   quartal: string;
 begin
-  i := cbQuartal.ItemIndex;
-  if i > 0 then
+  generatePrintableWachschiessenJahresansicht(selectedYear);
+
+  if(cbQuartal.ItemIndex > 0) then
   begin
-    quartal := '0'+IntToStr(cbQuartal.ItemIndex);
-    generateTankgutschein(quartal, SelYear);
+    if MessageDlg('Wollen Sie auch den Antrag für die Tankgutscheine für dieses Quartal als PDF speichern?', mtConfirmation, [mbYes, mbNo], 0, mbYes) = mrYes then
+    begin
+      i := cbQuartal.ItemIndex;
+      if i > 0 then
+      begin
+        quartal := '0'+IntToStr(cbQuartal.ItemIndex);
+        generateTankgutschein(quartal, SelYear);
+      end;
+    end;
   end;
 end;
+
+
+
+
+
 
 
 
@@ -456,7 +449,7 @@ begin
 
 
     //Dateiname für zu speichernde Datei erzeugen
-    filename := 'Tankgutscheinantrag_'+ quartal+'_'+IntToStr(jahr)+'_'+OBJEKTNAME+'_'+OBJEKTORT;
+    filename := 'Tankgutscheinantrag '+ quartal+' '+IntToStr(jahr)+' '+OBJEKTNAME+' '+OBJEKTORT;
 
     //Aus Resource-Datei temporäre Html-Datei und daraus eine PDF-Datei im TEMP Verzeichnis erzeugen
     CreateHtmlAndPdfFileFromResource(filename, stlTemp, 'print_portrait.bat');
@@ -781,7 +774,7 @@ begin
     if(cbQuartal.ItemIndex = 0) then
     begin
       //Dateiname für zu speichernde Datei erzeugen
-      filename := 'Wachschiessen_Jahresansicht_'+ IntToStr(jahr)+'_'+OBJEKTNAME+'_'+OBJEKTORT;
+      filename := 'Wachschiessen Jahresansicht '+ IntToStr(jahr)+' '+OBJEKTNAME+' '+OBJEKTORT;
 
       //Aus Resource-Datei temporäre Html-Datei und daraus eine PDF-Datei im TEMP Verzeichnis erzeugen
       CreateHtmlAndPdfFileFromResource(filename, stlTemp);
@@ -792,7 +785,7 @@ begin
     else
     begin
       //Dateiname für zu speichernde Datei erzeugen
-      filename := 'Wachschiessen_Quartal_'+ IntToStr(cbQuartal.ItemIndex)+'_'+IntToStr(jahr)+'_'+OBJEKTNAME+'_'+OBJEKTORT;
+      filename := 'Wachschiessen Quartal '+ IntToStr(cbQuartal.ItemIndex)+' '+IntToStr(jahr)+' '+OBJEKTNAME+' '+OBJEKTORT;
 
       //Aus Resource-Datei temporäre Html-Datei und daraus eine PDF-Datei im TEMP Verzeichnis erzeugen
       CreateHtmlAndPdfFileFromResource(filename, stlTemp);

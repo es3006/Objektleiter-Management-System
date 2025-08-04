@@ -99,9 +99,9 @@ begin
   SelYear       := YearOf(dtpDatum.Date);
 
   if(OBJEKTID = 0) then
-    showMitarbeiterInComboBox(cbMitarbeiter, SelMonth, SelYear, false, 0, 3) //1 = Alle wenn als esd angemeldet
+    showMitarbeiterInComboBox(cbMitarbeiter, SelMonth, SelYear, true, false, 0, 3) //1 = Alle wenn als esd angemeldet
   else
-    showMitarbeiterInComboBox(cbMitarbeiter, SelMonth, SelYear, false, OBJEKTID, 1); //1 = Stamm  wenn als ol angemeldet
+    showMitarbeiterInComboBox(cbMitarbeiter, SelMonth, SelYear, true, false, OBJEKTID, 1); //1 = Stamm  wenn als ol angemeldet
 
   //Datum auf gespeichertes Datum setzen das übergeben wird.
   dtpDatum.Date := StrToDate(MELDEDATUM);
