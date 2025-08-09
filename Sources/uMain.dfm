@@ -829,11 +829,14 @@ object fMain: TfMain
         Width = 300
       end
       item
-        Width = 600
+        Width = 100
       end
       item
         Alignment = taCenter
-        Width = 100
+        Width = 200
+      end
+      item
+        Width = 50
       end>
     ParentShowHint = False
     ShowHint = True
@@ -986,8 +989,8 @@ object fMain: TfMain
     end
   end
   object pnLogedUser: TPanel
-    Left = 804
-    Top = 189
+    Left = 8
+    Top = 657
     Width = 185
     Height = 41
     BevelOuter = bvNone
@@ -1001,6 +1004,23 @@ object fMain: TfMain
     ParentBackground = False
     ParentFont = False
     TabOrder = 2
+  end
+  object pnlOnlineStatus: TPanel
+    Left = 215
+    Top = 657
+    Width = 185
+    Height = 41
+    BevelOuter = bvNone
+    Caption = 'Offline'
+    Color = clRed
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentBackground = False
+    ParentFont = False
+    TabOrder = 3
   end
   object MainMenu1: TMainMenu
     Left = 216
@@ -1026,6 +1046,13 @@ object fMain: TfMain
         end
       end
       object N2: TMenuItem
+        Caption = '-'
+      end
+      object NachUpdatesuchen1: TMenuItem
+        Caption = 'Nach Update suchen'
+        OnClick = NachUpdatesuchen1Click
+      end
+      object N5: TMenuItem
         Caption = '-'
       end
       object Beenden1: TMenuItem
@@ -1063,6 +1090,17 @@ object fMain: TfMain
         Caption = 'Pr'#252'fe auf ablaufende Ausweise'
         ShortCut = 49217
         OnClick = PrfeauffehlendeStammdaten2Click
+      end
+    end
+    object Hilfe1: TMenuItem
+      Caption = 'Hilfe'
+      object Programmhilfe1: TMenuItem
+        Caption = 'Programmhilfe'
+        OnClick = Programmhilfe1Click
+      end
+      object Programmbeschreibung1: TMenuItem
+        Caption = 'Programmbeschreibung'
+        OnClick = Programmbeschreibung1Click
       end
     end
     object Einstellungen2: TMenuItem
@@ -11017,8 +11055,8 @@ object fMain: TfMain
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 376
-    Top = 488
+    Left = 64
+    Top = 344
   end
   object FDSQLiteBackup1: TFDSQLiteBackup
     DriverLink = FDPhysSQLiteDriverLink1
@@ -11038,5 +11076,11 @@ object fMain: TfMain
     Version = '1.0.2.0'
     Left = 488
     Top = 352
+  end
+  object TimerOnlineOffline: TTimer
+    Interval = 30000
+    OnTimer = TimerOnlineOfflineTimer
+    Left = 64
+    Top = 420
   end
 end

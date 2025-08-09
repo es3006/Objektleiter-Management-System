@@ -60,6 +60,11 @@ uses
 
 
 
+
+
+
+
+
 //In einer ListView nach einer ID in einer Spalte suchen
 //Rückgabe wenn gefunden = true
 function ListViewContainsIntInColumn(AListView: TListView; AValue: Integer; AColumn: Integer): Boolean;
@@ -247,6 +252,21 @@ begin
   if not SysUtils.FileExists('WebView2Loader_x64.dll') then
   begin
     SaveResourceToFile('WEBVIEWLOADER', 'WebView2Loader_x64.dll');
+  end;
+
+  if not SysUtils.FileExists('ssleay32.dll') then
+  begin
+    SaveResourceToFile('SSLEAY32', 'ssleay32.dll');
+  end;
+
+  if not SysUtils.FileExists('libeay32.dll') then
+  begin
+    SaveResourceToFile('LIBEAY32', 'libeay32.dll');
+  end;
+
+  if not SysUtils.FileExists('sqlite3.dll') then
+  begin
+    SaveResourceToFile('SQLITE3DLL64BIT', 'sqlite3.dll');
   end;
 
   if not SysUtils.DirectoryExists('SCRIPTS') then

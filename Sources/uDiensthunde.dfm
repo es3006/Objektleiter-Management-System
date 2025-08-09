@@ -29,7 +29,6 @@ object fDiensthunde: TfDiensthunde
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 587
     object Label12: TLabel
       Left = 10
       Top = 10
@@ -55,6 +54,15 @@ object fDiensthunde: TfDiensthunde
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+    end
+    object btnNew: TButton
+      Left = 408
+      Top = 13
+      Width = 171
+      Height = 37
+      Caption = 'Neuer Diensthund'
+      TabOrder = 0
+      OnClick = btnNewClick
     end
   end
   object lvDiensthunde: TAdvListView
@@ -111,6 +119,7 @@ object fDiensthunde: TfDiensthunde
     DetailView.Font.Height = -11
     DetailView.Font.Name = 'Tahoma'
     DetailView.Font.Style = []
+    OnRightClickCell = lvDiensthundeRightClickCell
     Version = '1.9.1.1'
   end
   object edDiensthundname: TEdit
@@ -120,6 +129,7 @@ object fDiensthunde: TfDiensthunde
     Height = 27
     ImeName = 'German'
     TabOrder = 2
+    OnChange = edDiensthundnameChange
   end
   object btnAddUpdate: TButton
     Left = 456
@@ -127,6 +137,7 @@ object fDiensthunde: TfDiensthunde
     Width = 123
     Height = 37
     Caption = 'Hinzuf'#252'gen'
+    Enabled = False
     TabOrder = 3
     OnClick = btnAddUpdateClick
   end

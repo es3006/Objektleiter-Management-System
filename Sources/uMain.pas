@@ -26,6 +26,14 @@ type
 
 
 
+const
+  PROGRAMMNAME = 'Objektleiter_Management';
+  PROGRAMMVERSION = '2.1.0.0';
+  LASTCHANGEDATE  = '09.08.2025';
+  ENCRYPTIONKEY = 'mdklwuje90321iks,2moijlwödmeu3290dnu2i1p,sdim1239';
+  WriteErrorsInFile = true;
+
+
 
 type
   TfMain = class(TForm)
@@ -73,6 +81,13 @@ type
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
     pnLogedUser: TPanel;
+    NachUpdatesuchen1: TMenuItem;
+    N5: TMenuItem;
+    Hilfe1: TMenuItem;
+    Programmhilfe1: TMenuItem;
+    Programmbeschreibung1: TMenuItem;
+    TimerOnlineOffline: TTimer;
+    pnlOnlineStatus: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure Einstellungen1Click(Sender: TObject);
@@ -105,6 +120,10 @@ type
     procedure N4Click(Sender: TObject);
     procedure PrfeauffehlendeStammdaten2Click(Sender: TObject);
     procedure PrfeauffehlendeStammdaten1Click(Sender: TObject);
+    procedure NachUpdatesuchen1Click(Sender: TObject);
+    procedure Programmhilfe1Click(Sender: TObject);
+    procedure Programmbeschreibung1Click(Sender: TObject);
+    procedure TimerOnlineOfflineTimer(Sender: TObject);
   private
 
   public
@@ -156,9 +175,13 @@ var
   SAVEPATH_Munitionstausch: string;
 
 
-const
-  ENCRYPTIONKEY = 'mdklwuje90321iks,2moijlwödmeu3290dnu2i1p,sdim1239';
-  PROGRAMMVERSION = '1.2.2.4';
+  WebsiteURL: string;
+  ScriptURL: string;
+  HilfeURL: string;
+  UpdateURL: string;
+  ProgrammURL: string;
+
+
 
 
 
@@ -168,7 +191,7 @@ implementation
 uses uFirstStart, uDBSettings, uDBFunktionen, uFunktionen, uWebBrowser, uMitarbeiter,
      uMitarbeiterNeu, uMitarbeiterEdit, uObjekte, uObjekteNeu, uWaffenbestand,
      uEinstellungen_WaffenMunition, uAnmeldung, uEinstellungen_Objekt, uZugangsdaten, uDiensthunde,
-     uEinstellungen_Programm;
+     uEinstellungen_Programm, uUpdate, uErrorLog;
 
 {$R *.dfm}
 {$R MyResources.RES}
@@ -181,8 +204,6 @@ var
   LetzterCheck, Heute: TDateTime;
   CheckAusweiseStr: string;
 begin
-  Heute := now;
-
   ini := TIniFile.Create(PATH + 'settings.ini');
   try
     SAVEPATH_Wochenberichte := ini.ReadString('PATH','Wochenberichte','');
@@ -383,9 +404,6 @@ begin
   FDConnection1.Open(); // Verbindung öffnen
 
   FDSQLiteBackup1.Database := DBNAME;
-
-  SaveResourceToFile('LOGINCLOSED', TEMPPATH+'Schloss_Zu_256.png');
-  SaveResourceToFile('LOGINOPENED', TEMPPATH+'Schloss_Offen_256.png');
 end;
 
 
@@ -414,6 +432,14 @@ begin
   pnLogedUser.Left   := r.Left;      //Progressbar to
   pnLogedUser.Width  := r.Right - r.Left; //fit with panel
   pnLogedUser.Height := r.Bottom - r.Top;
+
+  StatusBar1.Perform(SB_GETRECT, 1, Integer(@R));
+  pnlOnlineStatus.Parent := Statusbar1;  //adopt the Progressbar
+
+  pnlOnlineStatus.Top    := r.Top;      //set size of
+  pnlOnlineStatus.Left   := r.Left;      //Progressbar to
+  pnlOnlineStatus.Width  := r.Right - r.Left; //fit with panel
+  pnlOnlineStatus.Height := r.Bottom - r.Top;
 
 
   // Globale FormatSettings konfigurieren
@@ -463,6 +489,39 @@ begin
   end;
 
   pnLogedUser.Caption := 'Angemeldet als: ' + OBJEKTLEITERNAME;
+
+
+
+  //Prüfen ob eine Internetverbindung besteht
+      CheckInternetAsync(WebsiteURL, procedure(IsOnline: Boolean)
+      begin
+        //Internetverbindung besteht
+        if IsOnline then
+        begin
+          pnlOnlinestatus.Caption := 'Online';
+          pnlOnlinestatus.Color := clGreen;
+
+          GetRemoteVersionAsync(UpdateURL + 'version.txt', procedure(RemoteVersion: string)
+          begin
+            if RemoteVersion = '' then
+              Exit;
+
+            if VersionCompare(PROGRAMMVERSION, RemoteVersion) < 0 then
+            begin
+              StatusBar1.Panels[2].Text := 'Update (' + RemoteVersion + ') verfügbar';
+            end
+            else
+              StatusBar1.Panels[1].Text := 'Aktuelle Version';
+
+            StatusBar1.Invalidate;
+          end);
+        end
+        else
+        begin
+          pnlOnlinestatus.Caption := 'Offline';
+          pnlOnlinestatus.Color := clRed;
+        end;
+      end);
 end;
 
 
@@ -591,6 +650,30 @@ begin
   CheckAblaufendeAusweise(OBJEKTID);
 end;
 
+procedure TfMain.Programmbeschreibung1Click(Sender: TObject);
+var
+  URL: string;
+begin
+  URL := WebsiteURL;
+  ShellExecute(0, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL);
+end;
+
+
+
+
+procedure TfMain.Programmhilfe1Click(Sender: TObject);
+var
+  URL: string;
+begin
+  URL := HilfeURL + 'index.html';
+  ShellExecute(0, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL);
+end;
+
+
+
+
+
+
 procedure TfMain.mProgrammeinstellungenClick(Sender: TObject);
 begin
   fEinstellungen_Programm.show;
@@ -603,6 +686,28 @@ procedure TfMain.N4Click(Sender: TObject);
 begin
   BackupDatabase;
 end;
+
+procedure TfMain.NachUpdatesuchen1Click(Sender: TObject);
+begin
+  TLogging.LogMessage(OLUSERNAME, 'Main', 'MainMenu Nach Update suchen', 'geöffnet');
+
+
+  //Prüfen ob eine Internetverbindung besteht
+  CheckInternetAsync(WebsiteURL, procedure(IsOnline: Boolean)
+  begin
+    //Internetverbindung besteht
+    if IsOnline then
+    begin
+      CheckAndUpdateIfAvailableAsync(PROGRAMMVERSION); // z.B. '1.0.0.7'
+    end
+    else
+    begin
+      ShowMessage('Keine Internetverbindung. Die Updateprüfung wird abgebrochen.');
+    end;
+  end);
+end;
+
+
 
 procedure TfMain.tbGesamtausbildungClick(Sender: TObject);
 var
@@ -886,8 +991,43 @@ end;
 
 procedure TfMain.Timer1Timer(Sender: TObject);
 begin
-  StatusBar1.Panels[2].Text := DateTimeToStr(Now);
+  StatusBar1.Panels[3].Text := DateTimeToStr(Now);
 end;
+
+procedure TfMain.TimerOnlineOfflineTimer(Sender: TObject);
+begin
+  CheckInternetAsync(WebsiteURL, procedure(IsOnline: Boolean)
+  begin
+    if IsOnline then
+    begin
+      pnlOnlinestatus.Caption := 'Online';
+      pnlOnlinestatus.Color := clGreen;
+
+      GetRemoteVersionAsync(UpdateURL + 'version.txt', procedure(RemoteVersion: string)
+      begin
+        if RemoteVersion = '' then
+          Exit;
+
+        if VersionCompare(PROGRAMMVERSION, RemoteVersion) < 0 then
+        begin
+          StatusBar1.Panels[2].Text := 'Update (' + RemoteVersion + ') verfügbar';
+        end
+        else
+          StatusBar1.Panels[1].Text := 'Aktuelle Version';
+          StatusBar1.Invalidate;
+      end);
+    end
+    else
+    begin
+      pnlOnlinestatus.Caption := 'Offline';
+      pnlOnlinestatus.Color := clRed;
+    end;
+  end);
+end;
+
+
+
+
 
 procedure TfMain.tbErsteHilfeClick(Sender: TObject);
 var
@@ -940,7 +1080,12 @@ end;
 
 
 
-
+initialization
+  WebsiteURL  := 'https://esd.developercorner.de/API/Programme/Objektleiter_Management/Version2/';
+  ScriptURL   := WebsiteURL + 'scripts/';
+  HilfeURL    := WebsiteURL + 'hilfe/';
+  UpdateURL   := WebsiteURL + 'update/';
+  ProgrammURL := WebsiteURL + 'website/';
 
 
 

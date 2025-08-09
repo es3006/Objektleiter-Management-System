@@ -18,7 +18,6 @@ type
     edPassword: TLabeledEdit;
     btnAnmelden: TButton;
     Image1: TImage;
-    Timer1: TTimer;
     procedure btnAnmeldenClick(Sender: TObject);
     procedure edUsernameKeyPress(Sender: TObject; var Key: Char);
     procedure edPasswordKeyPress(Sender: TObject; var Key: Char);
@@ -26,12 +25,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure sbShowPWMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure sbShowPWMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure Timer1Timer(Sender: TObject);
   private
-    step: Integer;
-    waitTicks: Integer; // z.B. 5 Timer-Intervalle warten
     procedure ShakeForm;
   public
     ABSENDER: string;
@@ -100,15 +94,15 @@ begin
         LOGGEDIN := true;
 
         fMain.tbWochenberichtClick(nil);
-        Timer1.Enabled := true;
 
+        fAnmeldung.close;
         exit;
       end
       else
       begin
-      ShakeForm;
-        PlayResourceMP3('WRONGPW', 'TEMP\LoginError.wav');
+        ShakeForm;
 
+        PlayResourceMP3('WRONGPW', 'TEMP\LoginError.wav');
 
         OLUSERNAME := '';
         LOGGEDIN := false;
@@ -116,8 +110,8 @@ begin
 
         exit;
       end;
-      fMain.tbWochenberichtClick(nil);
-      Close;
+    //  fMain.tbWochenberichtClick(nil);
+    //  Close;
     end;
   finally
     FDQuery.Free;
@@ -159,8 +153,6 @@ end;
 procedure TfAnmeldung.FormCreate(Sender: TObject);
 begin
   LOGGEDIN := false;
-  step := 0;
-  waitTicks := 0;
 end;
 
 procedure TfAnmeldung.FormKeyPress(Sender: TObject; var Key: Char);
@@ -174,48 +166,10 @@ end;
 
 procedure TfAnmeldung.FormShow(Sender: TObject);
 begin
-  image1.Picture.LoadFromFile(TEMPPATH + 'Schloss_Zu_256.png');
-
   if(edUsername.Text = '') then
     edUsername.SetFocus
   else
     edPassword.SetFocus;
-end;
-
-procedure TfAnmeldung.sbShowPWMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  edPassword.PasswordChar := #0;
-end;
-
-procedure TfAnmeldung.sbShowPWMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  edPassword.PasswordChar := '*';
-end;
-
-procedure TfAnmeldung.Timer1Timer(Sender: TObject);
-begin
-  case step of
-    0: begin
-         image1.Picture.LoadFromFile(TEMPPATH + 'Schloss_Offen_256.png');
-         step := 1;
-         waitTicks := 25;  // z.B. 5 * Timer.Interval ms
-       end;
-
-    1: begin
-         Dec(waitTicks);
-         if waitTicks <= 0 then
-           step := 2;
-       end;
-
-    2: begin
-         Top := Top - 50;
-         if Top <= -100 then
-         begin
-           Timer1.Enabled := False;
-           Close;
-         end;
-       end;
-  end;
 end;
 
 
@@ -236,6 +190,7 @@ begin
       Self.Left := OriginalLeft + ShakeOffset
     else
       Self.Left := OriginalLeft - ShakeOffset;
+
     Sleep(ShakeDelay);
     Application.ProcessMessages; // Ermöglicht das Aktualisieren der GUI
   end;

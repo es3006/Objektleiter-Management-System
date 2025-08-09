@@ -1,8 +1,12 @@
-program Objektleiter_Management;
+﻿program Objektleiter_Management;
 
 uses
   uBootstrap,
+  System.SysUtils,
+  System.Classes,
   Vcl.Forms,
+  Vcl.Dialogs,
+  Winapi.Windows,
   uMain in 'uMain.pas' {fMain},
   uFirstStart in 'uFirstStart.pas' {fFirstStart},
   uFunktionen in 'uFunktionen.pas',
@@ -32,11 +36,46 @@ uses
   uZugangsdaten in 'uZugangsdaten.pas' {fZugangsdaten},
   uDiensthunde in 'uDiensthunde.pas' {fDiensthunde},
   uEinstellungen_Programm in 'uEinstellungen_Programm.pas' {fEinstellungen_Programm},
-  uFrameAusbildung in 'uFrameAusbildung.pas' {FrameAusbildung: TFrame};
+  uFrameAusbildung in 'uFrameAusbildung.pas' {FrameAusbildung: TFrame},
+  uUpdate in 'uUpdate.pas',
+  uErrorLog in 'uErrorLog.pas';
 
 {$R *.res}
 
+var
+  MutexHandle: THandle;
+  MutexName: string;
+  IsUpdateRestart: Boolean;
+  LogPath: string;
+
+
+
 begin
+  // ➤ Erkennung, ob das Programm durch das Update neu gestartet wurde
+  IsUpdateRestart := ParamStr(1).ToLower = '--replace';
+
+  // ➤ Wenn das Programm mit --replace gestartet wurde → Update anwenden
+  if IsUpdateRestart then
+  begin
+    ReplaceAndRestart;
+    Exit;
+  end
+  else
+  begin
+    if(FileExists(ExtractFilePath(ParamStr(0))+'application.log')) then
+      System.SysUtils.DeleteFile(LogPath);
+  end;
+
+  // ➤ Nur eine Instanz erlauben
+  MutexName := 'Global\Objektleiter_Management2';
+  MutexHandle := CreateMutex(nil, True, PChar(MutexName));
+  if GetLastError = ERROR_ALREADY_EXISTS then
+  begin
+    ShowMessage('Das Programm läuft bereits!');
+    Exit;
+  end;
+
+  try
   Application.Initialize;
   Application.MainFormOnTaskbar := true;
   Application.CreateForm(TfMain, fMain);
@@ -59,4 +98,8 @@ begin
   Application.CreateForm(TfDiensthunde, fDiensthunde);
   Application.CreateForm(TfEinstellungen_Programm, fEinstellungen_Programm);
   Application.Run;
+finally
+    if MutexHandle <> 0 then
+      CloseHandle(MutexHandle);
+  end;
 end.

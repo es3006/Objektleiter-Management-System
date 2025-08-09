@@ -187,9 +187,9 @@
       OnSelect = cbWaffennummerSelect
     end
     object btnInsertAllStamm: TButton
-      Left = 88
+      Left = 16
       Top = 20
-      Width = 257
+      Width = 329
       Height = 40
       Caption = 'Komplettes Stammpersonal hinzuf'#252'gen'
       TabOrder = 3
@@ -223,7 +223,7 @@
       item
         Caption = 'MitarbeiterID'
         MaxWidth = 1
-        Width = 1
+        Width = 0
       end
       item
         Caption = 'Sortierung'
@@ -276,7 +276,7 @@
       item
         Alignment = taCenter
         Caption = 'DH-Name'
-        Width = 209
+        Width = 210
       end>
     GridLines = True
     HideSelection = False
@@ -332,6 +332,7 @@
     DetailView.Font.Name = 'Tahoma'
     DetailView.Font.Style = []
     Version = '1.9.1.1'
+    ExplicitHeight = 471
   end
   object Panel1: TPanel
     Left = 0

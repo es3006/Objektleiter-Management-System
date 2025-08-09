@@ -1,5 +1,5 @@
 @ECHO OFF
 
-brcc32 -fo ../../../../Gesamtausbildung Gesamtausbildung.rc
+brcc32 -fo"..\..\Sources\Gesamtausbildung.res" Gesamtausbildung.rc
 
 Pause

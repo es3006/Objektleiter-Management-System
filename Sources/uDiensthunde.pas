@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, AdvListV, Vcl.StdCtrls,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, AdvListV, Vcl.StdCtrls, System.UITypes,
   Vcl.ExtCtrls, FireDAC.Stan.Param, FireDAC.Phys.SQLite, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
@@ -16,10 +16,13 @@ type
     Label1: TLabel;
     edDiensthundname: TEdit;
     btnAddUpdate: TButton;
-    procedure lvDiensthundeSelectItem(Sender: TObject; Item: TListItem;
-      Selected: Boolean);
+    btnNew: TButton;
+    procedure lvDiensthundeSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure FormShow(Sender: TObject);
     procedure btnAddUpdateClick(Sender: TObject);
+    procedure lvDiensthundeRightClickCell(Sender: TObject; iItem, iSubItem: Integer);
+    procedure btnNewClick(Sender: TObject);
+    procedure edDiensthundnameChange(Sender: TObject);
   private
     procedure InsertNewEntryInDB;
     procedure UpdateEntryInDB(ID: integer);
@@ -31,6 +34,8 @@ type
 var
   fDiensthunde: TfDiensthunde;
   NEWENTRY: boolean;
+  SelDiensthundID: integer;
+
 
 
 implementation
@@ -44,29 +49,29 @@ uses
 
 procedure TfDiensthunde.btnAddUpdateClick(Sender: TObject);
 var
-  l: TListItem;
   i: integer;
 begin
   if(NEWENTRY = true) then
   begin
+    showmessage('INSERT');
     InsertNewEntryInDB;
-    edDiensthundname.Clear;
-    NEWENTRY := false;
-    btnAddUpdate.Caption := 'Hinzufügen';
-  end
-  else
+  end;
+
+  if(NEWENTRY = false) then
   begin
+    showmessage('UPDATE');
     i := lvDiensthunde.ItemIndex;
     if(i<>-1) then
     begin
       UpdateEntryInDB(StrToInt(lvDiensthunde.Items[i].SubItems[0]));
-      edDiensthundname.Clear;
     end;
-
-    lvDiensthunde.ItemIndex := -1;
-    NEWENTRY := true;
-    btnAddUpdate.Caption := 'Hinzufügen';
   end;
+
+  NEWENTRY := true;
+
+  edDiensthundname.Clear;
+  edDiensthundname.SetFocus;
+  btnAddUpdate.Enabled := false;
 end;
 
 
@@ -142,12 +147,66 @@ end;
 
 
 
+procedure TfDiensthunde.btnNewClick(Sender: TObject);
+begin
+  NEWENTRY := true;
+  lvDiensthunde.ItemIndex := -1;
+  edDiensthundname.Clear;
+  edDiensthundname.SetFocus;
+  btnAddUpdate.Caption := 'Hinzufügen';
+end;
+
+
+
+
+procedure TfDiensthunde.edDiensthundnameChange(Sender: TObject);
+begin
+  btnAddUpdate.Enabled := true;
+end;
+
 procedure TfDiensthunde.FormShow(Sender: TObject);
 begin
   NEWENTRY := true;
 
   showAlleDiensthundeInListView;
 end;
+
+
+
+
+
+procedure TfDiensthunde.lvDiensthundeRightClickCell(Sender: TObject; iItem, iSubItem: Integer);
+var
+  FDQuery: TFDQuery;
+begin
+  if(MessageDlg('Wollen Sie diesen Diensthund wirklich löschen?', mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+  begin
+    FDQuery := TFDquery.Create(nil);
+    try
+      FDQuery.Connection := fMain.FDConnection1;
+
+      with FDQuery do
+      begin
+        SQL.Text := 'DELETE FROM diensthunde WHERE id = :ID;';
+        Params.ParamByName('ID').AsInteger := SelDiensthundID;
+
+        try
+          ExecSQL;
+        except
+          on E: Exception do
+            ShowMessage('Fehler beim löschen des Diensthundes aus der Tabelle "diensthunde": ' + E.Message);
+        end;
+
+      end;
+    finally
+      lvDiensthunde.DeleteSelected;
+      FDQuery.Free;
+    end;
+  end;
+end;
+
+
+
 
 procedure TfDiensthunde.lvDiensthundeSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
 var
@@ -157,14 +216,20 @@ begin
 
   if(i <> -1) then
   begin
-    edDiensthundname.Text := lvDiensthunde.Items[i].Caption;
     NEWENTRY := false;
+    SelDiensthundID := StrToInt(lvDiensthunde.Items[i].SubItems[0]);
     btnAddUpdate.Caption := 'Speichern';
+    edDiensthundname.Text := lvDiensthunde.Items[i].Caption;
+    edDiensthundname.SetFocus;
   end
   else
   begin
     NEWENTRY := true;
+    SelDiensthundID := 0;
     btnAddUpdate.Caption := 'Hinzufügen';
+    edDiensthundname.Clear;
+    edDiensthundname.SetFocus;
+    btnAddUpdate.Enabled := false;
   end;
 end;
 

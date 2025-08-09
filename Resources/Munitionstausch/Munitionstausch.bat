@@ -1,5 +1,5 @@
 @ECHO OFF
 
-brcc32 -fo ../../../../Munitionstausch Munitionstausch.rc
+brcc32 -fo"..\..\Sources\Munitionstausch.res" Munitionstausch.rc
 
 Pause

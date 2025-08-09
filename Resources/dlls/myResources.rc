@@ -1,0 +1,7 @@
+WRONGPW RCDATA ".\audio\wrongpw.WAV"
+WHOOSH RCDATA ".\audio\whoosh.WAV"
+BLING RCDATA ".\audio\bling.WAV"
+CLICK RCDATA ".\audio\click.WAV"
+SQLITE3DLL64BIT RCDATA ".\dlls\sqlite3.DLL"
+SSLEAY32 RCDATA ".\dlls\ssleay32.DLL"
+LIBEAY32 RCDATA ".\dlls\libeay32.DLL"
