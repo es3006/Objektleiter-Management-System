@@ -201,7 +201,7 @@ uses uFirstStart, uDBSettings, uDBFunktionen, uFunktionen, uWebBrowser, uMitarbe
 procedure TfMain.ReadSettingsFromIni;
 var
   ini: TIniFile;
-  LetzterCheck, Heute: TDateTime;
+  LetzterCheck: TDateTime;
   CheckAusweiseStr: string;
 begin
   ini := TIniFile.Create(PATH + 'settings.ini');

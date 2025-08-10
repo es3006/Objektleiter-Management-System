@@ -39,6 +39,8 @@ type
     btnInsertAllStamm: TButton;
     lbHinzufügen: TLabel;
     btnSaveEntryInDB: TButton;
+    N1: TMenuItem;
+    N2: TMenuItem;
     procedure Initialize;
     procedure cbMonatSelect(Sender: TObject);
     procedure cbAushilfenSelect(Sender: TObject);
@@ -57,6 +59,7 @@ type
     procedure btnSaveEntryInDBClick(Sender: TObject);
     procedure cbWaffennummerSelect(Sender: TObject);
     procedure lvWachpersonalDblClick(Sender: TObject);
+    procedure N2Click(Sender: TObject);
   private
     s1, s2, s3: String;
     currentIndex: Integer;
@@ -959,6 +962,139 @@ procedure TFrameWachpersonal.lvWachpersonalKeyPress(Sender: TObject; var Key: Ch
 begin
   Key := #0;
 end;
+
+
+
+
+procedure TFrameWachpersonal.N2Click(Sender: TObject);
+var
+  Q: TFDQuery;
+  i, selEntryID: Integer;
+  vorname, nachname, geburtsdatum, eintrittsdatum,
+  ausweisnr, ausweisgueltigbis, sonderausweisnr, sonderausweisgueltigbis: string;
+  altVorname, altNachname, altGeburtsdatum, altEintrittsdatum,
+  altAusweisnr, altAusweisgueltigbis, altSonderausweisnr, altSonderausweisgueltigbis: string;
+begin
+  i := lvWachpersonal.ItemIndex;
+  if i = -1 then Exit;
+
+  if MessageDlg(
+       'Haben Sie Daten dieses Mitarbeiters in den Stammdaten geändert und wollen Sie diesen Eintrag jetzt aktualisieren?',
+       mtConfirmation, [mbYes, mbNo], 0
+     ) <> mrYes then
+    Exit;
+
+  selEntryID := StrToIntDef(lvWachpersonal.Items[i].Caption, -1);
+  if selEntryID = -1 then Exit;
+
+  Q := TFDQuery.Create(nil);
+  try
+    Q.Connection := fMain.FDConnection1;
+
+    try
+      // 1. Aktuelle Daten aus mitarbeiter laden
+      Q.SQL.Text :=
+        'SELECT vorname, nachname, geburtsdatum, eintrittsdatum, ' +
+        'ausweisnr, ausweisgueltigbis, sonderausweisnr, sonderausweisgueltigbis ' +
+        'FROM mitarbeiter WHERE id = :MAID';
+      Q.ParamByName('MAID').AsInteger := StrToIntDef(lvWachpersonal.Items[i].SubItems[0], -1);
+      Q.Open;
+
+      if Q.IsEmpty then Exit;
+
+      vorname := Q.FieldByName('vorname').AsString;
+      nachname := Q.FieldByName('nachname').AsString;
+      geburtsdatum := Q.FieldByName('geburtsdatum').AsString;
+      eintrittsdatum := Q.FieldByName('eintrittsdatum').AsString;
+      ausweisnr := Q.FieldByName('ausweisnr').AsString;
+      ausweisgueltigbis := Q.FieldByName('ausweisgueltigbis').AsString;
+      sonderausweisnr := Q.FieldByName('sonderausweisnr').AsString;
+      sonderausweisgueltigbis := Q.FieldByName('sonderausweisgueltigbis').AsString;
+
+      Q.Close;
+
+      // 2. Vorhandene Daten aus wachpersonal laden
+      Q.SQL.Text :=
+        'SELECT vorname, nachname, geburtsdatum, eintrittsdatum, ' +
+        'ausweisnr, ausweisgueltigbis, sonderausweisnr, sonderausweisgueltigbis ' +
+        'FROM wachpersonal WHERE id = :ID';
+      Q.ParamByName('ID').AsInteger := selEntryID;
+      Q.Open;
+
+      if Q.IsEmpty then Exit;
+
+      altVorname := Q.FieldByName('vorname').AsString;
+      altNachname := Q.FieldByName('nachname').AsString;
+      altGeburtsdatum := Q.FieldByName('geburtsdatum').AsString;
+      altEintrittsdatum := Q.FieldByName('eintrittsdatum').AsString;
+      altAusweisnr := Q.FieldByName('ausweisnr').AsString;
+      altAusweisgueltigbis := Q.FieldByName('ausweisgueltigbis').AsString;
+      altSonderausweisnr := Q.FieldByName('sonderausweisnr').AsString;
+      altSonderausweisgueltigbis := Q.FieldByName('sonderausweisgueltigbis').AsString;
+
+      Q.Close;
+
+      // 3. Vergleich
+      if (vorname = altVorname) and
+         (nachname = altNachname) and
+         (geburtsdatum = altGeburtsdatum) and
+         (eintrittsdatum = altEintrittsdatum) and
+         (ausweisnr = altAusweisnr) and
+         (ausweisgueltigbis = altAusweisgueltigbis) and
+         (sonderausweisnr = altSonderausweisnr) and
+         (sonderausweisgueltigbis = altSonderausweisgueltigbis) then
+      begin
+        ShowMessage('Sie haben bereits die aktuellen Mitarbeiterdaten gespeichert. Es wurde nichts geändert.');
+        Exit;
+      end;
+
+      // 4. Update ausführen
+      Q.SQL.Text :=
+        'UPDATE wachpersonal SET vorname = :VORNAME, nachname = :NACHNAME, geburtsdatum = :GEBURTSDATUM, ' +
+        'eintrittsdatum = :EINTRITTSDATUM, ausweisnr = :AUSWEISNR, ausweisgueltigbis = :AUSWEISGUELTIGBIS, ' +
+        'sonderausweisnr = :SONDERAUSWEISNR, sonderausweisgueltigbis = :SONDERAUSWEISGUELTIGBIS ' +
+        'WHERE id = :ID';
+      Q.ParamByName('ID').AsInteger := selEntryID;
+      Q.ParamByName('VORNAME').AsString := vorname;
+      Q.ParamByName('NACHNAME').AsString := nachname;
+      Q.ParamByName('GEBURTSDATUM').AsString := geburtsdatum;
+      Q.ParamByName('EINTRITTSDATUM').AsString := eintrittsdatum;
+      Q.ParamByName('AUSWEISNR').AsString := ausweisnr;
+      Q.ParamByName('AUSWEISGUELTIGBIS').AsString := ausweisgueltigbis;
+      Q.ParamByName('SONDERAUSWEISNR').AsString := sonderausweisnr;
+      Q.ParamByName('SONDERAUSWEISGUELTIGBIS').AsString := sonderausweisgueltigbis;
+      Q.ExecSQL;
+
+      // 5. ListView aktualisieren
+      lvWachpersonal.Items[i].SubItems[2] := nachname;
+      lvWachpersonal.Items[i].SubItems[3] := vorname;
+      lvWachpersonal.Items[i].SubItems[4] := ConvertSQLDateToGermanDate(eintrittsdatum, false, false);
+      lvWachpersonal.Items[i].SubItems[5] := ConvertSQLDateToGermanDate(geburtsdatum, false, false);
+      lvWachpersonal.Items[i].SubItems[6] := ausweisnr;
+      lvWachpersonal.Items[i].SubItems[7] := ConvertSQLDateToGermanDate(ausweisgueltigbis, false, false);
+      lvWachpersonal.Items[i].SubItems[8] := sonderausweisnr;
+      lvWachpersonal.Items[i].SubItems[9] := ConvertSQLDateToGermanDate(sonderausweisgueltigbis, false, false);
+
+    except
+      on E: Exception do
+        ShowMessage('Fehler: ' + E.Message);
+    end;
+
+  finally
+    Q.Free;
+  end;
+end;
+
+
+
+
+
+
+
+
+
+
+
 
 
 

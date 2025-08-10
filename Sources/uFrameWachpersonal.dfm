@@ -402,6 +402,13 @@
     object Mitarbeiterentfernen1: TMenuItem
       Action = acDelMaFromWachpersonal
     end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object N2: TMenuItem
+      Caption = 'Mitarbeiter in Stammdaten ge'#228'ndert?  Jetzt aktualisieren'
+      OnClick = N2Click
+    end
   end
   object ActionList1: TActionList
     Left = 192
