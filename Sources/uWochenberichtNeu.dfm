@@ -37,6 +37,20 @@ object fWochenberichtNeu: TfWochenberichtNeu
       Width = 5
       Height = 19
     end
+    object lbSchonDa: TLabel
+      Left = 18
+      Top = 19
+      Width = 346
+      Height = 19
+      Caption = 'Der Wochenbericht f'#252'r kw0 wurde bereits erstellt'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -16
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      Visible = False
+    end
     object btnSaveNewWochenbericht: TButton
       Left = 528
       Top = 12
@@ -717,20 +731,6 @@ object fWochenberichtNeu: TfWochenberichtNeu
       Width = 23
       Height = 19
       Caption = 'KW'
-    end
-    object lbSchonDa: TLabel
-      Left = 328
-      Top = 19
-      Width = 346
-      Height = 19
-      Caption = 'Der Wochenbericht f'#252'r kw0 wurde bereits erstellt'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
-      Font.Height = -16
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      Visible = False
     end
     object SpeedButton1: TSpeedButton
       Left = 814

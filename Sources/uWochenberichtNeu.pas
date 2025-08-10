@@ -83,9 +83,9 @@ type
     Label18: TLabel;
     lbKW: TLabel;
     Label7: TLabel;
-    lbSchonDa: TLabel;
     dtpDatum: TDateTimePicker;
     SpeedButton1: TSpeedButton;
+    lbSchonDa: TLabel;
     procedure FormShow(Sender: TObject);
     procedure btnSaveNewWochenberichtClick(Sender: TObject);
     procedure dtpDatumChange(Sender: TObject);
@@ -134,8 +134,6 @@ begin
       abort;
     end;
 
-    ERROR := false;
-    LastInsertID := -1;
 
     FDQuery := TFDquery.Create(nil);
     try
@@ -257,6 +255,8 @@ begin
         Params.ParamByName('SSMW').AsString := '- ' + IntToStr(BESTANDWACHSCHIESSENMUN) + ' -'; //SSMW.Text;
         Params.ParamByName('SSMM').AsString := '- ' + IntToStr(BESTANDMANOEVERMUN) + ' -'; //SSMM.Text;
 
+        ERROR := false;
+
         try
           ExecSQL;
         except
@@ -296,7 +296,6 @@ begin
           except
             on E: Exception do
             begin
-              ERROR := true;
               ShowMessage('Fehler beim Speichern des neuen Wochenberichtes in der Tabelle "wochenberichte": ' + E.Message);
             end;
           end;
@@ -326,6 +325,8 @@ begin
 
   lbKW.Caption := IntToStr(SELKW);
   DatumString := GetStartEndOfWeek(SELKW, SELYEAR);
+
+  lbKW.Caption := '('+IntToStr(SELKW)+') '+DatumString;
 
   showDatumKontrollen;
 

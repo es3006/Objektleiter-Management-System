@@ -493,35 +493,37 @@ begin
 
 
   //Prüfen ob eine Internetverbindung besteht
-      CheckInternetAsync(WebsiteURL, procedure(IsOnline: Boolean)
+  CheckInternetAsync(WebsiteURL, procedure(IsOnline: Boolean)
+  begin
+    //Internetverbindung besteht
+    if IsOnline then
+    begin
+      pnlOnlinestatus.Caption := 'Online';
+      pnlOnlinestatus.Color := clGreen;
+
+      // Jetzt Remote-Version abrufen
+      GetRemoteVersionAsync(UpdateURL + 'version.txt', procedure(RemoteVersion: string)
       begin
-        //Internetverbindung besteht
-        if IsOnline then
+        if RemoteVersion = '' then
+          Exit;
+
+        if VersionCompare(PROGRAMMVERSION, RemoteVersion) < 0 then
         begin
-          pnlOnlinestatus.Caption := 'Online';
-          pnlOnlinestatus.Color := clGreen;
-
-          GetRemoteVersionAsync(UpdateURL + 'version.txt', procedure(RemoteVersion: string)
-          begin
-            if RemoteVersion = '' then
-              Exit;
-
-            if VersionCompare(PROGRAMMVERSION, RemoteVersion) < 0 then
-            begin
-              StatusBar1.Panels[2].Text := 'Update (' + RemoteVersion + ') verfügbar';
-            end
-            else
-              StatusBar1.Panels[1].Text := 'Aktuelle Version';
-
-            StatusBar1.Invalidate;
-          end);
+          StatusBar1.Panels[2].Text := 'Update (' + RemoteVersion + ') verfügbar';
         end
         else
-        begin
-          pnlOnlinestatus.Caption := 'Offline';
-          pnlOnlinestatus.Color := clRed;
-        end;
+          StatusBar1.Panels[2].Text := 'Aktuelle Version';
+
+        StatusBar1.Invalidate;
       end);
+    end
+    else
+    begin
+      pnlOnlinestatus.Caption := 'Offline';
+      pnlOnlinestatus.Color := clRed;
+      StatusBar1.Panels[2].Text := 'Installierte Version: ' + PROGRAMMVERSION;
+    end;
+  end);
 end;
 
 
@@ -1003,6 +1005,7 @@ begin
       pnlOnlinestatus.Caption := 'Online';
       pnlOnlinestatus.Color := clGreen;
 
+      // Jetzt Remote-Version abrufen
       GetRemoteVersionAsync(UpdateURL + 'version.txt', procedure(RemoteVersion: string)
       begin
         if RemoteVersion = '' then
@@ -1013,14 +1016,16 @@ begin
           StatusBar1.Panels[2].Text := 'Update (' + RemoteVersion + ') verfügbar';
         end
         else
-          StatusBar1.Panels[1].Text := 'Aktuelle Version';
-          StatusBar1.Invalidate;
+          StatusBar1.Panels[2].Text := 'Aktuelle Version';
+
+        StatusBar1.Invalidate;
       end);
     end
     else
     begin
       pnlOnlinestatus.Caption := 'Offline';
       pnlOnlinestatus.Color := clRed;
+      StatusBar1.Panels[2].Text := 'Installierte Version: ' + PROGRAMMVERSION;
     end;
   end);
 end;
