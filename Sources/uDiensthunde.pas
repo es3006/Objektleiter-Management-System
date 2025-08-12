@@ -53,13 +53,11 @@ var
 begin
   if(NEWENTRY = true) then
   begin
-    showmessage('INSERT');
     InsertNewEntryInDB;
   end;
 
   if(NEWENTRY = false) then
   begin
-    showmessage('UPDATE');
     i := lvDiensthunde.ItemIndex;
     if(i<>-1) then
     begin
