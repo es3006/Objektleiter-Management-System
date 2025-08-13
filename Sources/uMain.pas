@@ -33,6 +33,8 @@ const
   ENCRYPTIONKEY = 'mdklwuje90321iks,2moijlwödmeu3290dnu2i1p,sdim1239';
   WriteErrorsInFile = true;
 
+  PANEL_IDX_ONLINE = 0; //Panel Online in Statusbar Panels[0]
+  PANEL_IDX_INFO   = 1; //Panel Info in Statusbar Panels[1]
 
 
 type
@@ -124,8 +126,10 @@ type
     procedure Programmhilfe1Click(Sender: TObject);
     procedure Programmbeschreibung1Click(Sender: TObject);
     procedure TimerOnlineOfflineTimer(Sender: TObject);
+    procedure StatusBar1Resize(Sender: TObject);
   private
-
+    procedure PlaceCtrlInStatusBar(AControl: TWinControl; APanelIndex: Integer; AInset: Integer = 2);
+    procedure WMPlaceSBChildren(var Msg: TMessage); message WM_APP + $42;
   public
     CurrentFrame: TFrame;
     ColumnToSort, LastSorted, SortDir: Integer;
@@ -198,6 +202,46 @@ uses uFirstStart, uDBSettings, uDBFunktionen, uFunktionen, uWebBrowser, uMitarbe
 
 
 
+procedure TfMain.PlaceCtrlInStatusBar(AControl: TWinControl; APanelIndex: Integer; AInset: Integer);
+var
+  R: TRect;
+begin
+  if (AControl = nil) or (StatusBar1 = nil) then Exit;
+  if not StatusBar1.HandleAllocated then Exit;
+
+  // Bei SimplePanel existiert nur Index 0
+  if StatusBar1.SimplePanel and (APanelIndex <> 0) then Exit;
+  if (not StatusBar1.SimplePanel) and ((APanelIndex < 0) or (APanelIndex >= StatusBar1.Panels.Count)) then Exit;
+
+  // Panel-Rechteck holen (wichtig: LPARAM(@R), nicht Integer(@R)!)
+  SendMessage(StatusBar1.Handle, SB_GETRECT, APanelIndex, LPARAM(@R));
+
+  // Control in die Statusbar hängen und exakt in das Panel-Rechteck legen
+  AControl.Parent := StatusBar1;
+  AControl.Align := alNone;
+  AControl.SetBounds(R.Left + AInset, R.Top + AInset,
+                     (R.Right - R.Left) - 2*AInset,
+                     (R.Bottom - R.Top) - 2*AInset);
+  AControl.BringToFront;
+  AControl.Visible := True;
+end;
+
+
+
+procedure TfMain.WMPlaceSBChildren(var Msg: TMessage);
+begin
+  // Handle sicherstellen (falls noch nicht erzeugt)
+  StatusBar1.HandleNeeded;
+
+  // Beide Panels in die gewünschten Statusbar-Panels setzen
+  PlaceCtrlInStatusBar(pnlOnlineStatus, PANEL_IDX_ONLINE, 2);
+  PlaceCtrlInStatusBar(pnLogedUser,   PANEL_IDX_INFO,   2);
+end;
+
+
+
+
+
 procedure TfMain.ReadSettingsFromIni;
 var
   ini: TIniFile;
@@ -236,6 +280,11 @@ end;
 
 
 
+
+procedure TfMain.StatusBar1Resize(Sender: TObject);
+begin
+  PostMessage(Handle, WM_APP + $42, 0, 0);
+end;
 
 procedure TfMain.LoadFrame(FrameClass: TFrameClass);
 var
@@ -349,6 +398,9 @@ end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
+  pnlOnlineStatus.Visible := False;
+  pnLogedUser.Visible   := False;
+
   Self.Scaled := False;
 
   CreateDirectoriesAndExtractFilesFromRes;
@@ -404,6 +456,11 @@ begin
   FDConnection1.Open(); // Verbindung öffnen
 
   FDSQLiteBackup1.Database := DBNAME;
+
+
+  StatusBar1.SimplePanel := False;
+  while StatusBar1.Panels.Count < 4 do
+    StatusBar1.Panels.Add; // du nutzt Panels[0], [1], [2], [3]
 end;
 
 
@@ -423,24 +480,10 @@ procedure TfMain.FormShow(Sender: TObject);
 var
   Frame: TFrameWochenberichtEdit;
   i: integer;
-  r: TRect;
 begin
-  StatusBar1.Perform(SB_GETRECT, 0, Integer(@R));
-  pnLogedUser.Parent := Statusbar1;  //adopt the Progressbar
-
-  pnLogedUser.Top    := r.Top;      //set size of
-  pnLogedUser.Left   := r.Left;      //Progressbar to
-  pnLogedUser.Width  := r.Right - r.Left; //fit with panel
-  pnLogedUser.Height := r.Bottom - r.Top;
-
-  StatusBar1.Perform(SB_GETRECT, 1, Integer(@R));
-  pnlOnlineStatus.Parent := Statusbar1;  //adopt the Progressbar
-
-  pnlOnlineStatus.Top    := r.Top;      //set size of
-  pnlOnlineStatus.Left   := r.Left;      //Progressbar to
-  pnlOnlineStatus.Width  := r.Right - r.Left; //fit with panel
-  pnlOnlineStatus.Height := r.Bottom - r.Top;
-
+  PostMessage(Handle, WM_APP + $42, 0, 0);
+  pnlOnlineStatus.Visible := True;
+  pnLogedUser.Visible   := True;
 
   // Globale FormatSettings konfigurieren
   GlobalFormatSettings := TFormatSettings.Create;
@@ -524,6 +567,8 @@ begin
       StatusBar1.Panels[2].Text := 'Installierte Version: ' + PROGRAMMVERSION;
     end;
   end);
+
+  PostMessage(Handle, WM_APP + $42, 0, 0);
 end;
 
 

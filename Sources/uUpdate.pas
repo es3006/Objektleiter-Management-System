@@ -15,7 +15,8 @@ procedure GetRemoteVersionAsync(const URL: string; Callback: TProc<string>);
 procedure GetChangeLogAsync(const URL: string; Callback: TProc<string>);
 procedure StarteUpdateProzessAsync;
 procedure ReplaceAndRestart;
-procedure CheckAndUpdateIfAvailableAsync(const VersionInstalled: string);
+procedure CheckAndUpdateIfAvailableAsync(const VersionInstalled: string; const ShowNoUpdateMsg: Boolean = True);
+
 
 
 
@@ -110,24 +111,61 @@ end;
 
 
 
-procedure CheckAndUpdateIfAvailableAsync(const VersionInstalled: string);
+procedure CheckAndUpdateIfAvailableAsync(const VersionInstalled: string; const ShowNoUpdateMsg: Boolean = True);
 begin
   GetRemoteVersionAsync(UPDATEURL + VERSION_FILE,
     procedure(RemoteVersion: string)
+    var
+      cmp: Integer;
+      verInstalledTrim, verRemoteTrim: string;
     begin
-      if (RemoteVersion = '') or (VersionCompare(VersionInstalled, RemoteVersion) >= 0) then
-        Exit;
+      verInstalledTrim := Trim(VersionInstalled);
+      verRemoteTrim    := Trim(RemoteVersion);
 
+      if verRemoteTrim = '' then
+      begin
+        if ShowNoUpdateMsg then
+          TThread.Queue(nil, procedure begin
+            ShowMessage('Die Online-Version konnte nicht ermittelt werden.');
+          end);
+        Exit;
+      end;
+
+      cmp := VersionCompare(verInstalledTrim, verRemoteTrim);
+
+      // Bereits aktuell oder neuer -> Meldung (optional)
+      if cmp >= 0 then
+      begin
+        if ShowNoUpdateMsg then
+          TThread.Queue(nil, procedure begin
+            ShowMessage(Format('Sie nutzen bereits die aktuellste Version (%s).', [verInstalledTrim]));
+          end);
+        Exit;
+      end;
+
+      // Update verfügbar -> Changelog holen und fragen
       GetChangeLogAsync(UPDATEURL + CHANGELOG_FILE,
         procedure(Changelog: string)
         begin
-          if MessageDlg('Ein Update auf Version ' + RemoteVersion + ' ist verfügbar.' + sLineBreak +
-                        'Änderungen:' + sLineBreak + Changelog + sLineBreak +
-                        'Möchten Sie das Update jetzt installieren?', mtInformation, [mbYes, mbNo], 0) = mrYes then
+          TThread.Queue(nil, procedure
+          var
+            txt: string;
           begin
-            ShowMessage('Bitte warten... Update wird heruntergeladen, installiert'+sLineBreak + 'und das Programm wird neu gestartet.');
-            StarteUpdateProzessAsync;
-          end;
+            txt := 'Ein Update auf Version ' + verRemoteTrim + ' ist verfügbar.' + sLineBreak +
+                   'Änderungen:' + sLineBreak + Changelog + sLineBreak + sLineBreak +
+                   'Möchten Sie das Update jetzt installieren?';
+
+            if MessageDlg(txt, mtInformation, [mbYes, mbNo], 0) = mrYes then
+            begin
+              ShowMessage('Bitte warten... Update wird heruntergeladen und installiert.' + sLineBreak +
+                          'Das Programm wird anschließend neu gestartet.');
+              StarteUpdateProzessAsync;  // falls das UI anfasst, ggf. ebenfalls über TThread.Queue
+            end
+            else if ShowNoUpdateMsg then
+            begin
+              ShowMessage('Update wurde abgelehnt. Sie bleiben auf Version ' + verInstalledTrim + '.');
+            end;
+          end);
         end);
     end);
 end;

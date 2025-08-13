@@ -826,10 +826,10 @@ object fMain: TfMain
       item
         Alignment = taCenter
         Bevel = pbRaised
-        Width = 300
+        Width = 100
       end
       item
-        Width = 100
+        Width = 400
       end
       item
         Alignment = taCenter
@@ -840,6 +840,7 @@ object fMain: TfMain
       end>
     ParentShowHint = False
     ShowHint = True
+    OnResize = StatusBar1Resize
   end
   object ToolBar1: TToolBar
     Left = 0
